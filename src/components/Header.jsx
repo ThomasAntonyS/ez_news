@@ -7,7 +7,6 @@ const Header = () => {
     { name: "Technology", path: "technology" },
     { name: "Entertainment", path: "entertainment" },
     { name: "Sports", path: "sports" },
-    { name: "Health", path: "health" },
   ];
 
   const moreLinks = [
@@ -15,6 +14,7 @@ const Header = () => {
     { name: "World", path: "world" },
     { name: "Nation", path: "nation" },
     { name: "Science", path: "science" },
+    { name: "Health", path: "health" },
   ];
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -40,7 +40,7 @@ const Header = () => {
       </form>
 
       {/* Desktop nav: Main links + More dropdown (visible from sm and up) */}
-      <nav className="hidden sm:flex space-x-6 items-center relative">
+      <nav className="hidden 2xl:flex space-x-6 items-center relative">
         {mainLinks.map((link) => (
           <a
             key={link.path}
@@ -101,14 +101,14 @@ const Header = () => {
       <button
         onClick={() => setMobileMenuOpen((open) => !open)}
         aria-label="Toggle menu"
-        className="sm:hidden text-black"
+        className="2xl:hidden text-black"
       >
         {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
       </button>
 
       {/* Mobile menu (overlay) */}
       {mobileMenuOpen && (
-        <div className="absolute top-[9vh] left-0 right-0 bg-white shadow-lg border-t border-gray-200 sm:hidden z-30">
+        <div className="absolute top-[9vh] left-0 right-0 bg-white shadow-lg border-t border-gray-200 2xl:hidden z-30">
           <nav className="flex flex-col p-4 space-y-3">
             {[...mainLinks, ...moreLinks].map((link) => (
               <a
