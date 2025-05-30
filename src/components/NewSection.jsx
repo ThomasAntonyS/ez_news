@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { newsContext } from '../context/NewsContext';
 import { Link } from 'react-router-dom';
+import { Ring2 } from 'ldrs/react'
+import 'ldrs/react/Ring2.css'
 
 const NewSection = () => {
   const { popular, setPopular } = useContext(newsContext);
@@ -48,7 +50,16 @@ const NewSection = () => {
       <p className=' mb-6 sm:my-4 font-semibold text-3xl sm:text-2xl lg:text-[1.7rem]'>Popular News</p>
 
       {popular.length === 0 ? (
-        <p className="text-center my-10 text-gray-500">Loading popular news...</p>
+        <p className="w-max mx-auto my-4">
+          <Ring2
+            size="40"
+            stroke="5"
+            strokeLength="0.25"
+            bgOpacity="0.1"
+            speed="0.8"
+            color="black" 
+          />
+        </p>
       ) : (
         <div className='w-full flex flex-col lg:flex-row gap-4 '>
           {/* Left Section */}
@@ -65,7 +76,7 @@ const NewSection = () => {
                 <div className='flex flex-col justify-between w-full sm:w-[70%] p-3 sm:px-0'>
                   <p className='font-bold text-lg sm:text-xl line-clamp-2'>{item.title}</p>
                   <p className='text-sm sm:text-base line-clamp-3'>{item.description}</p>
-                  <div className='flex justify-between text-xs sm:text-sm mt-2 '>
+                  <div className='flex justify-between text-xs sm:text-sm mt-4 '>
                     <p>{item.publishedAt?.split('T')[0]}</p>
                     <p className='text-red-900 font-bold'>
                       Source:{' '}

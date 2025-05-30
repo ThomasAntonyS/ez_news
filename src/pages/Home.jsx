@@ -1,79 +1,75 @@
-import Banner from '../components/Banner'
+import { useEffect, useState } from 'react';
+import Banner from '../components/Banner';
 import Footer from '../components/Footer';
-import Header from '../components/Header'
-import HomeSliders from '../components/HomeSliders'
-import NewSection from '../components/NewSection'
+import Header from '../components/Header';
+import HomeSliders from '../components/HomeSliders';
+import NewSection from '../components/NewSection';
 
 const Home = () => {
   document.title = "EZ NEWS | Home";
 
-  const businessData = [
-    {
-      image: 'https://images.pexels.com/photos/3183197/pexels-photo-3183197.jpeg?auto=compress&cs=tinysrgb&w=600',
-      title: 'Scaling Your Startup',
-      description: 'Learn strategies for scaling your business effectively in competitive markets.',
-    },
-    {
-      image: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=600',
-      title: 'Investor Talks: Raising Capital',
-      description: 'Hear from top VCs and angel investors on what they look for in a pitch.',
-    },
-    {
-      image: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=600',
-      title: 'Investor Talks: Raising Capital',
-      description: 'Hear from top VCs and angel investors on what they look for in a pitch.',
-    },    
-  ];
+  const [businessData, setBusinessData] = useState([]);
+  const [entertainmentData, setEntertainmentData] = useState([]);
+  const [technologyData, setTechnologyData] = useState([]);
+  const [healthData, setHealthData] = useState([]);
+  const [bannerNews, setBannerNews] = useState([]);
 
-  const entertainmentData = [
-    {
-      image: 'https://images.pexels.com/photos/799137/pexels-photo-799137.jpeg?auto=compress&cs=tinysrgb&w=600',
-      title: 'Behind the Scenes: Film Production',
-      description: 'Go inside the making of blockbuster movies and indie hits.',
-    },
-    {
-      image: 'https://images.pexels.com/photos/1647169/pexels-photo-1647169.jpeg?auto=compress&cs=tinysrgb&w=600',
-      title: 'Music Trends in 2025',
-      description: 'Explore the future of sound and the tech shaping today’s music scene.',
-    },
-    {
-      image: 'https://images.pexels.com/photos/1647169/pexels-photo-1647169.jpeg?auto=compress&cs=tinysrgb&w=600',
-      title: 'Music Trends in 2025',
-      description: 'Explore the future of sound and the tech shaping today’s music scene.',
-    },
-  ];
+  const API_KEY = import.meta.env.VITE_API;
 
-  const technologyData = [
-    {
-      image: 'https://images.pexels.com/photos/3861959/pexels-photo-3861959.jpeg?auto=compress&cs=tinysrgb&w=600',
-      title: 'AI in Everyday Life',
-      description: 'How artificial intelligence is transforming consumer technology.',
-    },
-    {
-      image: 'https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=600',
-      title: 'Cybersecurity Trends',
-      description: 'Tips to protect your personal data and emerging threats to watch.',
-    },
-    {
-      image: 'https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=600',
-      title: 'Cybersecurity Trends',
-      description: 'Tips to protect your personal data and emerging threats to watch.',
-    },
-  ];
+  const fetchAndCache = async (key, category, setter) => {
+    const cached = sessionStorage.getItem(key);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      setter(parsed);
+      return parsed[0]; // return top article
+    }
+
+    try {
+      const res = await fetch(`https://gnews.io/api/v4/top-headlines?category=${category}&lang=en&max=3&apikey=${API_KEY}`);
+      const data = await res.json();
+
+      if (data.articles) {
+        sessionStorage.setItem(key, JSON.stringify(data.articles));
+        setter(data.articles);
+        return data.articles[0];
+      }
+    } catch (error) {
+      console.error(`Error fetching ${category} news:`, error);
+    }
+
+    return null;
+  };
+
+  useEffect(() => {
+    const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
+    const getAllNews = async () => {
+      const business = await fetchAndCache('business', 'business', setBusinessData);
+      await delay(2000);
+      const entertainment = await fetchAndCache('entertainment', 'entertainment', setEntertainmentData);
+      await delay(2000);
+      const technology = await fetchAndCache('technology', 'technology', setTechnologyData);
+      await delay(2000);
+      const health = await fetchAndCache('health', 'health', setHealthData);
+
+      setBannerNews([business, entertainment, technology, health].filter(Boolean));
+    };
+
+    getAllNews();
+  }, []);
 
   return (
     <div>
       <Header />
-      <Banner />
+      <Banner newsItems={bannerNews} />
       <NewSection />
 
-      {/* Dummy podcast sections */}
-      <HomeSliders sectionTitle="Business" podcastData={businessData} />
-      <HomeSliders sectionTitle="Entertainment" podcastData={entertainmentData} />
-      <HomeSliders sectionTitle="Technology" podcastData={technologyData} />
-      <HomeSliders sectionTitle="Health" podcastData={technologyData} />
+      <HomeSliders sectionTitle="Business" categoryPath="business" podcastData={businessData} />
+      <HomeSliders sectionTitle="Entertainment" categoryPath="entertainment" podcastData={entertainmentData} />
+      <HomeSliders sectionTitle="Technology" categoryPath="technology" podcastData={technologyData} />
+      <HomeSliders sectionTitle="Health" categoryPath="health" podcastData={healthData} />
 
-      <Footer/>
+      <Footer />
     </div>
   );
 };
