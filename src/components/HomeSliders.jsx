@@ -9,7 +9,7 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
     <div className="w-[90%] max-w-7xl mx-auto my-16">
       <h2 className="text-2xl sm:text-3xl font-bold mb-6">{sectionTitle}</h2>
 
-      <div className="flex flex-wrap gap-4 justify-between">
+      <div className="flex flex-wrap gap-8 sm:gap-4 justify-between">
         {podcastData && podcastData.length > 0 ? (
           podcastData.map((item, index) => (
             <PodcastCard

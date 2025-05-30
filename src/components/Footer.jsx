@@ -1,11 +1,27 @@
-import React from 'react';
 import { Facebook, Instagram, Linkedin } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
+  const handleScrollTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const categories = [
+    'general',
+    'world',
+    'nation',
+    'health',
+    'business',
+    'technology',
+    'entertainment',
+    'sports',
+    'science',
+  ];
+
   return (
     <footer className="bg-black text-white py-10 px-5">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
-        {/* Section 1: Logo + Description */}
+        {/* Section 1: Brand Info */}
         <div>
           <h2 className="text-2xl font-bold mb-3">EZ NEWS</h2>
           <p className="text-sm mb-4 text-gray-400">
@@ -20,19 +36,18 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-4">Categories</h3>
           <ul className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm text-gray-300">
-            <li className="hover:text-white cursor-pointer">General</li>
-            <li className="hover:text-white cursor-pointer">World</li>
-            <li className="hover:text-white cursor-pointer">Nation</li>
-            <li className="hover:text-white cursor-pointer">Health</li>
-            <li className="hover:text-white cursor-pointer">Business</li>
-            <li className="hover:text-white cursor-pointer">Technology</li>
-            <li className="hover:text-white cursor-pointer">Entertainment</li>
-            <li className="hover:text-white cursor-pointer">Sports</li>
-            <li className="hover:text-white cursor-pointer">Science</li>
-
+            {categories.map((category) => (
+              <Link
+                key={category}
+                to={`/${category}`}
+                onClick={handleScrollTop}
+                className="hover:text-white cursor-pointer"
+              >
+                {category.charAt(0).toUpperCase() + category.slice(1)}
+              </Link>
+            ))}
           </ul>
         </div>
-
 
         {/* Section 3: Resources + Social */}
         <div className="flex flex-col justify-between">
