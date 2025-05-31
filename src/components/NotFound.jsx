@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import Header from './Header'
 
 const NotFound = () => {
+
+  document.title = "404: Not_Found"
+  
   return (
     <>
         <Header/>

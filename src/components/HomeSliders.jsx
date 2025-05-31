@@ -21,7 +21,7 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
             />
           ))
         ) : (
-          <p className="w-max mx-auto my-4">
+          <div className="w-max mx-auto my-4">
             <Ring2
               size="40"
               stroke="5"
@@ -30,7 +30,7 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
               speed="0.8"
               color="black" 
             />
-          </p>
+          </div>
         )}
       </div>
 

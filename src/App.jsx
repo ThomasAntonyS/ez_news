@@ -3,6 +3,7 @@ import './App.css'
 import NewsContext from './context/NewsContext'
 import Home from './pages/Home'
 import NotFound from './components/NotFound'
+import SingleCategory from './components/SingleCategory'
 
 function App() {
 
@@ -17,6 +18,10 @@ function App() {
             <Route
             element={<Home/>}
             path='/'/>
+
+            <Route
+            element={<SingleCategory/>}
+            path='/:category'/>
 
             <Route
             element={<NotFound/>}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Menu, Search, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const mainLinks = [
@@ -58,13 +59,13 @@ const Header = () => {
         {/* Desktop nav */}
         <nav className="hidden 2xl:flex space-x-6 items-center relative">
           {mainLinks.map((link) => (
-            <a
+            <Link
               key={link.path}
-              href={`/${link.path}`}
+              to={`/${link.path}`}
               className="text-black px-3 py-1 font-semibold hover:bg-gray-100 transition-colors rounded"
             >
               {link.name}
-            </a>
+            </Link>
           ))}
 
           {/* More dropdown */}
@@ -104,12 +105,12 @@ const Header = () => {
               <ul className="absolute top-full left-0 bg-white shadow-lg rounded-md py-2 min-w-[150px] z-20">
                 {moreLinks.map((link) => (
                   <li key={link.path}>
-                    <a
-                      href={`/${link.path}`}
+                    <Link
+                      to={`/${link.path}`}
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
                       {link.name}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -132,14 +133,14 @@ const Header = () => {
         <div className="absolute top-[9vh] left-0 w-full bg-white shadow-2xl border-t border-gray-200 2xl:hidden z-40">
           <nav className="flex flex-col p-4 space-y-3">
             {[...mainLinks, ...moreLinks].map((link) => (
-              <a
+              <Link
                 key={link.path}
-                href={`/${link.path}`}
+                to={`/${link.path}`}
                 className="text-black font-semibold px-3 py-2 rounded hover:bg-gray-100 transition"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {link.name}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>
