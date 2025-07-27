@@ -6,25 +6,26 @@ import Footer from "../components/Footer";
 import { Ring2 } from 'ldrs/react';
 import 'ldrs/react/Ring2.css';
 
-const SingleCategory = () => {
-  const { category } = useParams();
-  document.title = `${category.charAt(0).toUpperCase() + category.slice(1)}`
+const Search = () => {
+  const { q } = useParams();
+  document.title = "EZ NEWS | Search"
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate()
 
-  const fetchData = async ( selectedCategory) => {
+  const fetchData = async (query) => {
     const api = import.meta.env.VITE_API;
     setLoading(true);
     try {
       const res = await fetch(
-        `https://gnews.io/api/v4/top-headlines?category=${selectedCategory}&lang=en&apikey=${api}`
+        `https://gnews.io/api/v4/search?q=${query}&lang=en&apikey=${api}`
       );      
       const response = await res.json();
       if(!response.articles){
         navigate("/not-found", { replace: true })
       }
       const articles = response.articles || [];    
+      const pages = Math.ceil((response.totalArticles || 0) / 10);
       setData(articles);
       setLoading(false);
     } catch (error) {
@@ -34,18 +35,17 @@ const SingleCategory = () => {
   };
 
   useEffect(() => {
-    if (category) {
-      fetchData( category);
+    if (q) {
+      fetchData(q);
     }
-  }, [ category]);
-
+  }, [q]);
 
   return (
     <>
       <Header />
       <div>
         <p className="w-max mx-auto mt-[15vh] text-[3rem] sm:text-[6rem] 2xl:text-[10rem] font-bold">
-          {category.charAt(0).toUpperCase() + category.slice(1)}
+          Search
         </p>
       </div>
 
@@ -99,4 +99,4 @@ const SingleCategory = () => {
   );
 };
 
-export default SingleCategory;
+export default Search;

@@ -1,8 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, Search, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
+  const [hasShadow, setHasShadow] = useState(false);
+  const [query, setQuery] = useState('');
+  const navigate = useNavigate();
+
   const mainLinks = [
     { name: "Home", path: "" },
     { name: "Technology", path: "technology" },
@@ -18,10 +24,6 @@ const Header = () => {
     { name: "Health", path: "health" },
   ];
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
-  const [hasShadow, setHasShadow] = useState(false);
-
   useEffect(() => {
     const handleScroll = () => {
       setHasShadow(window.scrollY > 10);
@@ -35,6 +37,21 @@ const Header = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault(); 
+    if (query.trim() === "") {
+      alert("Type a topic to search.");
+      return;
+    }
+
+    const formattedQuery = query.trim().replace(/ /g, "+");
+    navigate(`/search/${formattedQuery}`);
+    setQuery(''); 
+    if (mobileMenuOpen) {
+      setMobileMenuOpen(false);
+    }
+  };
+
   return (
     <header
       className={`fixed top-0 left-0 w-full bg-white z-50 transition-shadow ${
@@ -43,11 +60,13 @@ const Header = () => {
     >
       <div className="h-[9vh] flex justify-between items-center w-[90%] max-w-7xl mx-auto px-4">
         {/* Search Form */}
-        <form className="flex items-center space-x-2">
+        <form className="flex items-center space-x-2" onSubmit={handleSearch}>
           <input
             type="text"
             placeholder="Search..."
             aria-label="Search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
             className="border-b-2 font-semibold border-b-gray-300 pr-3 pl-2 py-1 focus:outline-none"
           />
           <button
@@ -111,7 +130,10 @@ const Header = () => {
                   <li key={link.path}>
                     <Link
                       to={`/${link.path}`}
-                      onClick={scrollToTop}
+                      onClick={() => {
+                        scrollToTop();
+                        setMoreDropdownOpen(false); // Close dropdown on link click
+                      }}
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
                       {link.name}

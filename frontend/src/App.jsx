@@ -4,6 +4,7 @@ import NewsContext from './context/NewsContext'
 import Home from './pages/Home'
 import NotFound from './pages/NotFound'
 import SingleCategory from './pages/SingleCategory'
+import Search from './pages/Search'
 
 function App() {
 
@@ -22,6 +23,11 @@ function App() {
             <Route
             element={<SingleCategory/>}
             path='/:category'/>
+
+            <Route
+            element={<Search/>}
+            path="/search/:q"
+            />
 
             <Route
             element={<NotFound/>}
