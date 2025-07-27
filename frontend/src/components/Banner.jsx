@@ -1,6 +1,23 @@
-const Banner = ({ newsItems }) => {
-  // Take only the first 3 items
+import React from 'react';
+
+const Banner = ({ newsItems, loading }) => {
   const bannerItems = newsItems.slice(0, 3);
+
+  if (loading) {
+    return (
+      <div>
+        <p className="w-max mx-auto mt-[10vh] text-[4rem] sm:text-[10rem] 2xl:text-[13rem] font-bold">
+          EZ NEWS
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-2 gap-4 sm:w-[80%] 2xl:w-[60%] mx-auto px-4 animate-pulse">
+          <div className="relative h-[20vh] sm:h-[32vh] 2xl:h-[50vh] sm:row-span-2 bg-gray-500 rounded-lg"></div>
+          <div className="relative h-[20vh] sm:h-[15vh] 2xl:h-[24vh] bg-gray-500 rounded-lg"></div>
+          <div className="relative h-[20vh] sm:h-[15vh] 2xl:h-[24vh] bg-gray-500 rounded-lg"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -9,7 +26,6 @@ const Banner = ({ newsItems }) => {
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-2 gap-4 sm:w-[80%] 2xl:w-[60%] mx-auto px-4">
-        {/* First item: tall block */}
         {bannerItems[0] && (
           <a
             href={bannerItems[0].url}
@@ -29,7 +45,6 @@ const Banner = ({ newsItems }) => {
           </a>
         )}
 
-        {/* Second item */}
         {bannerItems[1] && (
           <a
             href={bannerItems[1].url}
@@ -48,7 +63,6 @@ const Banner = ({ newsItems }) => {
           </a>
         )}
 
-        {/* Third item */}
         {bannerItems[2] && (
           <a
             href={bannerItems[2].url}

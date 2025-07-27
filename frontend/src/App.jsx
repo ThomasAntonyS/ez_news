@@ -1,9 +1,9 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, replace, Route, Routes } from 'react-router-dom'
 import './App.css'
 import NewsContext from './context/NewsContext'
 import Home from './pages/Home'
-import NotFound from './components/NotFound'
-import SingleCategory from './components/SingleCategory'
+import NotFound from './pages/NotFound'
+import SingleCategory from './pages/SingleCategory'
 
 function App() {
 
@@ -25,7 +25,7 @@ function App() {
 
             <Route
             element={<NotFound/>}
-            path='/*'/>
+            path='/not-found'/>
             
           </Routes>
 

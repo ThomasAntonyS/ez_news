@@ -4,14 +4,14 @@ import { Link } from "react-router-dom";
 
 const Header = () => {
   const mainLinks = [
-    { name: "Business", path: "business" },
+    { name: "Home", path: "" },
     { name: "Technology", path: "technology" },
     { name: "Entertainment", path: "entertainment" },
     { name: "Sports", path: "sports" },
   ];
 
   const moreLinks = [
-    { name: "General", path: "general" },
+    { name: "Business", path: "business" },
     { name: "World", path: "world" },
     { name: "Nation", path: "nation" },
     { name: "Science", path: "science" },
@@ -22,7 +22,6 @@ const Header = () => {
   const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
   const [hasShadow, setHasShadow] = useState(false);
 
-  // Detect scroll to add shadow
   useEffect(() => {
     const handleScroll = () => {
       setHasShadow(window.scrollY > 10);
@@ -31,6 +30,10 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <header
@@ -62,6 +65,7 @@ const Header = () => {
             <Link
               key={link.path}
               to={`/${link.path}`}
+              onClick={scrollToTop}
               className="text-black px-3 py-1 font-semibold hover:bg-gray-100 transition-colors rounded"
             >
               {link.name}
@@ -107,6 +111,7 @@ const Header = () => {
                   <li key={link.path}>
                     <Link
                       to={`/${link.path}`}
+                      onClick={scrollToTop}
                       className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                     >
                       {link.name}
@@ -136,8 +141,11 @@ const Header = () => {
               <Link
                 key={link.path}
                 to={`/${link.path}`}
+                onClick={() => {
+                  scrollToTop();
+                  setMobileMenuOpen(false);
+                }}
                 className="text-black font-semibold px-3 py-2 rounded hover:bg-gray-100 transition"
-                onClick={() => setMobileMenuOpen(false)}
               >
                 {link.name}
               </Link>
