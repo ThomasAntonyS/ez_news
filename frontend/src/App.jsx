@@ -1,10 +1,10 @@
 import { BrowserRouter, replace, Route, Routes } from 'react-router-dom'
-import './App.css'
 import NewsContext from './context/NewsContext'
 import Home from './pages/Home'
 import NotFound from './pages/NotFound'
 import SingleCategory from './pages/SingleCategory'
 import Search from './pages/Search'
+import './App.css'
 
 function App() {
 
