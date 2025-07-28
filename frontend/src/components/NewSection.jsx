@@ -89,7 +89,7 @@ const NewSection = () => {
                 />
                 <div className="flex flex-col justify-between w-full sm:w-[70%] p-3 sm:px-0">
                   <p className="font-bold text-lg sm:text-xl line-clamp-2">{item.title}</p>
-                  <p className="text-sm sm:text-base line-clamp-3">{item.description}</p>
+                  <p className="text-sm sm:text-base line-clamp-2">{item.description}</p>
                   <div className="flex justify-between text-xs sm:text-sm mt-4">
                     <p>{item.publishedAt?.split('T')[0]}</p>
                     <p className="text-red-900 font-bold">

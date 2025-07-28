@@ -13,6 +13,18 @@ const SingleCategory = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate()
 
+  const Links = [
+    { name: "Home", path: "" },
+    { name: "Technology", path: "technology" },
+    { name: "Entertainment", path: "entertainment" },
+    { name: "Sports", path: "sports" },
+    { name: "Business", path: "business" },
+    { name: "World", path: "world" },
+    { name: "Nation", path: "nation" },
+    { name: "Science", path: "science" },
+    { name: "Health", path: "health" },
+  ];
+
   const fetchData = async () => {
     const apiBase = import.meta.env.VITE_API_BASE;
     setLoading(true);
@@ -62,9 +74,18 @@ const SingleCategory = () => {
 
   useEffect(() => {
     if (category) {
-      fetchData( category);
+      const isValidCategory = Links.some(linkPath => category === linkPath.path);
+
+      if (isValidCategory) {
+        fetchData(category);
+      } else {
+        navigate("/not-found",{ replace: true });
+      }
+    } else {
+      console.log("No category provided. Navigating to /not-found");
+      navigate("/not-found",{ replace: true });
     }
-  }, [ category]);
+  }, [category]);
 
 
   return (

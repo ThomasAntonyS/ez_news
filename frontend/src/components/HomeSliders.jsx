@@ -1,10 +1,22 @@
 import PodcastCard from './PostCard';
 import { Ring2 } from 'ldrs/react'
 import 'ldrs/react/Ring2.css'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ChevronRightIcon } from 'lucide-react';
 
 const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
+
+  const naviagte = useNavigate()
+
+  function handleClick(e,categoryPath){
+    e.preventDefault()
+    naviagte(`/${categoryPath}`)
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    })
+  }
+
   return (
     <div className="w-[90%] max-w-7xl mx-auto my-16">
       <h2 className="text-2xl sm:text-3xl font-bold mb-6">{sectionTitle}</h2>
@@ -35,7 +47,7 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
       </div>
 
       <div className="text-center mt-8">
-        <Link to={`/${categoryPath}`} className="flex w-max mx-auto bg-red-600 text-white py-2 px-5 rounded-md hover:bg-red-700 transition">
+        <Link onClick={e=>handleClick(e,categoryPath)} className="flex w-max mx-auto bg-red-600 text-white py-2 px-5 rounded-md hover:bg-red-700 transition">
           Browse All Updates <span className=' h-max my-auto'><ChevronRightIcon/></span>
         </Link>
       </div>
