@@ -69,7 +69,7 @@ const Home = () => {
       for (const { key, setter } of categories) {
         const data = await fetchAndCache(key, key, setter);
         if (data) results.push(data);
-        await delay(1500);
+        await delay(500);
       }
 
       setBannerNews(results);
@@ -84,7 +84,6 @@ const Home = () => {
       <Header />
       <Banner newsItems={bannerNews} loading={loadingBanner} />
       <NewSection />
-
       <HomeSliders sectionTitle="Business" categoryPath="business" podcastData={businessData} />
       <HomeSliders sectionTitle="Entertainment" categoryPath="entertainment" podcastData={entertainmentData} />
       <HomeSliders sectionTitle="Technology" categoryPath="technology" podcastData={technologyData} />

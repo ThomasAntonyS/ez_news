@@ -46,6 +46,10 @@ const Header = () => {
 
     const formattedQuery = query.trim().replace(/ /g, "+");
     navigate(`/search/${formattedQuery}`);
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    })
     setQuery(''); 
     if (mobileMenuOpen) {
       setMobileMenuOpen(false);

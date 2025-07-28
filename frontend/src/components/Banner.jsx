@@ -11,9 +11,9 @@ const Banner = ({ newsItems, loading }) => {
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-2 gap-4 sm:w-[80%] 2xl:w-[60%] mx-auto px-4 animate-pulse">
-          <div className="relative h-[20vh] sm:h-[32vh] 2xl:h-[50vh] sm:row-span-2 bg-gray-500 rounded-lg"></div>
-          <div className="relative h-[20vh] sm:h-[15vh] 2xl:h-[24vh] bg-gray-500 rounded-lg"></div>
-          <div className="relative h-[20vh] sm:h-[15vh] 2xl:h-[24vh] bg-gray-500 rounded-lg"></div>
+          <div className="relative h-[20vh] sm:h-[32vh] 2xl:h-[50vh] sm:row-span-2 bg-gray-400 rounded-lg"></div>
+          <div className="relative h-[20vh] sm:h-[15vh] 2xl:h-[24vh] bg-gray-400 rounded-lg"></div>
+          <div className="relative h-[20vh] sm:h-[15vh] 2xl:h-[24vh] bg-gray-400 rounded-lg"></div>
         </div>
       </div>
     );

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { newsContext } from '../context/NewsContext';
 import { Ring2 } from 'ldrs/react';
 import 'ldrs/react/Ring2.css';
@@ -39,7 +39,6 @@ const NewSection = () => {
         setPopularNews(articles.slice(0, 5));
         setTrending(articles.slice(5, 10));
 
-        // Cache results with timestamp
         sessionStorage.setItem(
           cacheKey,
           JSON.stringify({ timestamp: now, data: response })
@@ -74,7 +73,6 @@ const NewSection = () => {
         </div>
       ) : (
         <div className="w-full flex flex-col lg:flex-row gap-4">
-          {/* Left Section */}
           <div className="w-full lg:w-[60%] rounded-md">
             {popularNews.map((item, index) => (
               <a
@@ -111,7 +109,6 @@ const NewSection = () => {
             ))}
           </div>
 
-          {/* Right Section */}
           <div className="w-full lg:w-[40%] h-max rounded-md p-3">
             <p className="text-2xl pb-1 sm:text-xl mb-3 font-semibold border-b-2">Trending</p>
             {trending.map((item, index) => (
