@@ -31,7 +31,7 @@ const Banner = ({ newsItems, loading }) => {
             href={bannerItems[0].url}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative h-[20vh] sm:h-[32vh] 2xl:h-[50vh] sm:row-span-2 group overflow-hidden rounded-lg"
+            className="relative h-[20vh] sm:h-[32vh] 2xl:h-[40vh] sm:row-span-2 group overflow-hidden rounded-lg"
           >
             <img
               src={bannerItems[0].image}
@@ -50,7 +50,7 @@ const Banner = ({ newsItems, loading }) => {
             href={bannerItems[1].url}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative h-[20vh] sm:h-[15vh] 2xl:h-[24vh] group overflow-hidden rounded-lg"
+            className="relative h-[20vh] sm:h-[15vh] 2xl:h-[19vh] group overflow-hidden rounded-lg"
           >
             <img
               src={bannerItems[1].image}
@@ -68,7 +68,7 @@ const Banner = ({ newsItems, loading }) => {
             href={bannerItems[2].url}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative h-[20vh] sm:h-[15vh] 2xl:h-[24vh] group overflow-hidden rounded-lg"
+            className="relative h-[20vh] sm:h-[15vh] 2xl:h-[19vh] group overflow-hidden rounded-lg"
           >
             <img
               src={bannerItems[2].image}

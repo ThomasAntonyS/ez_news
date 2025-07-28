@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { newsContext } from '../context/NewsContext';
 import { Ring2 } from 'ldrs/react';
+import {Link} from 'react-router-dom'
 import 'ldrs/react/Ring2.css';
 
 const NewSection = () => {
@@ -55,7 +56,7 @@ const NewSection = () => {
   }, []);
 
   return (
-    <div className="w-[95%] max-w-7xl mt-24 mx-auto px-2">
+    <div className="w-[95%] sm:max-w-[70%] mt-24 mx-auto px-2">
       <p className="mb-6 sm:my-4 font-semibold text-3xl sm:text-2xl lg:text-[1.7rem]">
         Popular News
       </p>
@@ -75,10 +76,10 @@ const NewSection = () => {
         <div className="w-full flex flex-col lg:flex-row gap-4">
           <div className="w-full lg:w-[60%] rounded-md">
             {popularNews.map((item, index) => (
-              <a
+              <Link
                 key={index}
                 className="flex flex-col sm:flex-row w-full sm:p-2 mb-16 shadow-md sm:shadow-none sm:mb-6 gap-3 transition-all rounded-lg sm:rounded-none text-justify hover:border-b"
-                href={item.url}
+                to={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -105,7 +106,7 @@ const NewSection = () => {
                     </p>
                   </div>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
 

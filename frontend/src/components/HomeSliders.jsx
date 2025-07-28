@@ -18,7 +18,7 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
   }
 
   return (
-    <div className="w-[90%] max-w-7xl mx-auto my-16">
+    <div className="w-[90%] sm:max-w-[70%] mx-auto my-16">
       <h2 className="text-2xl sm:text-3xl font-bold mb-6">{sectionTitle}</h2>
 
       <div className="flex flex-wrap gap-8 sm:gap-4 justify-between">

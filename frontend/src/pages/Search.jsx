@@ -18,7 +18,7 @@ const Search = () => {
     setLoading(true);
     try {
       const res = await fetch(
-        `https://gnews.io/api/v4/search?q=${query}&lang=en&apikey=${api}`
+        `https://gnews.io/api/v4/search?q=${query}&lang=en&apikey=${api}&in=title`
       );      
       const response = await res.json();
       if(!response.articles){
