@@ -13,25 +13,52 @@ const SingleCategory = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate()
 
-  const fetchData = async ( selectedCategory) => {
-    const api = import.meta.env.VITE_API;
+  const fetchData = async () => {
+    const apiBase = import.meta.env.VITE_API_BASE;
     setLoading(true);
+
+    const cacheKey = `category_${category}`;
+    const now = Date.now();
+
     try {
-      const res = await fetch(
-        `https://gnews.io/api/v4/top-headlines?category=${selectedCategory}&lang=en&apikey=${api}`
-      );      
-      const response = await res.json();
-      if(!response.articles){
-        navigate("/not-found", { replace: true })
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (now - parsed.timestamp < 10800000) {
+          const articles = parsed.data.articles || [];
+          if (articles.length === 0) {
+            navigate("/not-found", { replace: true });
+          } else {
+            setData(articles);
+          }
+          setLoading(false);
+          return;
+        }
       }
-      const articles = response.articles || [];    
+
+      const res = await fetch(`${apiBase}/category/${category}`);
+      const response = await res.json();
+
+      if (!response.articles) {
+        navigate("/not-found", { replace: true });
+        return;
+      }
+
+      const articles = response.articles || [];
       setData(articles);
+
+      sessionStorage.setItem(
+        cacheKey,
+        JSON.stringify({ timestamp: now, data: response })
+      );
+
       setLoading(false);
     } catch (error) {
       console.error("Error fetching articles:", error);
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     if (category) {

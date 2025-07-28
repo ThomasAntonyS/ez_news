@@ -15,24 +15,31 @@ const Home = () => {
   const [bannerNews, setBannerNews] = useState([]);
   const [loadingBanner, setLoadingBanner] = useState(true);
 
-  const API_KEY = import.meta.env.VITE_API;
-
   const fetchAndCache = async (key, category, setter) => {
+    const apiBase = import.meta.env.VITE_API_BASE;
     const cached = sessionStorage.getItem(key);
+    const now = Date.now();
+
     if (cached) {
       const parsed = JSON.parse(cached);
-      if (parsed.articles && Array.isArray(parsed.articles)) {
-        setter(parsed.articles.slice(0, 3));
-        return parsed.articles[0];
+
+      if (now - parsed.timestamp < 10800000) {
+        if (parsed.data.articles && Array.isArray(parsed.data.articles)) {
+          setter(parsed.data.articles.slice(0, 3));
+          return parsed.data.articles[0];
+        }
       }
     }
 
     try {
-      const res = await fetch(`https://gnews.io/api/v4/top-headlines?category=${category}&lang=en&apikey=${API_KEY}`);
+      const res = await fetch(`${apiBase}/category/${category}`);
       const data = await res.json();
 
       if (data.articles && Array.isArray(data.articles)) {
-        sessionStorage.setItem(key, JSON.stringify(data));
+        sessionStorage.setItem(
+          key,
+          JSON.stringify({ timestamp: now, data })
+        );
         const displayArticles = data.articles.slice(0, 3);
         setter(displayArticles);
         return data.articles[0];
@@ -49,15 +56,23 @@ const Home = () => {
 
     const getAllNews = async () => {
       setLoadingBanner(true);
-      const business = await fetchAndCache('business', 'business', setBusinessData);
-      await delay(2000);
-      const entertainment = await fetchAndCache('entertainment', 'entertainment', setEntertainmentData);
-      await delay(2000);
-      const technology = await fetchAndCache('technology', 'technology', setTechnologyData);
-      await delay(2000);
-      const health = await fetchAndCache('health', 'health', setHealthData);
 
-      setBannerNews([business, entertainment, technology, health].filter(Boolean));
+      const categories = [
+        { key: 'business', setter: setBusinessData },
+        { key: 'entertainment', setter: setEntertainmentData },
+        { key: 'technology', setter: setTechnologyData },
+        { key: 'health', setter: setHealthData }
+      ];
+
+      const results = [];
+
+      for (const { key, setter } of categories) {
+        const data = await fetchAndCache(key, key, setter);
+        if (data) results.push(data);
+        await delay(1500);
+      }
+
+      setBannerNews(results);
       setLoadingBanner(false);
     };
 
