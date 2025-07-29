@@ -86,6 +86,7 @@ const NewSection = () => {
                 <img
                   src={item.image}
                   alt={item.title}
+                  loading='lazy'
                   className="w-full sm:w-[30%] h-auto aspect-video object-cover rounded-md"
                 />
                 <div className="flex flex-col justify-between w-full sm:w-[70%] p-3 sm:px-0">

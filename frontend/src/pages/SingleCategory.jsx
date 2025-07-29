@@ -119,13 +119,24 @@ const SingleCategory = () => {
                 <img
                   src={article.image}
                   alt={article.title}
-                  className="w-full h-[30vh] object-cover"
+                  className="w-full min-h-[30vh] max-h-[30vh] object-cover"
                   loading="lazy"
                 />
                 <div className="p-4 flex flex-col justify-between h-full">
                   <h3 className="text-lg font-semibold mb-2 line-clamp-2">{article.title}</h3>
                   <p className="text-gray-600 text-sm mb-3 line-clamp-4">
                     {article.description}
+                  </p>
+                  <p className="text-red-900 font-bold line-clamp-1 mb-3">
+                    Source:{' '}
+                    <a
+                      href={article.source.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-black hover:underline text-ellipsis overflow-hidden underline sm:no-underline"
+                    >
+                      {article.source?.name}
+                    </a>
                   </p>
                   <a
                     href={article.url}
