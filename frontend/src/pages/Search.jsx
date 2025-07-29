@@ -13,26 +13,26 @@ const Search = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate()
 
-  const fetchData = async (query) => {
-    const api = import.meta.env.VITE_API;
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `https://gnews.io/api/v4/search?q=${query}&lang=en&apikey=${api}&in=title`
-      );      
-      const response = await res.json();
-      if(!response.articles){
-        navigate("/not-found", { replace: true })
-      }
-      const articles = response.articles || [];    
-      const pages = Math.ceil((response.totalArticles || 0) / 10);
-      setData(articles);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching articles:", error);
-      setLoading(false);
+const fetchData = async (query) => {
+  setLoading(true);
+  const apiUrl = import.meta.env.VITE_API_BASE
+  try {
+    const res = await fetch(`${apiUrl}/search/${query}`);
+    const response = await res.json();
+
+    if (!response.articles) {
+      navigate("/not-found", { replace: true });
+      return;
     }
-  };
+
+    setData(response.articles || []);
+  } catch (error) {
+    console.error("Error fetching articles:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     if (q) {

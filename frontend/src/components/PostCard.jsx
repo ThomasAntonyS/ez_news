@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { Link2 } from 'lucide-react';
-import CoverImage from '../assets/Cover_image.png'
 
 const PodcastCard = ({ image, title, url, description }) => {
   

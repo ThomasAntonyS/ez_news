@@ -92,7 +92,7 @@ const SingleCategory = () => {
     <>
       <Header />
       <div>
-        <p className="w-max mx-auto mt-[15vh] text-[3rem] sm:text-[6rem] 2xl:text-[10rem] font-bold">
+        <p className="w-max mx-auto mt-[15vh] text-[2.5rem] sm:text-[6rem] 2xl:text-[10rem] font-bold">
           {category.charAt(0).toUpperCase() + category.slice(1)}
         </p>
       </div>

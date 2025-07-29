@@ -147,6 +147,55 @@ app.get("/category/top-headlines", async (req, res) => {
   }
 });
 
+app.get("/search/:query", async (req, res) => {
+  const query = req.params.query;
+  const API_KEY = process.env.API_KEY;
+
+  const cacheKey = `search-${query}`; 
+  const getSearchQuery = `
+      SELECT category_data, entry_time
+      FROM data_table
+      WHERE category = ?
+  `;
+  const insertOrUpdateQuery = `
+      INSERT INTO data_table (category, category_data, entry_time)
+      VALUES (?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+          category_data = VALUES(category_data),
+          entry_time = VALUES(entry_time)
+  `;
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    const [rows] = await connection.query(getSearchQuery, [cacheKey]);
+    const now = new Date(); 
+    if (rows.length > 0) {
+      const { category_data, entry_time } = rows[0];
+      const storedEntryTime = new Date(entry_time);
+      const nowUTC_ms = now.getTime();
+      const storedEntryTimeUTC_ms = storedEntryTime.getTime();
+      const hoursDiff = (nowUTC_ms - storedEntryTimeUTC_ms) / (1000 * 60 * 60);
+      if (hoursDiff < 3) {
+        return res.json(category_data);
+      }
+    }
+
+    const apiUrl = `https://gnews.io/api/v4/search?q=${query}&lang=en&in=title&apikey=${API_KEY}`;
+    const apiResponse = await axios.get(apiUrl);
+    const freshData = apiResponse.data;
+    const currentTimeForDB = new Date().toISOString();
+    await connection.query(insertOrUpdateQuery, [cacheKey, JSON.stringify(freshData), currentTimeForDB]);
+    res.json(freshData);
+  } catch (error){
+    console.error("Error fetching search results:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+   finally {
+    if (connection) connection.release();
+  }
+});
+
+
 app.get("/", async (req, res) => {
   res.send("Welcome to ez news backend.")
 });
