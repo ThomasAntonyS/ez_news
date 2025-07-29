@@ -180,7 +180,7 @@ app.get("/search/:query", async (req, res) => {
       }
     }
 
-    const apiUrl = `https://gnews.io/api/v4/search?q=${query}&lang=en&in=title&apikey=${API_KEY}`;
+    const apiUrl = `https://gnews.io/api/v4/search?q=${query}&lang=en&apikey=${API_KEY}`;
     const apiResponse = await axios.get(apiUrl);
     const freshData = apiResponse.data;
     const currentTimeForDB = new Date().toISOString();

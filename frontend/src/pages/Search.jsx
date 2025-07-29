@@ -21,7 +21,7 @@ const fetchData = async (query) => {
     const response = await res.json();
 
     if (!response.articles) {
-      navigate("/not-found", { replace: true });
+      navigate("/error-not-found", { replace: true });
       return;
     }
 
