@@ -69,7 +69,7 @@ const Home = () => {
       for (const { key, setter } of categories) {
         const data = await fetchAndCache(key, key, setter);
         if (data) results.push(data);
-        await delay(500);
+        await delay(1000);
       }
 
       setBannerNews(results);
