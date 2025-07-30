@@ -39,7 +39,7 @@ const SingleCategory = () => {
         if (now - parsed.timestamp < 10800000) {
           const articles = parsed.data.articles || [];
           if (articles.length === 0) {
-            navigate("/*", { replace: true });
+            navigate("/error-not-found", { replace: true });
           } else {
             setData(articles);
           }
@@ -52,7 +52,7 @@ const SingleCategory = () => {
       const response = await res.json();
 
       if (!response.articles) {
-        navigate("/*", { replace: true });
+        navigate("/error-not-found", { replace: true });
         return;
       }
 
@@ -79,10 +79,10 @@ const SingleCategory = () => {
       if (isValidCategory) {
         fetchData(category);
       } else {
-        navigate("/*",{ replace: true });
+        navigate("/error-not-found",{ replace: true });
       }
     } else {
-      navigate("/*",{ replace: true });
+      navigate("/error-not-found",{ replace: true });
     }
   }, [category]);
 

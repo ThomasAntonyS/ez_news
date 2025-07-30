@@ -31,7 +31,7 @@ function App() {
 
             <Route
             element={<NotFound/>}
-            path='/*'/>
+            path='/error-not-found'/>
             
           </Routes>
 
