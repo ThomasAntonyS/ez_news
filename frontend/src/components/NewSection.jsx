@@ -5,7 +5,7 @@ import {Link} from 'react-router-dom'
 import 'ldrs/react/Ring2.css';
 
 const NewSection = () => {
-  const { popular, setPopular } = useContext(newsContext);
+  const { setPopular } = useContext(newsContext);
   const [trending, setTrending] = useState([]);
   const [popularNews, setPopularNews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -93,7 +93,6 @@ const NewSection = () => {
                   <p className="font-bold text-lg sm:text-xl line-clamp-2">{item.title}</p>
                   <p className="text-sm sm:text-base line-clamp-2">{item.description}</p>
                   <div className="flex justify-between text-xs sm:text-sm mt-4">
-                    <p>{item.publishedAt?.split('T')[0]}</p>
                     <p className="text-red-900 font-bold">
                       Source:{' '}
                       <a
@@ -129,7 +128,6 @@ const NewSection = () => {
                     {item.title}
                   </p>
                   <div className="flex justify-between text-xs sm:text-sm text-gray-600 mt-1 w-full">
-                    <p>{item.publishedAt?.split('T')[0]}</p>
                     <p className="text-red-900 font-bold">
                       Source:{' '}
                       <a
