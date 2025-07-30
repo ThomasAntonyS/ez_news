@@ -16,6 +16,7 @@
 
 <img width="1856" height="908" alt="edited" src="https://github.com/user-attachments/assets/5ad35294-0cca-46b3-98e1-a55eb9a1219e" />
 
+---
 
 **EZ News** is a user-friendly news aggregator designed to bring you the day's top headlines instantly and effortlessly. Our mission is to provide a seamless news Browse experience, eliminating the need for cumbersome sign-ups or logins. Just visit the site, and get updated with the latest news from around the world.
 
