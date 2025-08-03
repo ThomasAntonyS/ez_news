@@ -84,7 +84,7 @@ app.get("/category/:category", async (req, res) => {
         const storedEntryTimeUTC_ms = storedEntryTime.getTime(); 
         const nowUTC_ms = now.getTime(); 
         const hoursDiff = (nowUTC_ms - storedEntryTimeUTC_ms) / (1000 * 60 * 60);
-        if (hoursDiff < 3) {
+        if (hoursDiff < 2) {
           return res.json(category_data); 
         }
       }
@@ -129,7 +129,7 @@ app.get("/category/top-headlines", async (req, res) => {
         const nowUTC_ms = now.getTime();
         const storedEntryTimeUTC_ms = storedEntryTime.getTime();
         const hoursDiff = (nowUTC_ms - storedEntryTimeUTC_ms) / (1000 * 60 * 60);
-        if (hoursDiff < 3) {
+        if (hoursDiff < 2) {
           return res.json(category_data);
         }
       }
@@ -175,7 +175,7 @@ app.get("/search/:query", async (req, res) => {
       const nowUTC_ms = now.getTime();
       const storedEntryTimeUTC_ms = storedEntryTime.getTime();
       const hoursDiff = (nowUTC_ms - storedEntryTimeUTC_ms) / (1000 * 60 * 60);
-      if (hoursDiff < 3) {
+      if (hoursDiff < 2) {
         return res.json(category_data);
       }
     }
