@@ -78,6 +78,17 @@ const fetchData = async (query) => {
                   <p className="text-gray-600 text-sm mb-3 line-clamp-4">
                     {article.description}
                   </p>
+                  <p className="text-red-900 font-bold line-clamp-1 mb-3">
+                    Source:{' '}
+                    <a
+                      href={article.source.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-black hover:underline text-ellipsis overflow-hidden underline sm:no-underline"
+                    >
+                      {article.source?.name}
+                    </a>
+                  </p>
                   <a
                     href={article.url}
                     target="_blank"

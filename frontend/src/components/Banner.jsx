@@ -39,8 +39,7 @@ const Banner = ({ newsItems, loading }) => {
               className="w-full h-full object-cover transform group-hover:scale-105 transition duration-300"
             />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition duration-300 flex flex-col justify-end p-4 text-white">
-              <h3 className="text-lg line-clamp-2 font-semibold">{bannerItems[0].title}</h3>
-              <p className="text-sm hidden sm:flex line-clamp-2">{bannerItems[0].description}</p>
+              <h3 className="text-lg line-clamp-3 font-semibold">{bannerItems[0].title}</h3>
             </div>
           </a>
         )}

@@ -62,7 +62,7 @@ const Header = () => {
         hasShadow ? "shadow-md" : ""
       }`}
     >
-      <div className="h-[9vh] flex justify-between items-center w-[90%] sm:max-w-[70%] mx-auto px-4">
+      <div className="h-[9vh] flex justify-between items-center w-[90%] sm:max-w-[90%] mx-auto px-4">
         {/* Search Form */}
         <form className="flex items-center space-x-2" onSubmit={handleSearch}>
           <input
