@@ -52,6 +52,13 @@ const Home = () => {
   };
 
   useEffect(() => {
+    const business = sessionStorage.getItem("business");
+    const entertainment = sessionStorage.getItem("entertainment");
+    const health = sessionStorage.getItem("health");
+    const technology = sessionStorage.getItem("technology");
+
+    var reloadDelay= (!business || !entertainment || !health || !technology) ? 1000 : 0;
+
     const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
     const getAllNews = async () => {
@@ -69,7 +76,7 @@ const Home = () => {
       for (const { key, setter } of categories) {
         const data = await fetchAndCache(key, key, setter);
         if (data) results.push(data);
-        await delay(1000);
+        await delay(reloadDelay);
       }
 
       setBannerNews(results);

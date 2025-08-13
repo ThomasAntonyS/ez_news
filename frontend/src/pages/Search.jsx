@@ -66,19 +66,20 @@ const fetchData = async (query) => {
             {data.map((article, index) => (
               <div
                 key={index}
-                className="bg-white rounded-lg overflow-hidden shadow-md flex flex-col w-full transition-transform hover:scale-[1.02]"
+                className="relative bg-white rounded-lg overflow-hidden shadow-md flex flex-col w-full transition-transform hover:scale-[1.02]"
               >
+                <p className="absolute top-0 right-0 py-1 px-2 bg-black/80 text-white">{article.publishedAt.split("T")[0]}</p>
                 <img
                   src={article.image}
                   alt={article.title}
-                  className="w-full h-[30vh] object-cover"
+                  className="w-full h-min-[35vh] h-max-[35vh] object-cover"
                 />
                 <div className="p-4 flex flex-col justify-between h-full">
-                  <h3 className="text-lg font-semibold mb-2 line-clamp-2">{article.title}</h3>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-4">
+                  <h3 className="text-lg font-semibold mb-1 sm:mb-2 line-clamp-2">{article.title}</h3>
+                  <p className="text-gray-600 text-sm mb-2 sm:mb-3 line-clamp-4">
                     {article.description}
                   </p>
-                  <p className="text-red-900 font-bold line-clamp-1 mb-3">
+                  <p className="text-red-900 font-bold line-clamp-1 mb-2 sm:mb-3">
                     Source:{' '}
                     <a
                       href={article.source.url}
