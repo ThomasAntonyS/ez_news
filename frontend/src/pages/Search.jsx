@@ -72,7 +72,7 @@ const fetchData = async (query) => {
                 <img
                   src={article.image}
                   alt={article.title}
-                  className="w-full h-min-[35vh] h-max-[35vh] object-cover"
+                  className="w-full min-h-[35vh] max-h-[35vh] object-cover"
                 />
                 <div className="p-4 flex flex-col justify-between h-full">
                   <h3 className="text-lg font-semibold mb-1 sm:mb-2 line-clamp-2">{article.title}</h3>
