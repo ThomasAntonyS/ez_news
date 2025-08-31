@@ -136,9 +136,9 @@ const Header = () => {
                       to={`/${link.path}`}
                       onClick={() => {
                         scrollToTop();
-                        setMoreDropdownOpen(false); // Close dropdown on link click
+                        setMoreDropdownOpen(false); 
                       }}
-                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:border-l-4 hover:border-l-black"
                     >
                       {link.name}
                     </Link>
