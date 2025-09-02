@@ -15,6 +15,7 @@ const SingleCategory = () => {
 
   const Links = [
     { name: "Home", path: "" },
+    { name: "General", path: "general" },
     { name: "Technology", path: "technology" },
     { name: "Entertainment", path: "entertainment" },
     { name: "Sports", path: "sports" },
