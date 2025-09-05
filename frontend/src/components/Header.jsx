@@ -153,7 +153,7 @@ const Header = () => {
         <button
           onClick={() => setMobileMenuOpen((open) => !open)}
           aria-label="Toggle menu"
-          className="2xl:hidden text-black"
+          className="2xl:hidden p-1 rounded-md hover:shadow-sm text-black hover:cursor-pointer "
         >
           {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
