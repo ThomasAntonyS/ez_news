@@ -40,7 +40,7 @@ const Modal = ({ onClose }) => {
           Stay updated with trending news across all categories.
         </p>
         <p className="text-sm sm:text-lg lg:text-xl text-gray-700 mt-2">
-          News updates every <span className="text-black font-bold">2 hours</span>.
+          Fresh news is available every few hours.
         </p>
 
         {/* Progress bar */}
