@@ -151,7 +151,7 @@ const Header = () => {
                     aria-label="Toggle menu"
                     className="2xl:hidden p-1 border border-b-3 border-r-3 hover:bg-black hover:text-white text-black hover:cursor-pointer "
                 >
-                    {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                    {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
             </div>
 
