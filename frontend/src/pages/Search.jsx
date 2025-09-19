@@ -33,7 +33,7 @@ const Search = () => {
                         setData(articles);
                     }
                     const calculatedTotalPages = Math.min(10, Math.ceil(parsed.data.totalArticles / 10));
-                    setTotalPages(calculatedTotalPages);
+                    setTotalPages(()=>calculatedTotalPages);
                     setLoading(false);
                     return;
                 }
@@ -49,7 +49,7 @@ const Search = () => {
 
             setData(response.articles || []);
             const calculatedTotalPages = Math.min(10, Math.ceil(response.totalArticles / 10));
-            setTotalPages(calculatedTotalPages);
+            setTotalPages(()=>calculatedTotalPages);
 
             sessionStorage.setItem(
                 cacheKey,
