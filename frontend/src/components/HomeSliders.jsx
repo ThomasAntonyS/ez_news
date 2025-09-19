@@ -10,7 +10,7 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
 
   function handleClick(e,categoryPath){
     e.preventDefault()
-    naviagte(`/${categoryPath}`)
+    naviagte(`/${categoryPath}/1`)
     window.scrollTo({
       top:0,
       behavior:"smooth"

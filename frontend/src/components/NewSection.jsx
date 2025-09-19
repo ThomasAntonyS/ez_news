@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { newsContext } from '../context/NewsContext';
 import { Ring2 } from 'ldrs/react';
-import {Link} from 'react-router-dom'
 import 'ldrs/react/Ring2.css';
 
 const NewSection = () => {
@@ -9,8 +8,9 @@ const NewSection = () => {
   const [trending, setTrending] = useState([]);
   const [popularNews, setPopularNews] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  const API_BASE = import.meta.env.VITE_API_BASE
+
+  const API_BASE = import.meta.env.VITE_API_BASE;
+  const CACHE_LIFETIME = 4 * 60 * 60 * 1000; 
 
   useEffect(() => {
     const fetchPopular = async () => {
@@ -22,7 +22,7 @@ const NewSection = () => {
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) {
           const parsed = JSON.parse(cached);
-          if (now - parsed.timestamp < 10800000) {
+          if (now - parsed.timestamp < CACHE_LIFETIME) {
             const articles = parsed.data.articles || [];
             setPopular(articles);
             setPopularNews(articles.slice(0, 5));
@@ -76,10 +76,10 @@ const NewSection = () => {
         <div className="w-full flex flex-col lg:flex-row gap-4">
           <div className="w-full lg:w-[60%] rounded-md">
             {popularNews.map((item, index) => (
-              <Link
+              <a
                 key={index}
                 className="flex flex-col sm:flex-row w-full sm:p-2 mb-16 shadow-md sm:shadow-none sm:mb-6 gap-3 transition-all rounded-lg sm:rounded-none text-justify hover:border-b"
-                to={item.url}
+                href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -106,7 +106,7 @@ const NewSection = () => {
                     </p>
                   </div>
                 </div>
-              </Link>
+              </a>
             ))}
           </div>
 

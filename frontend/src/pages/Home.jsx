@@ -15,29 +15,29 @@ const Home = () => {
   const [bannerNews, setBannerNews] = useState([]);
   const [loadingBanner, setLoadingBanner] = useState(true);
 
-  const fetchAndCache = async (key, category, setter) => {
+  const fetchAndCacheNews = async (category, setter) => {
     const apiBase = import.meta.env.VITE_API_BASE;
-    const cached = sessionStorage.getItem(key);
+    const cacheKey = `${category}_1`;
     const now = Date.now();
 
-    if (cached) {
-      const parsed = JSON.parse(cached);
-
-      if (now - parsed.timestamp < 10800000) {
-        if (parsed.data.articles && Array.isArray(parsed.data.articles)) {
-          setter(parsed.data.articles.slice(0, 3));
-          return parsed.data.articles[0];
+    try {
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (now - parsed.timestamp < 14400000) {
+          if (parsed.data?.articles?.length > 0) {
+            setter(parsed.data.articles.slice(0, 3));
+            return parsed.data.articles[0];
+          }
         }
       }
-    }
 
-    try {
-      const res = await fetch(`${apiBase}/category/${category}`);
+      const res = await fetch(`${apiBase}/category/${category}/1`);
       const data = await res.json();
 
-      if (data.articles && Array.isArray(data.articles)) {
+      if (data.articles?.length > 0) {
         sessionStorage.setItem(
-          key,
+          cacheKey,
           JSON.stringify({ timestamp: now, data })
         );
         const displayArticles = data.articles.slice(0, 3);
@@ -47,43 +47,40 @@ const Home = () => {
     } catch (error) {
       console.error(`Error fetching ${category} news:`, error);
     }
-
     return null;
   };
 
   useEffect(() => {
-    const business = sessionStorage.getItem("business");
-    const entertainment = sessionStorage.getItem("entertainment");
-    const health = sessionStorage.getItem("health");
-    const technology = sessionStorage.getItem("technology");
+    const categoriesToFetch = [
+      { category: 'business', setter: setBusinessData },
+      { category: 'entertainment', setter: setEntertainmentData },
+      { category: 'technology', setter: setTechnologyData },
+      { category: 'health', setter: setHealthData }
+    ];
 
-    var reloadDelay= (!business || !entertainment || !health || !technology) ? 1000 : 0;
-
-    const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-
-    const getAllNews = async () => {
+    const getInitialNews = async () => {
       setLoadingBanner(true);
+      const bannerArticles = [];
+      const isAnyCategoryMissing = categoriesToFetch.some(
+        (cat) => !sessionStorage.getItem(`${cat.category}_1`)
+      );
 
-      const categories = [
-        { key: 'business', setter: setBusinessData },
-        { key: 'entertainment', setter: setEntertainmentData },
-        { key: 'technology', setter: setTechnologyData },
-        { key: 'health', setter: setHealthData }
-      ];
+      const delayBetweenFetches = isAnyCategoryMissing ? 1000 : 0;
+      const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-      const results = [];
-
-      for (const { key, setter } of categories) {
-        const data = await fetchAndCache(key, key, setter);
-        if (data) results.push(data);
-        await delay(reloadDelay);
+      for (const { category, setter } of categoriesToFetch) {
+        const bannerArticle = await fetchAndCacheNews(category, setter);
+        if (bannerArticle) {
+          bannerArticles.push(bannerArticle);
+        }
+        await delay(delayBetweenFetches);
       }
 
-      setBannerNews(results);
+      setBannerNews(bannerArticles);
       setLoadingBanner(false);
     };
 
-    getAllNews();
+    getInitialNews();
   }, []);
 
   return (
@@ -95,7 +92,6 @@ const Home = () => {
       <HomeSliders sectionTitle="Entertainment" categoryPath="entertainment" podcastData={entertainmentData} />
       <HomeSliders sectionTitle="Technology" categoryPath="technology" podcastData={technologyData} />
       <HomeSliders sectionTitle="Health" categoryPath="health" podcastData={healthData} />
-
       <Footer />
     </div>
   );
