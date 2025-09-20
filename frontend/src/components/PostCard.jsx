@@ -11,7 +11,7 @@ const PodcastCard = ({ image, title, url, description }) => {
       <div className="p-4 flex flex-col justify-between flex-grow"> 
         <h3 className="text-lg font-semibold mb-2 line-clamp-2">{title}</h3>
         <p className="text-gray-600 text-sm mb-3 line-clamp-4 flex-grow">{description}</p>
-        <Link to={url} target='_blank' className="flex text-blue-600 font-medium cursor-pointer hover:underline mt-auto"><span className='mr-2'><Link2/></span>Know more</Link>
+        <Link to={url} target='_blank' className="flex w-max text-blue-600 font-medium cursor-pointer hover:underline mt-auto"><span className='mr-2'><Link2/></span>Know more</Link>
       </div>
     </div>
   );

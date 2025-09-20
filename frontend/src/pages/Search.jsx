@@ -133,7 +133,7 @@ const Search = () => {
                                         href={article.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center text-blue-600 font-medium hover:underline"
+                                        className="flex items-center text-blue-600 font-medium hover:underline w-max"
                                     >
                                         <Link2 className="w-4 h-4 mr-2" />
                                         Know more
