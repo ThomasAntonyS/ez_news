@@ -47,7 +47,7 @@ const SingleCategory = () => {
                     } else {
                         setData(articles);
                     }
-                    setTotalPages(()=>Math.ceil(parsed.data.totalArticles / 10)>100 ? 100 : Math.ceil(parsed.data.totalArticles / 10));
+                    setTotalPages(()=>Math.ceil(parsed.data.totalArticles / 10)>10 ? 10 : Math.ceil(parsed.data.totalArticles / 10));
                     setLoading(false);
                     return;
                 }
@@ -63,7 +63,7 @@ const SingleCategory = () => {
 
             const articles = response.articles || [];
             setData(articles);
-            setTotalPages(()=>Math.ceil(response.totalArticles / 10)>100 ? 100 : Math.ceil(response.totalArticles / 10));
+            setTotalPages(()=>Math.ceil(response.totalArticles / 10)>10 ? 10 : Math.ceil(response.totalArticles / 10));
 
             sessionStorage.setItem(
                 cacheKey,
