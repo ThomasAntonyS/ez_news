@@ -65,7 +65,7 @@ const Home = () => {
         (cat) => !sessionStorage.getItem(`${cat.category}_1`)
       );
 
-      const delayBetweenFetches = isAnyCategoryMissing ? 1000 : 0;
+      const delayBetweenFetches = isAnyCategoryMissing ? 1500 : 0;
       const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
       for (const { category, setter } of categoriesToFetch) {
