@@ -129,12 +129,12 @@ const SingleCategory = () => {
                                 <img
                                     src={article.image}
                                     alt={article.title}
-                                    className="w-full min-h-[35vh] max-h-[35vh] object-cover"
+                                    className="w-full min-h-[25vh] sm:min-h-[35vh] max-h-[35vh] object-cover"
                                     loading="lazy"
                                 />
                                 <div className="p-4 flex flex-col justify-between h-full">
                                     <h3 className="text-lg font-semibold mb-1 sm:mb-2 line-clamp-2">{article.title}</h3>
-                                    <p className="text-gray-600 text-sm mb-2 sm:mb-3 line-clamp-4">
+                                    <p className="text-gray-600 text-sm mb-2 sm:mb-3 line-clamp-3 sm:line-clamp-4">
                                         {article.description}
                                     </p>
                                     <p className="text-red-900 font-bold line-clamp-1 mb-2 sm:mb-3">

@@ -28,7 +28,7 @@ const Search = () => {
                 if (now - parsed.timestamp < CACHE_LIFETIME) {
                     const articles = parsed.data.articles || [];
                     if (articles.length === 0) {
-                        navigate("/error-not-found", { replace: true });
+                        navigate("/error-not-found", { replace: true }); 
                     } else {
                         setData(articles);
                     }
@@ -41,11 +41,6 @@ const Search = () => {
 
             const res = await fetch(`${apiUrl}/search/${query}/${pageNum}`);
             const response = await res.json();
-
-            if (!response.articles) {
-                navigate("/error-not-found", { replace: true });
-                return;
-            }
 
             setData(response.articles || []);
             const calculatedTotalPages = Math.min(10, Math.ceil(response.totalArticles / 10));
@@ -101,70 +96,82 @@ const Search = () => {
                         />
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-10">
-                        {data.map((article, index) => (
-                            <div
-                                key={index}
-                                className="relative bg-white rounded-lg overflow-hidden shadow-md flex flex-col w-full transition-transform hover:scale-[1.02]"
-                            >
-                                <p className="absolute top-0 right-0 py-1 px-2 bg-black/80 text-white">{article.publishedAt.split("T")[0]}</p>
-                                <img
-                                    src={article.image}
-                                    alt={article.title}
-                                    className="w-full min-h-[35vh] max-h-[35vh] object-cover"
-                                />
-                                <div className="p-4 flex flex-col justify-between h-full">
-                                    <h3 className="text-lg font-semibold mb-1 sm:mb-2 line-clamp-2">{article.title}</h3>
-                                    <p className="text-gray-600 text-sm mb-2 sm:mb-3 line-clamp-4">
-                                        {article.description}
-                                    </p>
-                                    <p className="text-red-900 font-bold line-clamp-1 mb-2 sm:mb-3">
-                                        Source:{' '}
-                                        <a
-                                            href={article.source.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-black hover:underline text-ellipsis overflow-hidden underline sm:no-underline"
-                                        >
-                                            {article.source?.name}
-                                        </a>
-                                    </p>
-                                    <a
-                                        href={article.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center text-blue-600 font-medium hover:underline w-max"
+                    <>
+                        {data.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-10">
+                                {data.map((article, index) => (
+                                    <div
+                                        key={index}
+                                        className="relative bg-white rounded-lg overflow-hidden shadow-md flex flex-col w-full transition-transform hover:scale-[1.02]"
                                     >
-                                        <Link2 className="w-4 h-4 mr-2" />
-                                        Know more
-                                    </a>
-                                </div>
+                                        <p className="absolute top-0 right-0 py-1 px-2 bg-black/80 text-white">{article.publishedAt.split("T")[0]}</p>
+                                        <img
+                                            src={article.image}
+                                            alt={article.title}
+                                            className="w-full min-h-[25vh] sm:min-h-[35vh] max-h-[35vh] object-cover"
+                                        />
+                                        <div className="p-4 flex flex-col justify-between h-full">
+                                            <h3 className="text-lg font-semibold mb-1 sm:mb-2 line-clamp-2">{article.title}</h3>
+                                            <p className="text-gray-600 text-sm mb-2 sm:mb-3 line-clamp-3 sm:line-clamp-4">
+                                                {article.description}
+                                            </p>
+                                            <p className="text-red-900 font-bold line-clamp-1 mb-2 sm:mb-3">
+                                                Source:{' '}
+                                                <a
+                                                    href={article.source.url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-black hover:underline text-ellipsis overflow-hidden underline sm:no-underline"
+                                                >
+                                                    {article.source?.name}
+                                                </a>
+                                            </p>
+                                            <a
+                                                href={article.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center text-blue-600 font-medium hover:underline w-max"
+                                            >
+                                                <Link2 className="w-4 h-4 mr-2" />
+                                                Know more
+                                            </a>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                        ) : (
+                            <div className="w-full px-3 py-10 sm:py-20 flex flex-col items-center justify-center text-cente text-black bg-white border">
+                                <p className="text-center text-xl sm:text-3xl max-w-lg mx-auto">
+                                    Oops! Nothing popped up for that search...
+                                </p>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
 
 
-            <div className="flex justify-center items-center gap-4 py-8">
-                <button
-                    onClick={() => handleNavigation(parseInt(page) - 1)}
-                    disabled={parseInt(page) <= 1}
-                    className="bg-gray-300 p-2 rounded-full disabled:opacity-50 hover:cursor-pointer hover:bg-gray-200"
-                >
-                    <ChevronLeft className="w-6 h-6" />
-                </button>
+            {data.length > 0 &&
+                <div className="flex justify-center items-center gap-4 py-8">
+                    <button
+                        onClick={() => handleNavigation(parseInt(page) - 1)}
+                        disabled={parseInt(page) <= 1}
+                        className="bg-gray-300 p-2 rounded-full disabled:opacity-50 hover:cursor-pointer hover:bg-gray-200"
+                    >
+                        <ChevronLeft className="w-6 h-6" />
+                    </button>
 
-                <span className="text-xl font-semibold">Page {page} / {totalPages}</span>
+                    <span className="text-xl font-semibold">Page {page} / {totalPages}</span>
 
-                <button
-                    onClick={() => handleNavigation(parseInt(page) + 1)}
-                    disabled={parseInt(page) >= totalPages}
-                    className="bg-gray-300 p-2 rounded-full disabled:opacity-50 hover:cursor-pointer hover:bg-gray-200"
-                >
-                    <ChevronRight className="w-6 h-6" />
-                </button>
-            </div>
+                    <button
+                        onClick={() => handleNavigation(parseInt(page) + 1)}
+                        disabled={parseInt(page) >= totalPages}
+                        className="bg-gray-300 p-2 rounded-full disabled:opacity-50 hover:cursor-pointer hover:bg-gray-200"
+                    >
+                        <ChevronRight className="w-6 h-6" />
+                    </button>
+                </div>
+            }
 
             <Footer />
         </>

@@ -39,7 +39,7 @@ const Banner = ({ newsItems, loading }) => {
               className="w-full h-full object-cover transform group-hover:scale-105 transition duration-300"
             />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition duration-300 flex flex-col justify-end p-4 text-white">
-              <h3 className="text-lg line-clamp-3 font-semibold">{bannerItems[0].title}</h3>
+              <h3 className="text-lg line-clamp-2 font-semibold">{bannerItems[0].title}</h3>
             </div>
           </a>
         )}
@@ -57,7 +57,7 @@ const Banner = ({ newsItems, loading }) => {
               className="w-full h-full object-cover transform group-hover:scale-105 transition duration-300"
             />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition duration-300 flex items-end p-4 text-white">
-              <h3 className="text-sm font-semibold">{bannerItems[1].title}</h3>
+              <h3 className="text-sm font-semibold line-clamp-2">{bannerItems[1].title}</h3>
             </div>
           </a>
         )}
@@ -75,7 +75,7 @@ const Banner = ({ newsItems, loading }) => {
               className="w-full h-full object-cover transform group-hover:scale-105 transition duration-300"
             />
             <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition duration-300 flex items-end p-4 text-white">
-              <h3 className="text-sm font-semibold">{bannerItems[2].title}</h3>
+              <h3 className="text-sm font-semibold line-clamp-2">{bannerItems[2].title}</h3>
             </div>
           </a>
         )}

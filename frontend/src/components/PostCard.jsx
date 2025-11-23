@@ -6,7 +6,7 @@ const PodcastCard = ({ image, title, url, description }) => {
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-lg sm:shadow-md flex flex-col w-full sm:w-[48%] lg:w-[30%] transition-transform hover:scale-[1.02]">
       <div className="relative pt-[56.25%] overflow-hidden"> 
-        <img src={image} alt={title} loading='lazy' className="absolute inset-0 w-full h-full object-cover" />
+        <img src={image} alt={title} loading='lazy' className="absolute inset-0 w-full min-h-[25vh] sm:min-h-[35vh] max-h-[35vh] object-cover" />
       </div>
       <div className="p-4 flex flex-col justify-between flex-grow"> 
         <h3 className="text-lg font-semibold mb-2 line-clamp-2">{title}</h3>
