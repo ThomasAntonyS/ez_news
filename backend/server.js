@@ -3,11 +3,16 @@ const cors = require('cors');
 const mysql = require('mysql2/promise');
 const bodyParser = require('body-parser');
 const axios = require('axios');
+const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
+const cookieParser = require("cookie-parser");
+const SibApiV3Sdk = require("sib-api-v3-sdk");
 require('dotenv').config();
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -39,24 +44,240 @@ const pool = mysql.createPool({
   keepAliveInitialDelay: 0,
 });
 
-async function initializeDatabase() {
+const generateToken = (email,id,name) => {
+  return jwt.sign({ email: email, id:id, name:name}, process.env.JWT_SECRET, { expiresIn: '24h' });
+};
+
+const authenticateToken = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: "SESSION EXPIRED." });
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: "INVALID IDENTITY." });
+    req.user = user;
+    next();
+  });
+};
+
+const sendEmail = async (toEmail, subject, message) => {
+  try {
+    const defaultClient = SibApiV3Sdk.ApiClient.instance;
+    const apiKey = defaultClient.authentications['api-key'];
+    apiKey.apiKey = process.env.BREVO_API_KEY;
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.sender = { name: "EZ NEWS", email: process.env.sendSmtpEmail_sender };
+    sendSmtpEmail.to = [{ email: toEmail }];
+    sendSmtpEmail.subject = subject;
+    sendSmtpEmail.textContent = message;
+    return await apiInstance.sendTransacEmail(sendSmtpEmail);
+  } catch (error) {
+    console.error("Brevo Email Error:", error);
+    throw error;
+  }
+};
+
+app.get("/check-auth", authenticateToken, (req, res) => {
+  res.status(200).json({ 
+    authenticated: true, 
+    name: req.user.name, 
+    id: req.user.id,
+    email: req.user.email
+  });
+});
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const [data] = await pool.query(
+      "SELECT email, password, name, id FROM users WHERE email = ? AND isVerified = 1",
+      [email]
+    );
+
+    if (data.length === 0 || !(await bcrypt.compare(password, data[0].password))) {
+      return res.status(401).json({ message: "INVALID CREDENTIALS." });
+    }
+
+    const token = generateToken(data[0].email,data[0].id,data[0].name);
+    
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none', 
+      maxAge: 24 * 60 * 60 * 1000
+    });
+
+    return res.status(200).json({ message: "IDENTITY VERIFIED. Redirecting to home" });
+  } catch (error) {
+    return res.status(500).json({ message: "SYSTEM ERROR." });
+  }
+});
+
+app.post("/signup", async (req, res) => {
+  const { name, email, password } = req.body;
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? process.env.DOMAIN_URL 
+    : 'http://localhost:5173';
+
   let connection;
   try {
     connection = await pool.getConnection();
-    await connection.query('SELECT 1 + 1 AS solution');
-    console.log("Aiven MySQL Pool: Successfully connected and tested.");
-  } catch (error) {
-    console.error('Aiven MySQL Pool: Initial connection test failed!');
-    console.error('Details:', error);
-    process.exit(1);
-  } finally {
-    if (connection) {
-      connection.release();
-    }
-  }
-}
+    await connection.beginTransaction();
 
-initializeDatabase();
+    const [data] = await connection.query("SELECT email FROM users WHERE email = ?", [email]);
+    if (data.length > 0) {
+      await connection.rollback();
+      return res.status(409).json({ message: "EMAIL ALREADY EXIST. TRY LOGGING IN" });
+    }
+
+    const salt = parseInt(process.env.BCRYPT_SALT) || 10;
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedEmail = Buffer.from(email).toString('hex');
+    
+    const verificationUrl = `${baseUrl}/verify?usp=${hashedEmail}&p=${encodeURIComponent(hashedPassword)}`;
+    
+    await sendEmail(email, "VERIFY IDENTITY", `Verify your account: ${verificationUrl}`);
+    
+    await connection.query(
+      "INSERT INTO users (email, password, name, isVerified) VALUES (?, ?, ?, 0)",
+      [email, hashedPassword, name]
+    );
+
+    await connection.commit();
+    return res.status(200).json({message:`Verification mail send to ${email}. Click the url to verify account`})
+  } catch (error) {
+    if (connection) await connection.rollback();
+    res.status(500).json({ message: "SYSTEM ERROR." });
+  } finally {
+    if (connection) connection.release();
+  }
+});
+
+app.get("/verify", async (req, res) => {
+  const { usp, p } = req.query;
+  try {
+      const email = Buffer.from(usp, 'hex').toString();
+      const [result] = await pool.query(
+        "UPDATE users SET isVerified = 1 WHERE email = ? AND password = ?",
+        [email, p]
+      );
+
+      if (result.affectedRows === 0) {
+        return res.status(400).json({ message: "INVALID OR EXPIRED LINK." });
+      }
+
+      return res.status(200).json({ message: "VERIFICATION SUCCESSFUL." });
+  } catch (error) {
+      return res.status(500).json({ message: "SERVER ERROR." });
+  }
+});
+
+app.post("/logout", (req, res) => {
+  if (!req.cookies || !req.cookies.token) {
+    return res.status(400).json({ message: "NO ACTIVE SESSION FOUND." });
+  }
+
+  try {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none'
+    });
+    return res.status(200).json({ message: "LOGGED OUT." });
+  } catch (err) {
+    return res.status(500).json({ message: "LOGOUT ERROR." });
+  }
+});
+
+app.get("/get-user", authenticateToken, async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT name, email FROM users WHERE email = ?",
+      [req.user.email]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "USER NOT FOUND." });
+    }
+
+    res.status(200).json({
+      name: rows[0].name,
+      email: rows[0].email
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "SYSTEM ERROR." });
+  }
+});
+
+app.post("/save-news", authenticateToken, async (req, res) => {
+  const { articleId, articleData } = req.body;
+  const userId= req.user.id;
+
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    await connection.query(
+      "INSERT INTO news_data (news_id, news) VALUES (?, ?)",
+      [articleId, JSON.stringify(articleData)]
+    );
+
+    await connection.query(
+      "INSERT INTO user_news (user_id, news_id) VALUES (?, ?)",
+      [userId, articleId]
+    )
+
+    await connection.commit();
+    return res.status(200)
+    } 
+    catch (error) {
+      console.log(error)
+      if (connection) await connection.rollback();
+      res.status(500);
+    } finally {
+      if (connection) connection.release();
+    }
+});
+
+app.post("/unsave-news", authenticateToken, async (req, res) => {
+  const { articleId } = req.body;
+  const userId = req.user.id;
+
+  try {
+    
+    await pool.query(
+      "DELETE FROM user_news WHERE user_id = ? AND news_id = ?",
+      [userId, articleId]
+    );
+
+    res.status(200).json({ message: "REMOVED" });
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: "ERROR" });
+  }
+});
+
+app.get("/get-saved-news", authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const [articles] = await pool.query(
+      `SELECT nd.news 
+       FROM news_data nd
+       JOIN user_news un ON nd.news_id = un.news_id
+       WHERE un.user_id = ?`,
+      [userId]
+    );
+
+    res.status(200).json(articles);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "SERVER_ERROR" });
+  }
+});
 
 const getAndCacheData = async (res, cacheKey, apiUrl) => {
   const getQuery = `
@@ -96,13 +317,11 @@ const getAndCacheData = async (res, cacheKey, apiUrl) => {
     res.json(freshData);
 
   } catch (error) {
-    console.error("Error in getAndCacheData:", error);
     res.status(500).json({ error: "Internal Server Error" });
   } finally {
     if (connection) connection.release();
   }
 };
-
 
 app.get("/category/:category/:page", async (req, res) => {
   const { category, page } = req.params;
@@ -129,7 +348,6 @@ app.get("/search/:query/:page", async (req, res) => {
 
   await getAndCacheData(res, cacheKey, apiUrl);
 });
-
 
 app.get("/", async (req, res) => {
   res.send("Welcome to ez news backend.");
