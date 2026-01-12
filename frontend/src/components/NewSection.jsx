@@ -139,7 +139,7 @@ const NewSection = () => {
                                             <span className="text-[10px] font-black uppercase tracking-widest text-red-600">
                                                 {item.source?.name}
                                             </span>
-                                            <h3 className="font-bold text-xl lg:text-2xl mt-2 line-clamp-2 uppercase leading-tight">
+                                            <h3 className="font-bold text-xl lg:text-2xl mt-2 line-clamp-2 uppercase leading-tight hover:underline">
                                                 {item.title}
                                             </h3>
                                             <p className="text-sm mt-3 text-gray-800 line-clamp-2 sm:line-clamp-4">

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { User, Bookmark, LogOut, Trash2, Camera, ChevronLeft, ExternalLink } from 'lucide-react';
+import { User, Bookmark, LogOut, Trash2, Camera, ChevronLeft, ExternalLink, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
 import axios from 'axios';
 import Toast from '../components/Toast';
+import ConfirmationDialog from '../components/ConfirmationDialog';
 import logo from '../assets/icon.png';
 
 const Profile = () => {
@@ -12,9 +13,11 @@ const Profile = () => {
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const [savedArticles, setSavedArticles] = useState([]);
   const [loadingSaved, setLoadingSaved] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [dialog, setDialog] = useState({ isOpen: false, type: '', onConfirm: null });
+
   const { setIsLoggedIn, userData } = useAuth();
   const navigate = useNavigate();
-
   const apiBase = import.meta.env.VITE_API_BASE;
 
   const fetchSavedArticles = async () => {
@@ -40,12 +43,28 @@ const Profile = () => {
   }, [activeTab]);
 
   const handleLogout = async () => {
+    setIsProcessing(true);
     try {
       await axios.post(`${apiBase}/logout`, {}, { withCredentials: true });
       setIsLoggedIn(false);
       navigate("/");
     } catch (error) {
       setToast({ show: true, message: "An error occured. Try again", type: 'error' });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsProcessing(true);
+    try {
+      await axios.delete(`${apiBase}/delete-account`, { withCredentials: true });
+      setIsLoggedIn(false);
+      navigate("/");
+    } catch (error) {
+      setToast({ show: true, message: "Failed to delete account", type: 'error' });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -61,6 +80,17 @@ const Profile = () => {
       setSavedArticles(previousArticles);
       setToast({ show: true, message: "Failed to remove article", type: 'error' });
     }
+  };
+
+  const openConfirm = (type, action) => {
+    setDialog({
+      isOpen: true,
+      type,
+      onConfirm: () => {
+        action();
+        setDialog(prev => ({ ...prev, isOpen: false }));
+      }
+    });
   };
 
   return (
@@ -142,13 +172,20 @@ const Profile = () => {
                     savedArticles.map((item) => (
                       <div key={item.news_id} className="border-2 border-black p-6 group relative bg-white hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
                         <div className="flex justify-between items-start mb-2">
-                          <span className="text-[10px] font-semibold uppercase tracking-widest bg-black text-white px-2 py-0.5">
-                            {item.news.source?.name || "News"}
-                          </span>
+                          <a 
+                            href={item.news.url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-block transition-transform hover:-translate-y-0.5 active:translate-y-0"
+                          >
+                            <span className="text-[10px] font-black uppercase tracking-widest bg-black text-white px-2 py-0.5 border border-black hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-white hover:text-black transition-colors cursor-pointer">
+                              {item.news.source?.name || "News"}
+                            </span>
+                          </a>
                           <div className="flex items-center gap-4">
                             <span className="text-[10px] font-bold">{item.news.publishedAt?.split("T")[0]}</span>
                             <button 
-                              onClick={() => handleUnsave(item.news.id)} 
+                              onClick={() => openConfirm('newsDelete', () => handleUnsave(item.news.id))} 
                               className="text-black hover:text-red-600 cursor-pointer transition-colors"
                               title="Remove from Library"
                             >
@@ -158,7 +195,7 @@ const Profile = () => {
                         </div>
                         <div className="flex justify-between items-end gap-6">
                            <a href={item.news.url} target="_blank" rel="noreferrer" className="block group/link">
-                             <h4 className="text-xl md:text-2xl font-bold leading-tight group-hover/link:underline decoration-2">
+                             <h4 className="text-xl md:text-2xl font-bold leading-tight group-hover/link:underline decoration-2 line-clamp-5 sm:line-clamp-3">
                               {item.news.title}
                             </h4>
                           </a>
@@ -183,10 +220,14 @@ const Profile = () => {
               <div className="h-[60vh] flex flex-col items-center justify-center text-center animate-in zoom-in-95 duration-300">
                 <div className="border-2 border-black p-12 inline-block bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
                   <h3 className="text-3xl font-semibold uppercase mb-6 tracking-tighter">Sign Out?</h3>
-                  <p className="mb-8 font-bold text-sm max-w-xs">Your library remains safe in our secure database.</p>
+                  <p className="mb-8 font-bold text-sm max-w-xs uppercase">Your library remains safe in our secure database.</p>
                   <div className="flex flex-col gap-3">
-                    <button onClick={handleLogout} className="w-full py-4 bg-black text-white font-semibold uppercase tracking-widest cursor-pointer border-2 border-black hover:bg-white hover:text-black transition-all">
-                        Confirm Exit
+                    <button 
+                      onClick={() => openConfirm('signOut', handleLogout)} 
+                      disabled={isProcessing}
+                      className="w-full py-4 bg-black text-white font-semibold uppercase tracking-widest cursor-pointer border-2 border-black hover:bg-white hover:text-black transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {isProcessing ? <><Loader2 className="animate-spin" size={18}/> PROCESSING...</> : "Confirm Exit"}
                     </button>
                     <button onClick={() => setActiveTab('personal')} className="text-[10px] font-semibold cursor-pointer uppercase tracking-widest hover:underline">
                         Stay Logged In
@@ -199,10 +240,14 @@ const Profile = () => {
             {activeTab === 'delete' && (
               <div className="h-[60vh] flex flex-col items-center justify-center text-center animate-in slide-in-from-top-2 duration-300">
                 <div className="border-4 border-black p-8 md:p-12 max-w-lg bg-white shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]">
-                  <h3 className="text-4xl font-semibold uppercase mb-4 tracking-tighter">Nuclear Option</h3>
-                  <p className="font-bold text-sm mb-8 leading-relaxed">Account deletion is permanent. All saved articles will be wiped from the database.</p>
-                  <button className="w-full py-4 border-2 border-black text-black font-semibold uppercase cursor-pointer hover:bg-red-600 hover:text-white hover:border-red-600 transition-all">
-                    Wipe Account Data
+                  <h3 className="text-4xl font-bold uppercase mb-4 text-black">Nuclear Option</h3>
+                  <p className="font-bold text-sm mb-8 leading-relaxed uppercase">Account deletion is permanent. All saved articles will be wiped from the database.</p>
+                  <button 
+                    onClick={() => openConfirm('accountDelete', handleDeleteAccount)}
+                    disabled={isProcessing}
+                    className="w-full py-4 border-2 border-black text-black font-semibold uppercase cursor-pointer hover:bg-red-600 hover:text-white hover:border-red-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {isProcessing ? <><Loader2 className="animate-spin" size={18}/> PROCESSING...</> : "Wipe Account Data"}
                   </button>
                 </div>
               </div>
@@ -210,6 +255,13 @@ const Profile = () => {
           </div>
         </main>
       </div>
+
+      <ConfirmationDialog 
+        isOpen={dialog.isOpen}
+        type={dialog.type}
+        onConfirm={dialog.onConfirm}
+        onCancel={() => setDialog(prev => ({ ...prev, isOpen: false }))}
+      />
 
       {toast.show && (
         <Toast
