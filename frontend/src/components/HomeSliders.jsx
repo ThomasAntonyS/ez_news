@@ -111,7 +111,7 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
       <div className="mt-16 flex justify-center">
         <Link 
           onClick={e => handleClick(e, categoryPath)} 
-          className="group flex items-center gap-3 bg-black text-white py-4 px-8 font-black uppercase tracking-widest border-2 border-black hover:bg-white hover:text-black transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+          className="group flex items-center gap-3 bg-black text-white py-4 px-8 font-black uppercase tracking-widest border-2 border-black hover:bg-white hover:text-black transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
         >
           Browse All Updates 
           <ChevronRightIcon className="group-hover:translate-x-1 transition-transform" />

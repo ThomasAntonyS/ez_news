@@ -262,20 +262,72 @@ app.post("/unsave-news", authenticateToken, async (req, res) => {
 
 app.get("/get-saved-news", authenticateToken, async (req, res) => {
   const userId = req.user.id;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const offset = (page - 1) * limit;
 
   try {
-    const [articles] = await pool.query(
-      `SELECT nd.news 
-       FROM news_data nd
-       JOIN user_news un ON nd.news_id = un.news_id
-       WHERE un.user_id = ?`,
+    const [[{ total }]] = await pool.query(
+      `SELECT COUNT(*) as total FROM user_news WHERE user_id = ?`,
       [userId]
     );
 
-    res.status(200).json(articles);
+    const [articles] = await pool.query(
+      `SELECT nd.news, nd.news_id 
+       FROM news_data nd
+       JOIN user_news un ON nd.news_id = un.news_id
+       WHERE un.user_id = ?
+       LIMIT ? OFFSET ?`,
+      [userId, limit, offset]
+    );
+
+    res.status(200).json({
+      articles,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "SERVER_ERROR" });
+  }
+});
+
+app.delete("/delete-account", authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  const connection = await pool.getConnection();
+
+  try {
+    await connection.beginTransaction();
+
+    await connection.query(
+      "DELETE FROM user_news WHERE user_id = ?",
+      [userId]
+    );
+
+    const [result] = await connection.query(
+      "DELETE FROM users WHERE id = ?",
+      [userId]
+    );
+
+    if (result.affectedRows === 0) {
+      await connection.rollback();
+      return res.status(404).json({ message: "USER_NOT_FOUND" });
+    }
+
+    await connection.commit();
+
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none'
+    });
+
+    res.status(200).json({ message: "ACCOUNT_DELETED_SUCCESSFULLY" });
+  } catch (error) {
+    await connection.rollback();
+    res.status(500).json({ message: "SERVER_ERROR" });
+  } finally {
+    connection.release();
   }
 });
 

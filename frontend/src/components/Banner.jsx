@@ -11,7 +11,7 @@ const Banner = ({ newsItems, loading }) => {
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-2 gap-6 sm:w-[85%] 2xl:w-[70%] mx-auto px-4 mb-20">
-          <div className="h-[30vh] sm:h-full sm:row-span-2 bg-gray-200 border-4 border-black animate-pulse"></div>
+          <div className="h-[30vh] sm:h-full sm:row-span-2 bg-gray-200 border-3 border-black animate-pulse"></div>
           <div className="h-[20vh] bg-gray-200 border-4 border-black animate-pulse"></div>
           <div className="h-[20vh] bg-gray-200 border-4 border-black animate-pulse"></div>
         </div>
@@ -31,7 +31,7 @@ const Banner = ({ newsItems, loading }) => {
             href={bannerItems[0].url}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative h-[30vh] sm:h-full sm:row-span-2 group overflow-hidden border-4 border-black bg-black transition-all hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
+            className="relative h-[30vh] sm:h-full sm:row-span-2 group overflow-hidden border-3 border-black bg-black transition-all hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
           >
             <img
               src={bannerItems[0].image}
@@ -54,7 +54,7 @@ const Banner = ({ newsItems, loading }) => {
             href={bannerItems[1].url}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative h-[22vh] group overflow-hidden border-4 border-black bg-black transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
+            className="relative h-[22vh] group overflow-hidden border-3 border-black bg-black transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
           >
             <img
               src={bannerItems[1].image}
@@ -74,7 +74,7 @@ const Banner = ({ newsItems, loading }) => {
             href={bannerItems[2].url}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative h-[22vh] group overflow-hidden border-4 border-black bg-black transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
+            className="relative h-[22vh] group overflow-hidden border-3 border-black bg-black transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
           >
             <img
               src={bannerItems[2].image}
