@@ -14,7 +14,7 @@ const Search = () => {
     const [loading, setLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
-    const { userData, savedIds, fetchSavedIds } = useAuth();
+    const { userData, savedIds, fetchSavedIds, isLoggedIn } = useAuth();
     const apiBase = import.meta.env.VITE_API_BASE;
 
     document.title = "EZ NEWS | Search";
@@ -149,15 +149,21 @@ const Search = () => {
                                                     Full Report
                                                 </a>
 
-                                                <button 
-                                                    onClick={(e) => handleToggleSave(e, article)} 
-                                                    className="p-2 border-2 border-transparent hover:border-black transition-all"
-                                                >
-                                                    <Bookmark 
-                                                        size={20}
-                                                        className={`transition-colors ${savedIds.has(article.id) ? 'fill-black text-black' : 'text-black'}`} 
-                                                    />
-                                                </button>
+                                                {
+                                                    isLoggedIn?
+                                                    <button 
+                                                        onClick={(e) => handleToggleSave(e, article)} 
+                                                        className="flex p-2 border-2 border-transparent hover:border-black transition-all"
+                                                    >
+                                                        <Bookmark 
+                                                            size={20}
+                                                            className={`transition-colors ${savedIds.has(article.id) ? 'fill-black text-black' : 'text-black'}`} 
+                                                        />
+                                                        <span className="text-xs h-max my-auto font-black">{savedIds.has(article.id)?"IN LIBRARY":"ADD TO LIBRARY"}</span>
+                                                    </button>
+                                                    :
+                                                    null
+                                                }
                                             </div>
                                         </div>
                                     </div>

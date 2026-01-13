@@ -265,7 +265,6 @@ app.post("/unsave-news", authenticateToken, async (req, res) => {
 
     res.status(200).json({ message: "REMOVED" });
   } catch (error) {
-    console.log(error)
     res.status(500).json({ message: "ERROR" });
   }
 });

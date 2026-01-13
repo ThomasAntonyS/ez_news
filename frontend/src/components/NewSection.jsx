@@ -8,7 +8,7 @@ import axios from "axios";
 
 const NewSection = () => {
     const { setPopular } = useContext(newsContext);
-    const { userData, savedIds, fetchSavedIds } = useAuth();
+    const { userData, savedIds, fetchSavedIds, isLoggedIn } = useAuth();
     const [trending, setTrending] = useState([]);
     const [popularNews, setPopularNews] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -129,15 +129,21 @@ const NewSection = () => {
                                         </div>
                                     </div>
                                 </a>
+                                {
+                                isLoggedIn?
                                 <button
                                     onClick={(e) => handleToggleSave(e, item)}
-                                    className="absolute bottom-4 right-4 p-2 cursor-pointer border-2 border-transparent hover:border-black transition-all bg-white"
+                                    className="absolute flex bottom-4 right-4 p-2 cursor-pointer border-2 border-transparent hover:border-black transition-all bg-white"
                                 >
                                     <Bookmark
                                         size={20}
                                         className={`${savedIds.has(item.id) ? 'fill-black text-black' : 'text-black'}`}
                                     />
+                                    <span className="text-xs h-max my-auto font-black">{savedIds.has(item.id)?"IN LIBRARY":"ADD TO LIBRARY"}</span>
                                 </button>
+                                :
+                                null
+                                }
                             </div>
                         ))}
                     </div>

@@ -8,7 +8,7 @@ import axios from 'axios';
 
 const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
   const navigate = useNavigate();
-  const { userData, savedIds, fetchSavedIds } = useAuth();
+  const { userData, savedIds, fetchSavedIds, isLoggedIn } = useAuth();
   const apiBase = import.meta.env.VITE_API_BASE;
 
   const handleToggleSave = async (e, article) => {
@@ -65,15 +65,22 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
                 source={item.source?.name}
                 publishedAt={item.publishedAt}
               />
-              <button 
-                onClick={(e) => handleToggleSave(e, item)} 
-                className="absolute bottom-3 right-5 p-2 cursor-pointer border-2 border-transparent hover:border-black bg-white transition-all z-20"
-              >
-                <Bookmark 
-                  size={20}
-                  className={`transition-colors ${savedIds.has(item.id) ? 'fill-black text-black' : 'text-black'}`} 
-                />
-              </button>
+
+              {
+                isLoggedIn?
+                <button 
+                  onClick={(e) => handleToggleSave(e, item)} 
+                  className="absolute flex bottom-3 right-5 p-2 cursor-pointer border-2 border-transparent hover:border-black bg-white transition-all z-20"
+                >
+                  <Bookmark 
+                    size={20}
+                    className={`transition-colors ${savedIds.has(item.id) ? 'fill-black text-black' : 'text-black'}`} 
+                  />
+                  <span className="text-xs h-max my-auto font-black">{savedIds.has(item.id)?"IN LIBRARY":"ADD TO LIBRARY"}</span>
+                </button>
+                :
+                null
+              }
             </div>
           ))
         ) : (
