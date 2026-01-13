@@ -13,9 +13,8 @@ const SingleCategory = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
-    const [savedIds, setSavedIds] = useState(new Set());
     const navigate = useNavigate();
-    const { userData } = useAuth();
+    const { userData, savedIds, fetchSavedIds } = useAuth();
     const apiBase = import.meta.env.VITE_API_BASE;
 
     const Links = [
@@ -33,19 +32,6 @@ const SingleCategory = () => {
 
     document.title = `${category.charAt(0).toUpperCase() + category.slice(1)}`;
 
-    const fetchSavedStatus = async () => {
-        if (!userData) {
-            setSavedIds(new Set());
-            return;
-        }
-        try {
-            const res = await axios.get(`${apiBase}/get-saved-news`, { withCredentials: true });
-            const ids = new Set(res.data.map(item => item.news_id));
-            setSavedIds(ids);
-        } catch (error) {
-            console.error("SYNC_ERROR", error);
-        }
-    };
 
     const fetchData = async () => {
         setLoading(true);
@@ -94,12 +80,11 @@ const SingleCategory = () => {
         const isValidPage = !isNaN(parsedPage) && parsedPage > 0;
 
         if (isValidCategory && isValidPage) {
-            fetchData();
-            fetchSavedStatus();
+            fetchData();;
         } else {
             navigate("/error-not-found", { replace: true });
         }
-    }, [page, category, userData]);
+    }, [page, category]);
 
     const handleNavigation = (newPage) => {
         navigate(`/${category}/${newPage}`);
@@ -111,25 +96,20 @@ const SingleCategory = () => {
         if (!userData) return alert("PLEASE LOGIN TO SAVE NEWS");
 
         const articleId = article.id;
-        const isCurrentlySaved = savedIds.has(articleId);
-
-        setSavedIds(prev => {
-            const next = new Set(prev);
-            if (isCurrentlySaved) next.delete(articleId);
-            else next.add(articleId);
-            return next;
-        });
+        const pubDate = article.publishedAt.split("T")[0];
+        const isAlreadySaved = savedIds.has(articleId);
 
         try {
-            await axios.post(`${apiBase}/save-news`, { articleId, articleData: article }, { withCredentials: true });
+            if (!isAlreadySaved) {
+                await axios.post(`${apiBase}/save-news`, { articleId, articleData: article, pubDate }, { withCredentials: true });
+            } else {
+                await axios.post(`${apiBase}/unsave-news`, { articleId }, { withCredentials: true });
+            }
         } catch (error) {
             console.error("TRANSACTION_FAILED", error);
-            setSavedIds(prev => {
-                const rollback = new Set(prev);
-                if (isCurrentlySaved) rollback.add(articleId);
-                else rollback.delete(articleId);
-                return rollback;
-            });
+        }
+        finally{
+            fetchSavedIds();
         }
     };
 
@@ -153,7 +133,7 @@ const SingleCategory = () => {
                         {data.map((article, index) => (
                             <div
                                 key={index}
-                                className="group relative border-2 border-black bg-white flex flex-col w-full transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+                                className="group relative border-2 border-black bg-white flex flex-col w-full transition-all hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
                             >
                                 <p className="absolute top-2 right-2 py-1 px-2 bg-black text-white text-[10px] font-bold z-10">
                                     {article.publishedAt.split("T")[0]}

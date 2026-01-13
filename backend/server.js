@@ -53,7 +53,14 @@ const authenticateToken = (req, res, next) => {
   if (!token) return res.status(401).json({ message: "SESSION EXPIRED." });
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: "INVALID IDENTITY." });
+    if (err){
+      res.clearCookie('token', {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none'
+      });
+      return res.status(403).json({ message: "INVALID IDENTITY." });
+    }
     req.user = user;
     next();
   });
@@ -212,8 +219,8 @@ app.get("/get-user", authenticateToken, async (req, res) => {
 });
 
 app.post("/save-news", authenticateToken, async (req, res) => {
-  const { articleId, articleData } = req.body;
-  const userId= req.user.id;
+  const { articleId, articleData, pubDate } = req.body;
+  const userId = req.user.id;
 
   let connection;
   try {
@@ -221,25 +228,29 @@ app.post("/save-news", authenticateToken, async (req, res) => {
     await connection.beginTransaction();
 
     await connection.query(
-      "INSERT INTO news_data (news_id, news) VALUES (?, ?)",
+      "INSERT IGNORE INTO news_data (news_id, news) VALUES (?, ?)",
       [articleId, JSON.stringify(articleData)]
     );
 
     await connection.query(
-      "INSERT INTO user_news (user_id, news_id) VALUES (?, ?)",
-      [userId, articleId]
-    )
+      "INSERT IGNORE INTO user_news (user_id, news_id, date) VALUES (?, ?, ?)",
+      [userId, articleId, pubDate]
+    );
 
     await connection.commit();
-    return res.status(200)
-    } 
-    catch (error) {
-      console.log(error)
-      if (connection) await connection.rollback();
-      res.status(500);
-    } finally {
-      if (connection) connection.release();
+    res.status(200).json({ message: "SUCCESS" });
+  } 
+  catch (error) {
+    if (connection) await connection.rollback();
+    
+    if (error.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({ message: "ALREADY_SAVED" });
     }
+    
+    res.status(500).json({ message: "SERVER_ERROR" });
+  } finally {
+    if (connection) connection.release();
+  }
 });
 
 app.post("/unsave-news", authenticateToken, async (req, res) => {
@@ -288,6 +299,35 @@ app.get("/get-saved-news", authenticateToken, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: "SERVER_ERROR" });
+  }
+});
+
+app.get('/saved-news-ids', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const now = new Date();
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    const formatSql = (date) => date.toISOString().slice(0, 10);
+    
+    const startTime = formatSql(yesterday);
+    const endTime = formatSql(now);
+
+    const [rows] = await pool.query(
+      `SELECT news_id 
+       FROM user_news
+       WHERE user_id = ? 
+       AND date BETWEEN ? AND ?`,
+      [userId, startTime, endTime]
+    );
+
+    const savedIds = rows.map(row => row.news_id);
+
+    res.status(200).json(savedIds);
+  } catch (error) {
+    console.error("Error fetching saved IDs:", error);
     res.status(500).json({ message: "SERVER_ERROR" });
   }
 });
@@ -344,7 +384,7 @@ const getAndCacheData = async (res, cacheKey, apiUrl) => {
         category_data = VALUES(category_data),
         entry_time = VALUES(entry_time)
   `;
-  const REFRESH_INTERVAL = 4 * 60 * 60 * 1000; 
+  const REFRESH_INTERVAL = 5 * 60 * 60 * 1000; 
 
   let connection;
   try {

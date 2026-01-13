@@ -24,7 +24,8 @@ const Home = () => {
       const cached = sessionStorage.getItem(cacheKey);
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (now - parsed.timestamp < 14400000) {
+        const cacheTime = 5*60*60*1000
+        if (now - parsed.timestamp < cacheTime) {
           if (parsed.data?.articles?.length > 0) {
             setter(parsed.data.articles.slice(0, 3));
             return parsed.data.articles[0];

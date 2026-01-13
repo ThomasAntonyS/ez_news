@@ -4,57 +4,32 @@ import 'ldrs/react/Ring2.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronRightIcon, Bookmark } from 'lucide-react';
 import { useAuth } from "../context/AuthContext";
-import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
   const navigate = useNavigate();
-  const { userData } = useAuth();
-  const [savedIds, setSavedIds] = useState(new Set());
+  const { userData, savedIds, fetchSavedIds } = useAuth();
   const apiBase = import.meta.env.VITE_API_BASE;
-
-  const fetchSavedStatus = async () => {
-    if (!userData) return;
-    try {
-      const res = await axios.get(`${apiBase}/get-saved-news`, { withCredentials: true });
-      const ids = new Set(res.data.map(item => item.news_id));
-      setSavedIds(ids);
-    } catch (error) {
-      console.error("SYNC_ERROR", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchSavedStatus();
-  }, [userData]);
 
   const handleToggleSave = async (e, article) => {
     e.preventDefault();
     if (!userData) return alert("PLEASE LOGIN TO SAVE NEWS");
 
     const articleId = article.id;
+    const pubDate = article.publishedAt.split("T")[0];
     const isCurrentlySaved = savedIds.has(articleId);
-
-    setSavedIds(prev => {
-      const next = new Set(prev);
-      if (isCurrentlySaved) next.delete(articleId);
-      else next.add(articleId);
-      return next;
-    });
 
     try {
       if (isCurrentlySaved) {
         await axios.post(`${apiBase}/unsave-news`, { articleId }, { withCredentials: true });
       } else {
-        await axios.post(`${apiBase}/save-news`, { articleId, articleData: article }, { withCredentials: true });
+        await axios.post(`${apiBase}/save-news`, { articleId, articleData: article, pubDate }, { withCredentials: true });
       }
     } catch (error) {
-      setSavedIds(prev => {
-        const rollback = new Set(prev);
-        if (isCurrentlySaved) rollback.add(articleId);
-        else rollback.delete(articleId);
-        return rollback;
-      });
+      console.error(error)
+    }
+    finally{
+      fetchSavedIds()
     }
   };
 

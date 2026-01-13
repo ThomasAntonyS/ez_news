@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { User, Bookmark, LogOut, Trash2, Camera, ChevronLeft, ExternalLink, Loader2, ChevronRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
@@ -17,8 +17,9 @@ const Profile = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [dialog, setDialog] = useState({ isOpen: false, type: '', onConfirm: null });
+  const libraryTopRef = useRef(null);
 
-  const { setIsLoggedIn, userData } = useAuth();
+  const { setIsLoggedIn, userData, setSavedIds, fetchSavedIds } = useAuth();
   const navigate = useNavigate();
   const apiBase = import.meta.env.VITE_API_BASE;
   const itemsPerPage = 10;
@@ -51,6 +52,7 @@ const Profile = () => {
     setIsProcessing(true);
     try {
       await axios.post(`${apiBase}/logout`, {}, { withCredentials: true });
+      setSavedIds(new Set())
       setIsLoggedIn(false);
       navigate("/");
     } catch (error) {
@@ -64,6 +66,7 @@ const Profile = () => {
     setIsProcessing(true);
     try {
       await axios.delete(`${apiBase}/delete-account`, { withCredentials: true });
+      setSavedIds(new Set())
       setIsLoggedIn(false);
       navigate("/");
     } catch (error) {
@@ -84,6 +87,9 @@ const Profile = () => {
       setSavedArticles(previousArticles);
       setToast({ show: true, message: "Failed to remove article", type: 'error' });
     }
+    finally{
+      fetchSavedIds()
+    }
   };
 
   const openConfirm = (type, action) => {
@@ -96,6 +102,22 @@ const Profile = () => {
       }
     });
   };
+
+  const handleNext = () => {
+    setCurrentPage(prev => prev + 1);
+  };
+
+  const handlePrevious = () => {
+    setCurrentPage(prev => prev - 1);
+  };
+
+  useEffect(() => {
+    if (activeTab === "saved") {
+      libraryTopRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [currentPage]);
+
+
 
   return (
     <div className="h-screen w-screen bg-white flex flex-col overflow-hidden text-black">
@@ -165,7 +187,7 @@ const Profile = () => {
             )}
 
             {activeTab === 'saved' && (
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 pb-20">
+              <div ref={libraryTopRef} className="animate-in fade-in slide-in-from-bottom-2 duration-300 pb-20">
                 <h3 className="text-4xl md:text-6xl font-semibold uppercase tracking-tighter mb-10">Library</h3>
                 <div className="grid gap-4">
                   {loadingSaved ? (
@@ -202,11 +224,11 @@ const Profile = () => {
                         </div>
                       ))}
                       <div className="flex items-center justify-between mt-12 pt-8 border-t-4 border-black">
-                        <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)} className="flex items-center gap-2 font-black cursor-pointer uppercase text-xs border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-all disabled:opacity-30">
+                        <button disabled={currentPage === 1} onClick={handlePrevious} className="flex items-center gap-2 font-black cursor-pointer uppercase text-xs border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-all disabled:opacity-30">
                           <ChevronLeft size={16} strokeWidth={3} /> Previous
                         </button>
                         <div className="font-black text-sm tracking-widest">PAGE {currentPage} / {totalPages}</div>
-                        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => prev + 1)} className="flex items-center gap-2 font-black cursor-pointer uppercase text-xs border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-all disabled:opacity-30">
+                        <button disabled={currentPage === totalPages} onClick={handleNext} className="flex items-center gap-2 font-black cursor-pointer uppercase text-xs border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-all disabled:opacity-30">
                           Next <ChevronRight size={16} strokeWidth={3} />
                         </button>
                       </div>

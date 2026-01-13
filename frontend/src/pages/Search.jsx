@@ -13,26 +13,11 @@ const Search = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
-    const [savedIds, setSavedIds] = useState(new Set());
     const navigate = useNavigate();
-    const { userData } = useAuth();
+    const { userData, savedIds, fetchSavedIds } = useAuth();
     const apiBase = import.meta.env.VITE_API_BASE;
 
     document.title = "EZ NEWS | Search";
-
-    const fetchSavedStatus = async () => {
-        if (!userData) {
-            setSavedIds(new Set());
-            return;
-        }
-        try {
-            const res = await axios.get(`${apiBase}/get-saved-news`, { withCredentials: true });
-            const ids = new Set(res.data.map(item => item.news_id));
-            setSavedIds(ids);
-        } catch (error) {
-            console.error("SYNC_ERROR", error);
-        }
-    };
 
     const fetchData = async (query, pageNum) => {
         setLoading(true);
@@ -62,12 +47,7 @@ const Search = () => {
 
             setData(response.articles || []);
             setTotalPages(Math.min(10, Math.ceil(response.totalArticles / 10)));
-
-            sessionStorage.setItem(
-                cacheKey,
-                JSON.stringify({ timestamp: now, data: response })
-            );
-
+            sessionStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, data: response }));
         } catch (error) {
             console.error("FETCH_ERROR", error);
         } finally {
@@ -79,17 +59,14 @@ const Search = () => {
         const parsedPage = parseInt(page);
         if (q && !isNaN(parsedPage) && parsedPage > 0) {
             fetchData(q, parsedPage);
-            fetchSavedStatus();
         } else {
             navigate("/error-not-found", { replace: true });
         }
-    }, [q, page, userData]);
+    }, [q, page]);
 
     const handleNavigation = (newPage) => {
         navigate(`/search/${q}/${newPage}`);
-        setTimeout(() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 100);
+        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
     };
 
     const handleToggleSave = async (e, article) => {
@@ -97,35 +74,26 @@ const Search = () => {
         if (!userData) return alert("PLEASE LOGIN TO SAVE NEWS");
 
         const articleId = article.id;
+        const pubDate = article.publishedAt.split("T")[0];
         const isCurrentlySaved = savedIds.has(articleId);
-
-        setSavedIds(prev => {
-            const next = new Set(prev);
-            if (isCurrentlySaved) next.delete(articleId);
-            else next.add(articleId);
-            return next;
-        });
 
         try {
             if (isCurrentlySaved) {
                 await axios.post(`${apiBase}/unsave-news`, { articleId }, { withCredentials: true });
             } else {
-                await axios.post(`${apiBase}/save-news`, { articleId, articleData: article }, { withCredentials: true });
+                await axios.post(`${apiBase}/save-news`, { articleId, articleData: article, pubDate }, { withCredentials: true });
             }
         } catch (error) {
-            setSavedIds(prev => {
-                const rollback = new Set(prev);
-                if (isCurrentlySaved) rollback.add(articleId);
-                else rollback.delete(articleId);
-                return rollback;
-            });
+            console.error(error)
+        }
+        finally{
+            fetchSavedIds()
         }
     };
 
     return (
         <div className="min-h-screen bg-white text-black">
             <Header />
-            
             <div className="pt-20">
                 <p className="w-max mx-auto mt-10 text-[2.5rem] sm:text-[6rem] 2xl:text-[10rem] font-black uppercase tracking-tighter">
                     Search
@@ -149,7 +117,6 @@ const Search = () => {
                                         <p className="absolute top-2 right-2 py-1 px-2 bg-black text-white text-[10px] font-bold z-10">
                                             {article.publishedAt.split("T")[0]}
                                         </p>
-                                        
                                         <div className="overflow-hidden border-b-2 border-black">
                                             <img
                                                 src={article.image}
@@ -158,7 +125,6 @@ const Search = () => {
                                                 loading="lazy"
                                             />
                                         </div>
-
                                         <div className="p-5 flex flex-col flex-1">
                                             <span className="text-[10px] font-black uppercase tracking-wide text-red-600 mb-2">
                                                 {article.source?.name}
@@ -231,7 +197,6 @@ const Search = () => {
                     </button>
                 </div>
             )}
-
             <Footer />
         </div>
     );

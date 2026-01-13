@@ -8,25 +8,13 @@ import axios from "axios";
 
 const NewSection = () => {
     const { setPopular } = useContext(newsContext);
-    const { userData } = useAuth();
+    const { userData, savedIds, fetchSavedIds } = useAuth();
     const [trending, setTrending] = useState([]);
     const [popularNews, setPopularNews] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [savedIds, setSavedIds] = useState(new Set());
 
     const API_BASE = import.meta.env.VITE_API_BASE;
     const CACHE_LIFETIME = 4 * 60 * 60 * 1000;
-
-    const fetchSavedStatus = async () => {
-        if (!userData) return;
-        try {
-            const res = await axios.get(`${API_BASE}/get-saved-news`, { withCredentials: true });
-            const ids = new Set(res.data.map(item => item.news_id));
-            setSavedIds(ids);
-        } catch (error) {
-            console.error("SYNC_ERROR", error);
-        }
-    };
 
     useEffect(() => {
         const fetchPopular = async () => {
@@ -68,8 +56,7 @@ const NewSection = () => {
         };
 
         fetchPopular();
-        fetchSavedStatus();
-    }, [userData]);
+    }, []);
 
     const handleToggleSave = async (e, article) => {
         e.preventDefault();
@@ -77,26 +64,20 @@ const NewSection = () => {
         if (!userData) return alert("PLEASE LOGIN TO SAVE NEWS");
 
         const articleId = article.id;
+        const pubDate = article.publishedAt.split("T")[0];
         const isCurrentlySaved = savedIds.has(articleId);
-
-        setSavedIds(prev => {
-            const next = new Set(prev);
-            isCurrentlySaved ? next.delete(articleId) : next.add(articleId);
-            return next;
-        });
 
         try {
             if (isCurrentlySaved) {
                 await axios.post(`${API_BASE}/unsave-news`, { articleId }, { withCredentials: true });
             } else {
-                await axios.post(`${API_BASE}/save-news`, { articleId, articleData: article }, { withCredentials: true });
+                await axios.post(`${API_BASE}/save-news`, { articleId, articleData: article, pubDate }, { withCredentials: true });
             }
         } catch (error) {
-            setSavedIds(prev => {
-                const rollback = new Set(prev);
-                isCurrentlySaved ? rollback.add(articleId) : rollback.delete(articleId);
-                return rollback;
-            });
+            console.error(error)
+        }
+        finally{
+            fetchSavedIds()
         }
     };
 

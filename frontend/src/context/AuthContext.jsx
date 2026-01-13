@@ -5,6 +5,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [savedIds, setSavedIds] = useState(new Set());
   const [userData, setUserData] = useState({
     email:"",
     id:"",
@@ -31,12 +32,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const fetchSavedIds = async () => {
+    const API_BASE = import.meta.env.VITE_API_BASE;
+    if (!userData) return;
+    try {
+        const res = await axios.get(`${API_BASE}/saved-news-ids`, { withCredentials: true });
+        const ids = new Set(res.data);
+        setSavedIds(ids);
+    } catch (error) {
+        console.error(error);
+    }
+  }
+
   useEffect(() => {
     checkAuth();
   }, [isLoggedIn]);
 
+  useEffect(()=>{
+    fetchSavedIds()
+  },[])
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, userData, loading }}>
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, userData, loading, savedIds, setSavedIds, fetchSavedIds }}>
       {children}
     </AuthContext.Provider>
   );

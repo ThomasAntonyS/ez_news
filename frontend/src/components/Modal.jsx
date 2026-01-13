@@ -28,7 +28,7 @@ const Modal = ({ onClose }) => {
         px-4 sm:px-6 transition-all duration-500 bg-black/40
         ${closing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
     >
-      <div className="bg-white border-[6px] border-black shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] w-full 
+      <div className="bg-white border-[6px] border-black sm:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] w-full 
         max-w-md sm:max-w-lg md:max-w-xl 
         text-center p-8 sm:p-12 transition-all"
       >
