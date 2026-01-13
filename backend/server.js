@@ -233,7 +233,7 @@ app.post("/save-news", authenticateToken, async (req, res) => {
     );
 
     await connection.query(
-      "INSERT IGNORE INTO user_news (user_id, news_id, date) VALUES (?, ?, ?)",
+      "INSERT INTO user_news (user_id, news_id, date) VALUES (?, ?, ?)",
       [userId, articleId, pubDate]
     );
 
@@ -242,7 +242,6 @@ app.post("/save-news", authenticateToken, async (req, res) => {
   } 
   catch (error) {
     if (connection) await connection.rollback();
-    
     if (error.code === 'ER_DUP_ENTRY') {
       return res.status(409).json({ message: "ALREADY_SAVED" });
     }
