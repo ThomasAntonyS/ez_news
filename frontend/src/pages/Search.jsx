@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import Header from '../components/Header';
 import { useEffect, useState } from "react";
 import { Link2, ChevronLeft, ChevronRight, Bookmark } from "lucide-react";
@@ -100,7 +100,7 @@ const Search = () => {
                 </p>
             </div>
 
-            <div className="w-[90%] mx-auto px-4 py-10">
+            <div className="w-full sm:w-[90%] mx-auto px-4 py-10">
                 {loading ? (
                     <div className="flex justify-center items-center h-64">
                         <Ring2 size="40" stroke="5" speed="0.8" color="black" />
@@ -126,9 +126,9 @@ const Search = () => {
                                             />
                                         </div>
                                         <div className="p-5 flex flex-col flex-1">
-                                            <span className="text-[10px] font-black uppercase tracking-wide text-red-600 mb-2">
+                                            <Link to={article.source?.url} className="text-[10px] w-max font-black uppercase tracking-wide text-red-600 mb-2 hover:underline">
                                                 {article.source?.name}
-                                            </span>
+                                            </Link>
                                             
                                             <h3 className="text-xl font-bold mb-3 line-clamp-2 leading-tight uppercase">
                                                 {article.title}
@@ -143,7 +143,7 @@ const Search = () => {
                                                     href={article.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex items-center text-xs font-black uppercase tracking-wide hover:underline"
+                                                    className="flex items-center text-xs font-black uppercase tracking-wide hover:underline px-2"
                                                 >
                                                     <Link2 className="w-4 h-4 mr-2" />
                                                     Full Report

@@ -63,6 +63,7 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
                 url={item.url}
                 description={item.description}
                 source={item.source?.name}
+                sourceUrl={item.source?.url}
                 publishedAt={item.publishedAt}
               />
 

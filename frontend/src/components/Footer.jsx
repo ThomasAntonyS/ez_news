@@ -31,10 +31,7 @@ const Footer = () => {
                     >
                         EZ NEWS
                     </p>
-                    <p className="text-sm font-bold uppercase tracking-widest mb-4 text-white">
-                        info@eznews.com
-                    </p>
-                    <p className="text-xs font-medium leading-relaxed text-gray-400 uppercase tracking-tight">
+                    <p className="text-xs font-medium leading-relaxed text-gray-400 tracking-tight">
                         From breaking news to thought-provoking opinion pieces, our site keeps you informed & engaged. No fluff, just headlines.
                     </p>
                 </div>
@@ -43,7 +40,7 @@ const Footer = () => {
                     <h3 className="text-xl font-black uppercase tracking-wide mb-6 border-b-2 border-white w-max">
                         Categories
                     </h3>
-                    <ul className="grid grid-cols-1 gap-y-3 text-xs font-bold uppercase tracking-wide">
+                    <ul className="grid grid-cols-2 gap-y-3 text-xs font-bold uppercase tracking-wide">
                         {categories.map((category) => (
                             <Link
                                 key={category}
@@ -61,7 +58,7 @@ const Footer = () => {
                     <h3 className="text-xl font-black uppercase tracking-wide mb-6 border-b-2 border-white w-max">
                         Legal
                     </h3>
-                    <ul className="space-y-3 text-xs font-bold uppercase tracking-widest">
+                    <ul className="space-y-3 text-xs font-bold uppercase tracking-wide">
                         <li className="hover:translate-x-2 transition-transform cursor-pointer">Privacy Policy</li>
                         <li className="hover:translate-x-2 transition-transform cursor-pointer">Advertise</li>
                         <li className="hover:translate-x-2 transition-transform cursor-pointer">Terms & Conditions</li>
@@ -92,7 +89,7 @@ const Footer = () => {
             </div>
 
             <div className="border-t-2 border-zinc-900 py-8 text-center">
-                <p className="text-[10px] font-black uppercase tracking-wide text-zinc-500">
+                <p className="text-[10px] font-black tracking-wide text-zinc-500">
                     &copy; {new Date().getFullYear()} EZ NEWS. All Rights Reserved.
                 </p>
             </div>

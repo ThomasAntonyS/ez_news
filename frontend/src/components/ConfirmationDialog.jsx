@@ -13,7 +13,7 @@ const ConfirmationDialog = ({ isOpen, type, onConfirm, onCancel }) => {
     accountDelete: {
       title: "TERMINATE ACCOUNT?",
       message: "All user data, preferences, and saved articles will be deleted. This cannot be undone.",
-      confirmText: "TERMINATE_ACCOUNt",
+      confirmText: "DELETE_ACCOUNt",
       confirmColor: "bg-red-600 hover:bg-white hover:text-black",
     },
     signOut: {

@@ -1,6 +1,7 @@
 import { Link2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const PodcastCard = ({ image, title, url, description, source, publishedAt }) => {
+const PodcastCard = ({ image, title, url, description, source, sourceUrl, publishedAt }) => {
   return (
     <div className="group border-2 border-black bg-white flex flex-col h-full transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
       {publishedAt && (
@@ -18,9 +19,9 @@ const PodcastCard = ({ image, title, url, description, source, publishedAt }) =>
       </div>
 
       <div className="p-5 flex flex-col flex-1">
-        <span className="text-[10px] font-black uppercase tracking-widest text-red-600 mb-2">
-          {source || "EZ NEWS"}
-        </span>
+        <Link to={sourceUrl || "#"} className="text-[10px] w-max font-black uppercase tracking-widest text-red-600 mb-2 hover:underline">
+          {source || "Source Unavailable"}
+        </Link>
 
         <h3 className="text-xl font-bold mb-3 line-clamp-2 leading-tight uppercase">
           {title}
