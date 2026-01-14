@@ -36,7 +36,7 @@ const PodcastCard = ({ image, title, url, description, source, sourceUrl, publis
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center text-xs font-black uppercase tracking-wide hover:underline"
+            className="flex items-center text-xs font-black uppercase tracking-wide hover:underline ml-1"
           >
             <Link2 className="w-4 h-4 mr-2" />
             Know more

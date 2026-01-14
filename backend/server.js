@@ -382,7 +382,7 @@ const getAndCacheData = async (res, cacheKey, apiUrl) => {
         category_data = VALUES(category_data),
         entry_time = VALUES(entry_time)
   `;
-  const REFRESH_INTERVAL = 5 * 60 * 60 * 1000; 
+  const REFRESH_INTERVAL = 8 * 60 * 60 * 1000; 
 
   let connection;
   try {

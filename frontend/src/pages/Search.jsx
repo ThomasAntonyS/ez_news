@@ -23,7 +23,7 @@ const Search = () => {
         setLoading(true);
         const cacheKey = `search_${query}_${pageNum}`;
         const now = Date.now();
-        const CACHE_LIFETIME = 14400000;
+        const CACHE_LIFETIME = 8 * 60 * 60 * 1000;
 
         try {
             const cached = sessionStorage.getItem(cacheKey);
@@ -125,7 +125,7 @@ const Search = () => {
                                                 loading="lazy"
                                             />
                                         </div>
-                                        <div className="p-5 flex flex-col flex-1">
+                                        <div className="px-5 py-3 sm:pt-5 flex flex-col flex-1">
                                             <Link to={article.source?.url} className="text-[10px] w-max font-black uppercase tracking-wide text-red-600 mb-2 hover:underline">
                                                 {article.source?.name}
                                             </Link>
@@ -138,7 +138,7 @@ const Search = () => {
                                                 {article.description}
                                             </p>
 
-                                            <div className="mt-auto flex justify-between items-center pt-4 border-t border-black">
+                                            <div className="mt-auto flex justify-between items-center pt-2 border-t border-black">
                                                 <a
                                                     href={article.url}
                                                     target="_blank"
@@ -153,13 +153,13 @@ const Search = () => {
                                                     isLoggedIn?
                                                     <button 
                                                         onClick={(e) => handleToggleSave(e, article)} 
-                                                        className="flex p-2 border-2 border-transparent hover:border-black transition-all"
+                                                        className="flex p-2 cursor-pointer transition-all"
                                                     >
                                                         <Bookmark 
                                                             size={20}
                                                             className={`transition-colors ${savedIds.has(article.id) ? 'fill-black text-black' : 'text-black'}`} 
                                                         />
-                                                        <span className="text-xs h-max my-auto font-black">{savedIds.has(article.id)?"IN LIBRARY":"ADD TO LIBRARY"}</span>
+                                                        <span className="text-xs h-max my-auto font-black hover:underline">{savedIds.has(article.id)?"IN LIBRARY":"ADD TO LIBRARY"}</span>
                                                     </button>
                                                     :
                                                     null

@@ -204,20 +204,20 @@ const Profile = () => {
                                 {item.news.source?.name || "News"}
                               </span>
                             </a>
-                            <div className="flex items-center gap-4">
-                              <span className="text-[10px] font-bold uppercase">{item.news.publishedAt?.split("T")[0]}</span>
-                              <button onClick={() => openConfirm('newsDelete', () => handleUnsave(item.news_id))} className="text-black hover:text-red-600 cursor-pointer transition-colors">
-                                <Trash2 size={18} />
+                            <div className="flex items-center gap-4 px-2">
+                              <span className="hidden sm:flex text-[12px] font-bold uppercase">{item.news.publishedAt?.split("T")[0]}</span>
+                              <button title='Delete Article' onClick={() => openConfirm('newsDelete', () => handleUnsave(item.news_id))} className="text-black hover:text-red-600 cursor-pointer transition-colors">
+                                <Trash2 size={20} />
                               </button>
                             </div>
                           </div>
                           <div className="flex justify-between items-end gap-6">
                             <a href={item.news.url} target="_blank" rel="noreferrer" className="block group/link">
-                              <h4 className="text-xl md:text-2xl font-bold leading-tight group-hover/link:underline decoration-2 line-clamp-3">
+                              <h4 className="text-xl md:text-2xl font-bold leading-tight group-hover/link:underline decoration-2 line-clamp-5 sm:line-clamp-3">
                                 {item.news.title}
                               </h4>
                             </a>
-                            <a href={item.news.url} target="_blank" rel="noreferrer" className="shrink-0 p-2 border-2 border-transparent hover:border-black transition-all">
+                            <a title='Visit' href={item.news.url} target="_blank" rel="noreferrer" className="shrink-0 p-1 border-2 border-transparent hover:border-black transition-all">
                               <ExternalLink size={20} />
                             </a>
                           </div>

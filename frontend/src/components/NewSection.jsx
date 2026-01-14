@@ -14,7 +14,7 @@ const NewSection = () => {
     const [loading, setLoading] = useState(true);
 
     const API_BASE = import.meta.env.VITE_API_BASE;
-    const CACHE_LIFETIME = 4 * 60 * 60 * 1000;
+    const CACHE_LIFETIME = 8 * 60 * 60 * 1000;
 
     useEffect(() => {
         const fetchPopular = async () => {
