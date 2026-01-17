@@ -61,7 +61,7 @@ const Header = () => {
                         placeholder="SEARCH..."
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        className="font-black uppercase tracking-tighter px-3 py-1 focus:bg-gray-50 outline-none w-[150px] sm:w-[200px] placeholder:text-black/50 transition-colors text-sm"
+                        className="font-black uppercase tracking-tighter px-3 py-1 focus:bg-gray-50 outline-none w-[150px] sm:w-[200px] placeholder:text-black transition-colors text-sm"
                     />
                     <button type="submit" className="bg-black text-white px-3 flex items-center justify-center hover:bg-red-600 transition-colors border-l-2 border-black">
                         <Search size={16} strokeWidth={4} />

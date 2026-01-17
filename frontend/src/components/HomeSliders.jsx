@@ -4,11 +4,13 @@ import 'ldrs/react/Ring2.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronRightIcon, Bookmark } from 'lucide-react';
 import { useAuth } from "../context/AuthContext";
+import { useState } from 'react';
 import axios from 'axios';
 
 const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
   const navigate = useNavigate();
   const { userData, savedIds, fetchSavedIds, isLoggedIn } = useAuth();
+  const [processingId, setProcessingId] = useState(null);
   const apiBase = import.meta.env.VITE_API_BASE;
 
   const handleToggleSave = async (e, article) => {
@@ -19,17 +21,19 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
     const pubDate = article.publishedAt.split("T")[0];
     const isCurrentlySaved = savedIds.has(articleId);
 
+    setProcessingId(articleId);
+
     try {
       if (isCurrentlySaved) {
         await axios.post(`${apiBase}/unsave-news`, { articleId }, { withCredentials: true });
       } else {
         await axios.post(`${apiBase}/save-news`, { articleId, articleData: article, pubDate }, { withCredentials: true });
       }
+      await fetchSavedIds();
     } catch (error) {
-      console.error(error)
-    }
-    finally{
-      fetchSavedIds()
+      console.error(error);
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -67,21 +71,30 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
                 publishedAt={item.publishedAt}
               />
 
-              {
-                isLoggedIn?
+              {isLoggedIn && (
                 <button 
                   onClick={(e) => handleToggleSave(e, item)} 
-                  className="absolute flex bottom-3 right-5 p-2 cursor-pointer border-2 border-transparent hover:border-black bg-white transition-all z-20"
+                  disabled={processingId === item.id}
+                  className="absolute flex items-center bottom-3 right-5 p-2 cursor-pointer border-2 border-transparent hover:border-black bg-white transition-all z-20 disabled:cursor-not-allowed"
                 >
-                  <Bookmark 
-                    size={20}
-                    className={`transition-colors ${savedIds.has(item.id) ? 'fill-black text-black' : 'text-black'}`} 
-                  />
-                  <span className="text-xs h-max my-auto font-black">{savedIds.has(item.id)?"IN LIBRARY":"ADD TO LIBRARY"}</span>
+                  {processingId === item.id ? (
+                    <div className="flex items-center px-1">
+                      <Ring2 size="17" stroke="3" speed="0.8" color="black" />
+                      <span className="text-xs ml-1 font-black uppercase">PROCESSING...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <Bookmark 
+                        size={20}
+                        className={`transition-colors ${savedIds.has(item.id) ? 'fill-black text-black' : 'text-black'}`} 
+                      />
+                      <span className="text-xs h-max my-auto font-black ml-1">
+                        {savedIds.has(item.id) ? "IN LIBRARY" : "ADD TO LIBRARY"}
+                      </span>
+                    </>
+                  )}
                 </button>
-                :
-                null
-              }
+              )}
             </div>
           ))
         ) : (

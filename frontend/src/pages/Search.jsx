@@ -12,6 +12,7 @@ const Search = () => {
     const { q, page } = useParams();
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [processingId, setProcessingId] = useState(null);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
     const { userData, savedIds, fetchSavedIds, isLoggedIn } = useAuth();
@@ -77,17 +78,19 @@ const Search = () => {
         const pubDate = article.publishedAt.split("T")[0];
         const isCurrentlySaved = savedIds.has(articleId);
 
+        setProcessingId(articleId);
+
         try {
             if (isCurrentlySaved) {
                 await axios.post(`${apiBase}/unsave-news`, { articleId }, { withCredentials: true });
             } else {
                 await axios.post(`${apiBase}/save-news`, { articleId, articleData: article, pubDate }, { withCredentials: true });
             }
+            await fetchSavedIds();
         } catch (error) {
-            console.error(error)
-        }
-        finally{
-            fetchSavedIds()
+            console.error(error);
+        } finally {
+            setProcessingId(null);
         }
     };
 
@@ -145,25 +148,34 @@ const Search = () => {
                                                     rel="noopener noreferrer"
                                                     className="flex items-center text-xs font-black uppercase tracking-wide hover:underline px-2"
                                                 >
-                                                    <Link2 className="w-4 h-4 mr-2" />
+                                                    <Link2 className="w-4 h-4 mr-2 my-3" />
                                                     Full Report
                                                 </a>
 
-                                                {
-                                                    isLoggedIn?
+                                                {isLoggedIn && (
                                                     <button 
                                                         onClick={(e) => handleToggleSave(e, article)} 
+                                                        disabled={processingId === article.id}
                                                         className="flex p-2 cursor-pointer transition-all"
                                                     >
-                                                        <Bookmark 
-                                                            size={20}
-                                                            className={`transition-colors ${savedIds.has(article.id) ? 'fill-black text-black' : 'text-black'}`} 
-                                                        />
-                                                        <span className="text-xs h-max my-auto font-black hover:underline">{savedIds.has(article.id)?"IN LIBRARY":"ADD TO LIBRARY"}</span>
+                                                        {processingId === article.id ? (
+                                                            <div className="flex items-center">
+                                                                <Ring2 size="17" stroke="3" speed="0.8" color="black" />
+                                                                <span className="text-xs ml-1 font-black">PROCESSING...</span>
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                <Bookmark 
+                                                                    size={20}
+                                                                    className={`transition-colors ${savedIds.has(article.id) ? 'fill-black text-black' : 'text-black'}`} 
+                                                                />
+                                                                <span className="text-xs h-max my-auto font-black hover:underline">
+                                                                    {savedIds.has(article.id) ? "IN LIBRARY" : "ADD TO LIBRARY"}
+                                                                </span>
+                                                            </>
+                                                        )}
                                                     </button>
-                                                    :
-                                                    null
-                                                }
+                                                )}
                                             </div>
                                         </div>
                                     </div>

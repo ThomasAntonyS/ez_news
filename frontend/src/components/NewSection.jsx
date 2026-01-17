@@ -12,6 +12,7 @@ const NewSection = () => {
     const [trending, setTrending] = useState([]);
     const [popularNews, setPopularNews] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [processingId, setProcessingId] = useState(null);
 
     const API_BASE = import.meta.env.VITE_API_BASE;
     const CACHE_LIFETIME = 8 * 60 * 60 * 1000;
@@ -67,17 +68,19 @@ const NewSection = () => {
         const pubDate = article.publishedAt.split("T")[0];
         const isCurrentlySaved = savedIds.has(articleId);
 
+        setProcessingId(articleId);
+
         try {
             if (isCurrentlySaved) {
                 await axios.post(`${API_BASE}/unsave-news`, { articleId }, { withCredentials: true });
             } else {
                 await axios.post(`${API_BASE}/save-news`, { articleId, articleData: article, pubDate }, { withCredentials: true });
             }
+            await fetchSavedIds();
         } catch (error) {
             console.error(error)
-        }
-        finally{
-            fetchSavedIds()
+        } finally {
+            setProcessingId(null);
         }
     };
 
@@ -129,21 +132,30 @@ const NewSection = () => {
                                         </div>
                                     </div>
                                 </a>
-                                {
-                                isLoggedIn?
-                                <button
-                                    onClick={(e) => handleToggleSave(e, item)}
-                                    className="absolute flex bottom-4 right-4 p-2 cursor-pointer border-2 border-transparent hover:border-black transition-all bg-white"
-                                >
-                                    <Bookmark
-                                        size={20}
-                                        className={`${savedIds.has(item.id) ? 'fill-black text-black' : 'text-black'}`}
-                                    />
-                                    <span className="text-xs h-max my-auto font-black">{savedIds.has(item.id)?"IN LIBRARY":"ADD TO LIBRARY"}</span>
-                                </button>
-                                :
-                                null
-                                }
+                                {isLoggedIn && (
+                                    <button
+                                        onClick={(e) => handleToggleSave(e, item)}
+                                        disabled={processingId === item.id}
+                                        className="absolute flex items-center bottom-4 right-4 p-2 cursor-pointer border-2 border-transparent hover:border-black transition-all bg-white"
+                                    >
+                                        {processingId === item.id ? (
+                                            <div className="flex items-center">
+                                                <Ring2 size="17" stroke="3" speed="0.8" color="black" />
+                                                <span className="text-xs ml-1 font-black uppercase">PROCESSING...</span>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <Bookmark
+                                                    size={20}
+                                                    className={`${savedIds.has(item.id) ? 'fill-black text-black' : 'text-black'}`}
+                                                />
+                                                <span className="text-xs h-max my-auto font-black ml-1">
+                                                    {savedIds.has(item.id) ? "IN LIBRARY" : "ADD TO LIBRARY"}
+                                                </span>
+                                            </>
+                                        )}
+                                    </button>
+                                )}
                             </div>
                         ))}
                     </div>
