@@ -123,7 +123,7 @@ const Header = () => {
 
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="2xl:hidden p-2 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all"
+                        className="2xl:hidden p-2 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all hover:cursor-pointer"
                     >
                         {mobileMenuOpen ? <X size={20} strokeWidth={4} /> : <Menu size={20} strokeWidth={4} />}
                     </button>
