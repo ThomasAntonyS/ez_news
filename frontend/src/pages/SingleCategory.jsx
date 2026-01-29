@@ -96,6 +96,7 @@ const SingleCategory = () => {
         if (!userData) return alert("PLEASE LOGIN TO SAVE NEWS");
 
         const articleId = article.id;
+        const articleTitle = article.title.toLowerCase()
         const pubDate = article.publishedAt.split("T")[0];
         const isAlreadySaved = savedIds.has(articleId);
 
@@ -103,7 +104,7 @@ const SingleCategory = () => {
 
         try {
             if (!isAlreadySaved) {
-                await axios.post(`${apiBase}/save-news`, { articleId, articleData: article, pubDate }, { withCredentials: true });
+                await axios.post(`${apiBase}/save-news`, { articleId, articleData: article, pubDate, articleTitle }, { withCredentials: true });
             } else {
                 await axios.post(`${apiBase}/unsave-news`, { articleId }, { withCredentials: true });
             }

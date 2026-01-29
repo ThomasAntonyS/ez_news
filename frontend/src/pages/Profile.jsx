@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { User, Bookmark, LogOut, Trash2, Camera, ChevronLeft, ExternalLink, Loader2, ChevronRight } from 'lucide-react';
+import { User, Bookmark, LogOut, Trash2, Camera, ChevronLeft, ExternalLink, Loader2, ChevronRight, Search } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
 import axios from 'axios';
@@ -14,6 +14,7 @@ const Profile = () => {
   const [savedArticles, setSavedArticles] = useState([]);
   const [loadingSaved, setLoadingSaved] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [dialog, setDialog] = useState({ isOpen: false, type: '', onConfirm: null });
@@ -24,10 +25,13 @@ const Profile = () => {
   const apiBase = import.meta.env.VITE_API_BASE;
   const itemsPerPage = 10;
 
-  const fetchSavedArticles = async (page = 1) => {
+  const fetchSavedArticles = async (page = 1, search = searchQuery) => {
     setLoadingSaved(true);
     try {
-      const res = await axios.get(`${apiBase}/get-saved-news?page=${page}&limit=${itemsPerPage}`, { withCredentials: true });
+      const res = await axios.get(
+        `${apiBase}/get-saved-news?page=${page}&limit=${itemsPerPage}&search=${search}`, 
+        { withCredentials: true }
+      )
       const parsedArticles = res.data.articles.map(item => ({
         ...item,
         news: typeof item.news === 'string' ? JSON.parse(item.news) : item.news
@@ -35,18 +39,34 @@ const Profile = () => {
       setSavedArticles(parsedArticles);
       setTotalPages(res.data.totalPages);
       setCurrentPage(res.data.currentPage);
-    } catch (error) {
-      console.error("Error fetching saved news:", error);
-    } finally {
-      setLoadingSaved(false);
+      } catch (error) {
+        console.error("Error fetching saved news:", error);
+      } finally {
+        setLoadingSaved(false);
+      }
+  }
+
+  useEffect(() => {
+    if (activeTab === 'saved' && searchQuery.trim()!="") {
+      const delayDebounceFn = setTimeout(() => {
+        fetchSavedArticles(1);
+      }, 500);
+
+      return () => clearTimeout(delayDebounceFn);
     }
-  };
+  }, [searchQuery]);
 
   useEffect(() => {
     if (activeTab === 'saved') {
       fetchSavedArticles(currentPage);
     }
   }, [activeTab, currentPage]);
+
+  useEffect(() => {
+    if (activeTab === "saved") {
+      libraryTopRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [currentPage]);
 
   const handleLogout = async () => {
     setIsProcessing(true);
@@ -111,13 +131,10 @@ const Profile = () => {
     setCurrentPage(prev => prev - 1);
   };
 
-  useEffect(() => {
-    if (activeTab === "saved") {
-      libraryTopRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [currentPage]);
-
-
+  const handleClear = () =>{
+    setSearchQuery("")
+    fetchSavedArticles(1,"")
+  }
 
   return (
     <div className="h-screen w-screen bg-white flex flex-col overflow-hidden text-black">
@@ -189,6 +206,33 @@ const Profile = () => {
             {activeTab === 'saved' && (
               <div ref={libraryTopRef} className="animate-in fade-in slide-in-from-bottom-2 duration-300 pb-20">
                 <h3 className="text-4xl md:text-6xl font-semibold uppercase tracking-tighter mb-10">Library</h3>
+
+              <div className="flex items-center gap-4 mb-10 w-full md:w-fit">
+                <div className="flex items-center p-2 border-2 border-black bg-white focus-within:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
+                  <input 
+                    type="text" 
+                    placeholder="SEARCH BY NEWS TITLE." 
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1); 
+                    }}
+                    className="w-full md:w-64 pr-4 text-[14px] font-black tracking-wide placeholder:text-black focus:outline-none bg-transparent"
+                  />
+                  <div className="shrink-0 border-l-2 border-black pl-2 hover:cursor-pointer">
+                    <Search size={18} strokeWidth={3} />
+                  </div>
+                </div>
+                  
+                {searchQuery.trim() !== "" && (
+                  <button onClick={handleClear}
+                    className="px-4 py-2 border-2 border-black bg-white text-[14px] font-black uppercase tracking-wide hover:bg-black hover:text-white transition-all cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+
                 <div className="grid gap-4">
                   {loadingSaved ? (
                     <div className="flex flex-col gap-4">

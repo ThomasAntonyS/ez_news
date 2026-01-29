@@ -75,6 +75,7 @@ const Search = () => {
         if (!userData) return alert("PLEASE LOGIN TO SAVE NEWS");
 
         const articleId = article.id;
+        const articleTitle = article.title.toLowerCase()
         const pubDate = article.publishedAt.split("T")[0];
         const isCurrentlySaved = savedIds.has(articleId);
 
@@ -84,7 +85,7 @@ const Search = () => {
             if (isCurrentlySaved) {
                 await axios.post(`${apiBase}/unsave-news`, { articleId }, { withCredentials: true });
             } else {
-                await axios.post(`${apiBase}/save-news`, { articleId, articleData: article, pubDate }, { withCredentials: true });
+                await axios.post(`${apiBase}/save-news`, { articleId, articleData: article, pubDate, articleTitle }, { withCredentials: true });
             }
             await fetchSavedIds();
         } catch (error) {

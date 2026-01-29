@@ -219,7 +219,7 @@ app.get("/get-user", authenticateToken, async (req, res) => {
 });
 
 app.post("/save-news", authenticateToken, async (req, res) => {
-  const { articleId, articleData, pubDate } = req.body;
+  const { articleId, articleData, pubDate, articleTitle } = req.body;
   const userId = req.user.id;
 
   let connection;
@@ -228,8 +228,8 @@ app.post("/save-news", authenticateToken, async (req, res) => {
     await connection.beginTransaction();
 
     await connection.query(
-      "INSERT IGNORE INTO news_data (news_id, news) VALUES (?, ?)",
-      [articleId, JSON.stringify(articleData)]
+      "INSERT IGNORE INTO news_data (news_id, news, news_title) VALUES (?, ?, ?)",
+      [articleId, JSON.stringify(articleData), articleTitle]
     );
 
     await connection.query(
@@ -274,20 +274,25 @@ app.get("/get-saved-news", authenticateToken, async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
+  const search = req.query.search || "";
 
   try {
     const [[{ total }]] = await pool.query(
-      `SELECT COUNT(*) as total FROM user_news WHERE user_id = ?`,
-      [userId]
+      `SELECT COUNT(*) as total 
+       FROM user_news un 
+       JOIN news_data nd ON un.news_id = nd.news_id 
+       WHERE un.user_id = ? AND nd.news_title LIKE ?`,
+      [userId, `%${search}%`]
     );
 
     const [articles] = await pool.query(
       `SELECT nd.news, nd.news_id 
        FROM news_data nd
        JOIN user_news un ON nd.news_id = un.news_id
-       WHERE un.user_id = ?
+       WHERE un.user_id = ? AND nd.news_title LIKE ?
+       ORDER BY un.id DESC
        LIMIT ? OFFSET ?`,
-      [userId, limit, offset]
+      [userId, `%${search}%`, limit, offset]
     );
 
     res.status(200).json({

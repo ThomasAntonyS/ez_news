@@ -65,6 +65,7 @@ const NewSection = () => {
         if (!userData) return alert("PLEASE LOGIN TO SAVE NEWS");
 
         const articleId = article.id;
+        const articleTitle = article.title.toLowerCase()
         const pubDate = article.publishedAt.split("T")[0];
         const isCurrentlySaved = savedIds.has(articleId);
 
@@ -74,7 +75,7 @@ const NewSection = () => {
             if (isCurrentlySaved) {
                 await axios.post(`${API_BASE}/unsave-news`, { articleId }, { withCredentials: true });
             } else {
-                await axios.post(`${API_BASE}/save-news`, { articleId, articleData: article, pubDate }, { withCredentials: true });
+                await axios.post(`${API_BASE}/save-news`, { articleId, articleData: article, pubDate, articleTitle }, { withCredentials: true });
             }
             await fetchSavedIds();
         } catch (error) {
