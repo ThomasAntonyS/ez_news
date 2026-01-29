@@ -10,7 +10,7 @@ import axios from 'axios';
 const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
   const navigate = useNavigate();
   const { userData, savedIds, fetchSavedIds, isLoggedIn } = useAuth();
-  const [processingId, setProcessingId] = useState(null);
+  const [processingId, setProcessingIds] = useState([]);
   const apiBase = import.meta.env.VITE_API_BASE;
 
   const handleToggleSave = async (e, article) => {
@@ -21,7 +21,7 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
     const pubDate = article.publishedAt.split("T")[0];
     const isCurrentlySaved = savedIds.has(articleId);
 
-    setProcessingId(articleId);
+    setProcessingIds(prev => [...prev, articleId]);
 
     try {
       if (isCurrentlySaved) {
@@ -33,7 +33,7 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
     } catch (error) {
       console.error(error);
     } finally {
-      setProcessingId(null);
+      setProcessingIds(prev => prev.filter(id => id !== articleId));
     }
   };
 
@@ -74,10 +74,10 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
               {isLoggedIn && (
                 <button 
                   onClick={(e) => handleToggleSave(e, item)} 
-                  disabled={processingId === item.id}
+                  disabled={processingId.includes(item.id)}
                   className="absolute flex items-center bottom-3 right-5 p-2 cursor-pointer border-2 border-transparent hover:border-black bg-white transition-all z-20 disabled:cursor-not-allowed"
                 >
-                  {processingId === item.id ? (
+                  {processingId.includes(item.id) ? (
                     <div className="flex items-center px-1">
                       <Ring2 size="17" stroke="3" speed="0.8" color="black" />
                       <span className="text-xs ml-1 font-black uppercase">PROCESSING...</span>

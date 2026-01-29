@@ -12,7 +12,7 @@ const NewSection = () => {
     const [trending, setTrending] = useState([]);
     const [popularNews, setPopularNews] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [processingId, setProcessingId] = useState(null);
+    const [processingIds, setProcessingIds] = useState([]);
 
     const API_BASE = import.meta.env.VITE_API_BASE;
     const CACHE_LIFETIME = 8 * 60 * 60 * 1000;
@@ -68,7 +68,7 @@ const NewSection = () => {
         const pubDate = article.publishedAt.split("T")[0];
         const isCurrentlySaved = savedIds.has(articleId);
 
-        setProcessingId(articleId);
+        setProcessingIds(prev => [...prev, articleId]);
 
         try {
             if (isCurrentlySaved) {
@@ -78,9 +78,9 @@ const NewSection = () => {
             }
             await fetchSavedIds();
         } catch (error) {
-            console.error(error)
+            console.error(error);
         } finally {
-            setProcessingId(null);
+            setProcessingIds(prev => prev.filter(id => id !== articleId));
         }
     };
 
@@ -135,10 +135,10 @@ const NewSection = () => {
                                 {isLoggedIn && (
                                     <button
                                         onClick={(e) => handleToggleSave(e, item)}
-                                        disabled={processingId === item.id}
+                                        disabled={processingIds.includes(item.id)}
                                         className="absolute flex items-center bottom-4 right-4 p-2 cursor-pointer border-2 border-transparent hover:border-black transition-all bg-white"
                                     >
-                                        {processingId === item.id ? (
+                                        {processingIds.includes(item.id) ? (
                                             <div className="flex items-center">
                                                 <Ring2 size="17" stroke="3" speed="0.8" color="black" />
                                                 <span className="text-xs ml-1 font-black uppercase">PROCESSING...</span>

@@ -12,7 +12,7 @@ const Search = () => {
     const { q, page } = useParams();
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [processingId, setProcessingId] = useState(null);
+    const [processingId, setProcessingIds] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
     const { userData, savedIds, fetchSavedIds, isLoggedIn } = useAuth();
@@ -78,7 +78,7 @@ const Search = () => {
         const pubDate = article.publishedAt.split("T")[0];
         const isCurrentlySaved = savedIds.has(articleId);
 
-        setProcessingId(articleId);
+       setProcessingIds(prev => [...prev, articleId]);
 
         try {
             if (isCurrentlySaved) {
@@ -90,7 +90,7 @@ const Search = () => {
         } catch (error) {
             console.error(error);
         } finally {
-            setProcessingId(null);
+            setProcessingIds(prev => prev.filter(id => id !== articleId));
         }
     };
 
@@ -155,10 +155,10 @@ const Search = () => {
                                                 {isLoggedIn && (
                                                     <button 
                                                         onClick={(e) => handleToggleSave(e, article)} 
-                                                        disabled={processingId === article.id}
+                                                        disabled={processingId.includes(article.id)}
                                                         className="flex p-2 cursor-pointer transition-all"
                                                     >
-                                                        {processingId === article.id ? (
+                                                        {processingId.includes(article.id) ? (
                                                             <div className="flex items-center">
                                                                 <Ring2 size="17" stroke="3" speed="0.8" color="black" />
                                                                 <span className="text-xs ml-1 font-black">PROCESSING...</span>
