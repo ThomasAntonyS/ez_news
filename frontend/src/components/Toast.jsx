@@ -27,7 +27,7 @@ const Toast = ({ message, type, onClose }) => {
           <p className={`text-[10px] ${isSuccess?"text-green-500":"text-red-500"} font-black uppercase tracking-wide leading-none mb-1`}>
             {isSuccess ? 'Confirmed' : 'System Alert'}
           </p>
-          <p className="text-sm font-bold uppercase tracking-tight leading-tight">
+          <p className="text-sm font-bold tracking-tight leading-tight">
             {message}
           </p>
         </div>

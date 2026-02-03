@@ -61,11 +61,12 @@ const SignUp = () => {
 
     return (
         <div className="relative min-h-screen bg-white flex items-center justify-center p-4">
-            <div className=" bg-white px-8 py-8 rounded-none border-3 border-black w-full max-w-[440px] h-auto">
+            <div className=" bg-white px-8 py-8 rounded-none border-3 border-black w-full max-w-[440px] h-auto shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <div className='flex justify-end -mr-1'>
                     <img 
                         src={logo} 
                         alt="Logo" 
+                        title='Back to Home'
                         onClick={handleNavigateToHome}
                         className=" w-16 h-16 object-contain cursor-pointer"
                     />

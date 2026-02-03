@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Profile from './pages/Profile';
 import UserVerification from './pages/UserVerification';
+import ForgotPassword from './pages/ForgotPassword';
 import { ProtectedRoute, PublicRoute } from './components/ProtectedRoute';
 import './App.css';
 
@@ -64,7 +65,24 @@ function App() {
                 } 
               />
 
-              <Route element={<UserVerification />} path='/verify' />
+              <Route
+                path='/verify'
+                element={
+                  <PublicRoute>
+                    <UserVerification/>
+                  </PublicRoute>
+                }  
+              />
+
+              <Route
+                path='/reset-password'
+                element={
+                  <PublicRoute>
+                    <ForgotPassword/>
+                  </PublicRoute>
+                }  
+              />
+
               <Route element={<NotFound />} path='/error-not-found' />
               <Route path='*' element={<Navigate to="/error-not-found" replace />} />
             </Routes>

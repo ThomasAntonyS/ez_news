@@ -44,16 +44,16 @@ const UserVerification = () => {
 
     return (
         <div className="min-h-screen bg-white flex items-center justify-center p-4">
-            <div className="bg-white p-10 border-3 border-black w-full max-w-[500px] text-center">
+            <div className="bg-white p-10 border-3 border-black w-full max-w-[500px] text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <div className="flex justify-center mb-6">
                     <img src={logo} alt="EZ NEWS" className="w-16 h-16 object-contain" />
                 </div>
 
                 <div className="flex justify-center mb-6">
-                    <div className="p-4 border-2 border-black bg-black">
-                        {status === 'verifying' && <Loader2 size={48} color="white" className="animate-spin" />}
-                        {status === 'success' && <ShieldCheck size={48} color="white" />}
-                        {status === 'error' && <ShieldAlert size={48} color="white" />}
+                    <div>
+                        {status === 'verifying' && <Loader2 size={48} color="black" className="animate-spin" />}
+                        {status === 'success' && <ShieldCheck size={48} color="black" />}
+                        {status === 'error' && <ShieldAlert size={48} color="black" />}
                     </div>
                 </div>
 
@@ -61,7 +61,7 @@ const UserVerification = () => {
                     {status === 'verifying' ? 'Verifying...' : status === 'success' ? 'Verified' : 'Failed'}
                 </h1>
                 
-                <div className="bg-black text-white py-2 px-4 inline-block font-black uppercase tracking-widest text-[10px] mb-6">
+                <div className={`${status=='success'?"bg-green-600":"bg-red-600"} text-white py-2 px-4 inline-block font-black uppercase tracking-widest text-[10px] mb-6`}>
                     {message}
                 </div>
 
@@ -80,7 +80,7 @@ const UserVerification = () => {
                         onClick={() => navigate('/signup')}
                         className="w-full mt-4 bg-black text-white border-3 border-black font-black py-4 flex items-center justify-center gap-3 hover:bg-white hover:text-black transition-all uppercase tracking-widest cursor-pointer"
                     >
-                        Return to Signup
+                        Return to Signup <ArrowRight size={20}/>
                     </button>
                 )}
             </div>

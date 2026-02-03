@@ -59,11 +59,12 @@ const Login = () => {
 
     return (
         <div className="relative min-h-screen bg-white flex items-center justify-center p-4">            
-            <div className="bg-white px-8 py-10 rounded-none border-3 border-black w-full max-w-[420px] h-auto">
+            <div className="bg-white px-8 py-10 rounded-none border-3 border-black w-full max-w-[420px] h-auto shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <div className='flex justify-end -mr-1'>
                     <img 
                         src={logo} 
                         alt="Logo"
+                        title='Back to Home'
                         onClick={handleNavigateToHome} 
                         className=" w-16 h-16 object-contain cursor-pointer"
                     />
@@ -104,9 +105,9 @@ const Login = () => {
                         </div>
                     </div>
 
-                    <button type="button" className="text-black text-xs font-bold hover:underline block cursor-pointer">
+                    <Link to={"/reset-password"} className="text-black text-xs font-bold hover:underline block cursor-pointer">
                         Forgot password?
-                    </button>
+                    </Link>
 
                     <button
                         type="submit"

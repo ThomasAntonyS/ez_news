@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const cookieParser = require("cookie-parser");
 const SibApiV3Sdk = require("sib-api-v3-sdk");
+const crypto = require('crypto')
 require('dotenv').config();
 
 const app = express();
@@ -194,27 +195,6 @@ app.post("/logout", (req, res) => {
     return res.status(200).json({ message: "LOGGED OUT." });
   } catch (err) {
     return res.status(500).json({ message: "LOGOUT ERROR." });
-  }
-});
-
-app.get("/get-user", authenticateToken, async (req, res) => {
-  try {
-    const [rows] = await pool.query(
-      "SELECT name, email FROM users WHERE email = ?",
-      [req.user.email]
-    );
-
-    if (rows.length === 0) {
-      return res.status(404).json({ message: "USER NOT FOUND." });
-    }
-
-    res.status(200).json({
-      name: rows[0].name,
-      email: rows[0].email
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "SYSTEM ERROR." });
   }
 });
 
@@ -442,6 +422,72 @@ app.get("/search/:query/:page", async (req, res) => {
   const apiUrl = `https://gnews.io/api/v4/search?q=${query}&lang=en&page=${page}&apikey=${API_KEY}`;
 
   await getAndCacheData(res, cacheKey, apiUrl);
+});
+
+app.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+  try {
+    const [user] = await pool.query("SELECT id FROM users WHERE email = ?", [email]);
+    if (user.length === 0) return res.status(404).json({ message: "Account not found" });
+
+    const code = crypto.randomInt(100000, 999999).toString();
+    const expiryTime = Date.now() + (15 * 60 * 1000)
+
+    await pool.query("DELETE FROM reset_table WHERE email = ?", [email]);
+    await pool.query(
+      "INSERT INTO reset_table (email, code, expires_at) VALUES (?, ?, ?)",
+      [email, code, expiryTime]
+    );
+
+    await sendEmail(email, "VERIFICATION CODE", `Your reset code is: ${code}`);
+
+    res.status(200).json({ message: "CODE SENT SUCCESSFULLY" });
+  } catch (error) {
+    res.status(500).json({ message: "SERVER ERROR" });
+  }
+});
+
+app.post("/verify-reset-code", async (req, res) => {
+  const { email, code } = req.body;
+  const currentTime = Date.now();
+  try {
+    const [records] = await pool.query(
+      "SELECT * FROM reset_table WHERE email = ? AND code = ?",
+      [email, code]
+    );
+
+    if (records.length === 0) return res.status(400).json({ message: "INVALID CODE" });
+    if (currentTime > records[0].expires_at) return res.status(400).json({ message: "CODE EXPIRED" })
+
+    res.status(200).json({ message: "CODE VERIFIED" });
+  } catch (error) {
+    res.status(500).json({ message: "SERVER ERROR" });
+  }
+});
+
+app.post("/reset-password", async (req, res) => {
+  const { email, code, password } = req.body;
+  const currentTime = Date.now();
+
+  try {
+    const [records] = await pool.query(
+      "SELECT * FROM reset_table WHERE email = ? AND code = ? AND expires_at > ?",
+      [email, code, currentTime]
+    );
+
+    if (records.length === 0) return res.status(400).json({ message: "SESSION EXPIRED" });
+
+    const salt = parseInt(process.env.BCRYPT_SALT) || 10;
+
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    await pool.query("UPDATE users SET password = ? WHERE email = ?", [hashedPassword, email]);
+    await pool.query("DELETE FROM reset_table WHERE email = ?", [email]);
+
+    res.status(200).json({ message: "PASSWORD RESET SUCCESSFUL" });
+  } catch (error) {
+    res.status(500).json({ message: "SERVER ERROR" });
+  }
 });
 
 app.get("/", async (req, res) => {

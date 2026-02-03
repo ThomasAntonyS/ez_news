@@ -203,7 +203,7 @@ const Search = () => {
                         <ChevronLeft size={24} />
                     </button>
 
-                    <span className="text-lg font-black uppercase tracking-widest">
+                    <span className="text-lg font-black uppercase tracking-wide">
                         {page} / {totalPages}
                     </span>
 
