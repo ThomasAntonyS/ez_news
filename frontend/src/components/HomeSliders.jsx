@@ -52,9 +52,9 @@ const HomeSliders = ({ sectionTitle, podcastData, categoryPath }) => {
         </h2>
         <button 
           onClick={e => handleClick(e, categoryPath)}
-          className="hidden sm:block text-xs font-black cursor-pointer uppercase tracking-wide hover:underline decoration-2"
+          className="hidden sm:flex text-xs font-black cursor-pointer uppercase tracking-wide hover:underline decoration-2"
         >
-          View Collection →
+          View Collection <ChevronRightIcon fontWeight={800} size={13} className=' h-max my-auto'/>
         </button>
       </div>
 
