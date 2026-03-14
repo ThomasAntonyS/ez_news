@@ -1,7 +1,8 @@
-import React from 'react';
 
 const Banner = ({ newsItems, loading }) => {
   const bannerItems = newsItems.slice(0, 3);
+
+  const containerClasses = "grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-2 gap-6 sm:w-[85%] 2xl:w-[70%] mx-auto px-4 mb-20 h-auto sm:max-h-[50vh]";
 
   if (loading) {
     return (
@@ -9,11 +10,10 @@ const Banner = ({ newsItems, loading }) => {
         <p className="w-max mx-auto mt-[10vh] text-[4rem] sm:text-[10rem] 2xl:text-[13rem] font-black uppercase tracking-tighter text-black">
           EZ NEWS
         </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-2 gap-6 sm:w-[85%] 2xl:w-[70%] mx-auto px-4 mb-20">
+        <div className={containerClasses}>
           <div className="h-[30vh] sm:h-full sm:row-span-2 bg-gray-200 border-3 border-black animate-pulse"></div>
-          <div className="h-[20vh] bg-gray-200 border-4 border-black animate-pulse"></div>
-          <div className="h-[20vh] bg-gray-200 border-4 border-black animate-pulse"></div>
+          <div className="h-[20vh] sm:h-full bg-gray-200 border-4 border-black animate-pulse"></div>
+          <div className="h-[20vh] sm:h-full bg-gray-200 border-4 border-black animate-pulse"></div>
         </div>
       </div>
     );
@@ -25,13 +25,13 @@ const Banner = ({ newsItems, loading }) => {
         EZ NEWS
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-2 gap-6 sm:w-[85%] 2xl:w-[70%] mx-auto px-4 mb-20">
+      <div className={containerClasses}>
         {bannerItems[0] && (
           <a
             href={bannerItems[0].url}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative h-[30vh] sm:h-full sm:row-span-2 group overflow-hidden border-3 border-black bg-black transition-all hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
+            className="relative h-[40vh] sm:h-full sm:row-span-2 group overflow-hidden border-3 border-black bg-black transition-all hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
           >
             <img
               src={bannerItems[0].image}
@@ -54,7 +54,7 @@ const Banner = ({ newsItems, loading }) => {
             href={bannerItems[1].url}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative h-[22vh] group overflow-hidden border-3 border-black bg-black transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
+            className="relative h-[20vh] sm:h-full group overflow-hidden border-3 border-black bg-black transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
           >
             <img
               src={bannerItems[1].image}
@@ -74,7 +74,7 @@ const Banner = ({ newsItems, loading }) => {
             href={bannerItems[2].url}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative h-[22vh] group overflow-hidden border-3 border-black bg-black transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
+            className="relative h-[20vh] sm:h-full group overflow-hidden border-3 border-black bg-black transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
           >
             <img
               src={bannerItems[2].image}
