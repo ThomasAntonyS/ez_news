@@ -11,9 +11,9 @@ const Banner = ({ newsItems, loading }) => {
           EZ NEWS
         </p>
         <div className={containerClasses}>
-          <div className="h-[30vh] sm:h-full sm:row-span-2 bg-gray-200 border-3 border-black animate-pulse"></div>
-          <div className="h-[20vh] sm:h-full bg-gray-200 border-4 border-black animate-pulse"></div>
-          <div className="h-[20vh] sm:h-full bg-gray-200 border-4 border-black animate-pulse"></div>
+          <div className="h-[44vh] sm:row-span-2 bg-gray-200 border-3 border-black animate-pulse"></div>
+          <div className="h-[20vh] bg-gray-200 border-4 border-black animate-pulse"></div>
+          <div className="h-[20vh] bg-gray-200 border-4 border-black animate-pulse"></div>
         </div>
       </div>
     );
