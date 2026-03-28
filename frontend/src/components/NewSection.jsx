@@ -6,30 +6,42 @@ import { Bookmark } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
-// --- SKELETON COMPONENTS ---
 const PopularSkeleton = () => (
-    <div className="border-2 border-black bg-white mb-10 flex flex-col sm:flex-row h-full animate-pulse shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)]">
-        <div className="w-full sm:w-[35%] aspect-video sm:aspect-square bg-gray-200 border-b-2 sm:border-b-0 sm:border-r-2 border-black" />
-        <div className="flex flex-col justify-between w-full sm:w-[65%] p-5 space-y-4">
-            <div>
-                <div className="h-3 w-20 bg-gray-200 mb-4" />
-                <div className="h-6 w-full bg-gray-200 mb-2" />
-                <div className="h-6 w-3/4 bg-gray-200 mb-4" />
-                <div className="h-3 w-full bg-gray-200 mb-2" />
-                <div className="h-3 w-full bg-gray-200" />
+    <div className=" h-48 bg-white mb-10 flex flex-col sm:flex-row animate-pulse">
+        {/* Image Area */}
+        <div className="hidden sm:w-[35%] aspect-video sm:aspect-square bg-slate-200" />
+        
+        {/* Content Area */}
+        <div className="flex flex-col justify-between w-full sm:w-[65%] p-5">
+            <div className="space-y-3">
+                {/* Source tag */}
+                <div className="h-3 w-20 bg-slate-200 rounded-sm" />
+                {/* Title lines */}
+                <div className="h-6 w-full bg-slate-200" />
+                <div className="h-6 w-4/5 bg-slate-200" />
+                {/* Description lines */}
+                <div className="pt-2 space-y-2">
+                    <div className="h-3 w-full bg-slate-100" />
+                    <div className="h-3 w-full bg-slate-100" />
+                </div>
             </div>
-            <div className="self-end h-8 w-32 bg-gray-200 mt-4" />
+            {/* Save Button Placeholder */}
+            <div className="self-end h-8 w-24 bg-slate-200 mt-4 border border-slate-300" />
         </div>
     </div>
 );
 
 const TrendingSkeleton = () => (
-    <div className="border-2 border-black p-4 bg-white flex items-start gap-4 animate-pulse shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
-        <div className="bg-gray-200 w-10 h-10 shrink-0" />
-        <div className="flex flex-col w-full space-y-2">
-            <div className="h-4 w-full bg-gray-200" />
-            <div className="h-4 w-2/3 bg-gray-200" />
-            <div className="h-2 w-16 bg-gray-200 mt-2" />
+    <div className=" p-4 bg-white flex items-start gap-4 animate-pulse ">
+        {/* Number Box */}
+        <div className="bg-slate-300 w-10 h-10 shrink-0" />
+        
+        <div className="flex flex-col w-full space-y-3">
+            {/* Title Line */}
+            <div className="h-4 w-full bg-slate-200" />
+            <div className="h-4 w-2/3 bg-slate-200" />
+            {/* Source Line */}
+            <div className="h-2 w-16 bg-slate-100 mt-1" />
         </div>
     </div>
 );
@@ -60,7 +72,7 @@ const NewSection = () => {
                         setPopular(articles);
                         setPopularNews(articles.slice(0, 5));
                         setTrending(articles.slice(5, 10));
-                        setLoading(false);
+                        setLoading(false)
                         return;
                     }
                 }
@@ -73,10 +85,7 @@ const NewSection = () => {
                 setPopularNews(articles.slice(0, 5));
                 setTrending(articles.slice(5, 10));
 
-                sessionStorage.setItem(
-                    cacheKey,
-                    JSON.stringify({ timestamp: now, data: response })
-                );
+                sessionStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, data: response }));
             } catch (err) {
                 console.error('Failed to fetch popular news:', err);
             } finally {
@@ -122,7 +131,7 @@ const NewSection = () => {
             </div>
 
             <div className="w-full flex flex-col lg:flex-row gap-10">
-                {/* Popular News Section */}
+                {/* Main Content Area */}
                 <div className="w-full lg:w-[65%]">
                     {loading ? (
                         Array(5).fill(0).map((_, i) => <PopularSkeleton key={i} />)
@@ -189,7 +198,7 @@ const NewSection = () => {
                     )}
                 </div>
 
-                {/* Trending Section */}
+                {/* Sidebar Area */}
                 <div className="w-full lg:w-[35%]">
                     <p className="text-2xl pb-2 mb-6 font-black uppercase tracking-wide border-b-4 border-black">
                         Trending
