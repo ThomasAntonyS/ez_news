@@ -12,7 +12,7 @@ const Toast = ({ message, type, onClose }) => {
   const isSuccess = type === 'success';
 
   return (
-    <div className="fixed top-6 right-6 z-20 w-[calc(100%-3rem)] sm:w-auto sm:min-w-[350px] max-w-[400px] animate-in fade-in slide-in-from-right-5 duration-300">
+    <div className="fixed top-6 right-6 z-20 w-[calc(100%-3rem)] sm:w-auto sm:min-w-87.5 max-w-100 animate-in fade-in slide-in-from-right-5 duration-300">
       <div className="bg-white border-2 border-black p-4 flex items-center gap-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
         
         <div className="shrink-0">

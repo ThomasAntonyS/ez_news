@@ -6,6 +6,34 @@ import { Bookmark } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
+// --- SKELETON COMPONENTS ---
+const PopularSkeleton = () => (
+    <div className="border-2 border-black bg-white mb-10 flex flex-col sm:flex-row h-full animate-pulse shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)]">
+        <div className="w-full sm:w-[35%] aspect-video sm:aspect-square bg-gray-200 border-b-2 sm:border-b-0 sm:border-r-2 border-black" />
+        <div className="flex flex-col justify-between w-full sm:w-[65%] p-5 space-y-4">
+            <div>
+                <div className="h-3 w-20 bg-gray-200 mb-4" />
+                <div className="h-6 w-full bg-gray-200 mb-2" />
+                <div className="h-6 w-3/4 bg-gray-200 mb-4" />
+                <div className="h-3 w-full bg-gray-200 mb-2" />
+                <div className="h-3 w-full bg-gray-200" />
+            </div>
+            <div className="self-end h-8 w-32 bg-gray-200 mt-4" />
+        </div>
+    </div>
+);
+
+const TrendingSkeleton = () => (
+    <div className="border-2 border-black p-4 bg-white flex items-start gap-4 animate-pulse shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]">
+        <div className="bg-gray-200 w-10 h-10 shrink-0" />
+        <div className="flex flex-col w-full space-y-2">
+            <div className="h-4 w-full bg-gray-200" />
+            <div className="h-4 w-2/3 bg-gray-200" />
+            <div className="h-2 w-16 bg-gray-200 mt-2" />
+        </div>
+    </div>
+);
+
 const NewSection = () => {
     const { setPopular } = useContext(newsContext);
     const { userData, savedIds, fetchSavedIds, isLoggedIn } = useAuth();
@@ -65,7 +93,7 @@ const NewSection = () => {
         if (!userData) return alert("PLEASE LOGIN TO SAVE NEWS");
 
         const articleId = article.id;
-        const articleTitle = article.title.toLowerCase()
+        const articleTitle = article.title.toLowerCase();
         const pubDate = article.publishedAt.split("T")[0];
         const isCurrentlySaved = savedIds.has(articleId);
 
@@ -93,14 +121,13 @@ const NewSection = () => {
                 </h2>
             </div>
 
-            {loading ? (
-                <div className="flex justify-center items-center h-64">
-                    <Ring2 size="40" stroke="5" speed="0.8" color="black" />
-                </div>
-            ) : (
-                <div className="w-full flex flex-col lg:flex-row gap-10">
-                    <div className="w-full lg:w-[65%]">
-                        {popularNews.map((item, index) => (
+            <div className="w-full flex flex-col lg:flex-row gap-10">
+                {/* Popular News Section */}
+                <div className="w-full lg:w-[65%]">
+                    {loading ? (
+                        Array(5).fill(0).map((_, i) => <PopularSkeleton key={i} />)
+                    ) : (
+                        popularNews.map((item, index) => (
                             <div
                                 key={index}
                                 className="relative group border-2 border-black bg-white mb-10 transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
@@ -158,15 +185,20 @@ const NewSection = () => {
                                     </button>
                                 )}
                             </div>
-                        ))}
-                    </div>
+                        ))
+                    )}
+                </div>
 
-                    <div className="w-full lg:w-[35%]">
-                        <p className="text-2xl pb-2 mb-6 font-black uppercase tracking-wide border-b-4 border-black">
-                            Trending
-                        </p>
-                        <div className="flex flex-col gap-6">
-                            {trending.map((item, index) => (
+                {/* Trending Section */}
+                <div className="w-full lg:w-[35%]">
+                    <p className="text-2xl pb-2 mb-6 font-black uppercase tracking-wide border-b-4 border-black">
+                        Trending
+                    </p>
+                    <div className="flex flex-col gap-6">
+                        {loading ? (
+                            Array(5).fill(0).map((_, i) => <TrendingSkeleton key={i} />)
+                        ) : (
+                            trending.map((item, index) => (
                                 <div 
                                     key={index}
                                     className="group border-2 border-black p-4 bg-white transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
@@ -190,11 +222,11 @@ const NewSection = () => {
                                         </div>
                                     </a>
                                 </div>
-                            ))}
-                        </div>
+                            ))
+                        )}
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

@@ -51,7 +51,7 @@ const Header = () => {
     };
 
     return (
-        <header className={`fixed top-0 left-0 w-full bg-white z-[100] border-b-3 border-black transition-all duration-300 ${hasShadow ? "py-2 shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]" : "py-4"}`}>
+        <header className={`fixed top-0 left-0 w-full bg-white z-100 border-b-3 border-black transition-all duration-300 ${hasShadow ? "py-2 shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]" : "py-4"}`}>
             <div className="flex justify-between items-center w-[95%] sm:w-[90%] mx-auto px-2">
                 
                 {/* Search Form - Unified Box Design */}
@@ -61,7 +61,7 @@ const Header = () => {
                         placeholder="SEARCH..."
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        className="font-black uppercase tracking-tighter px-3 py-1 focus:bg-gray-50 outline-none w-[150px] sm:w-[200px] placeholder:text-black transition-colors text-sm"
+                        className="font-black uppercase tracking-tighter px-3 py-1 focus:bg-gray-50 outline-none w-37.5 sm:w-50 placeholder:text-black transition-colors text-sm"
                     />
                     <button type="submit" className="bg-black text-white px-3 flex items-center justify-center hover:bg-red-600 transition-colors border-l-2 border-black">
                         <Search size={16} strokeWidth={4} />
@@ -87,7 +87,7 @@ const Header = () => {
                         </button>
                         
                         {moreDropdownOpen && (
-                            <ul className="absolute top-full left-0 bg-white border-4 border-black py-2 min-w-[200px] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] z-[110]">
+                            <ul className="absolute top-full left-0 bg-white border-4 border-black py-2 min-w-50 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] z-110">
                                 {moreLinks.map((link) => (
                                     <li key={link.path}>
                                         <Link
@@ -132,7 +132,7 @@ const Header = () => {
 
             {/* Mobile Menu Overlay */}
             {mobileMenuOpen && (
-                <div className="absolute top-full left-0 w-full bg-white border-b-8 border-black 2xl:hidden z-[100] shadow-[0px_10px_30px_rgba(0,0,0,0.2)]">
+                <div className="absolute top-full left-0 w-full bg-white border-b-8 border-black 2xl:hidden z-100 shadow-[0px_10px_30px_rgba(0,0,0,0.2)]">
                     <nav className="flex flex-col p-6 space-y-1">
                         {[...mainLinks, ...moreLinks].map((link) => (
                             <Link

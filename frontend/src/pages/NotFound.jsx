@@ -31,7 +31,7 @@ const NotFound = () => {
           </Link>
         </div>
 
-        <div className="fixed -bottom-10 -right-10 -z-0 opacity-[0.03] pointer-events-none">
+        <div className="fixed -bottom-10 -right-10 z-0 opacity-[0.03] pointer-events-none">
           <p className="text-[20rem] font-black uppercase transform rotate-45">
             VOID
           </p>

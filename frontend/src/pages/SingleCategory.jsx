@@ -8,6 +8,37 @@ import 'ldrs/react/Ring2.css';
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
+// --- SKELETON COMPONENT ---
+const SkeletonCard = () => (
+    <div className="relative border-2 border-black bg-white flex flex-col w-full animate-pulse shadow-[6px_6px_0px_0px_rgba(0,0,0,0.1)]">
+        {/* Date Placeholder */}
+        <div className="absolute top-2 right-2 h-4 w-20 bg-gray-200 z-10"></div>
+        
+        {/* Image Placeholder */}
+        <div className="border-b-2 border-black bg-gray-200 h-62.5 w-full"></div>
+
+        <div className="px-5 py-3 sm:pt-5 flex flex-col flex-1">
+            {/* Source Placeholder */}
+            <div className="h-3 w-24 bg-gray-200 mb-2"></div>
+            
+            {/* Title Placeholder */}
+            <div className="h-6 w-full bg-gray-200 mb-2"></div>
+            <div className="h-6 w-3/4 bg-gray-200 mb-3"></div>
+            
+            {/* Description Placeholder */}
+            <div className="h-3 w-full bg-gray-200 mb-1"></div>
+            <div className="h-3 w-full bg-gray-200 mb-1"></div>
+            <div className="h-3 w-1/2 bg-gray-200 mb-6"></div>
+
+            {/* Footer Placeholder */}
+            <div className="mt-auto flex justify-between items-center pt-2 border-t border-black">
+                <div className="h-4 w-20 bg-gray-200 my-3"></div>
+                <div className="h-6 w-24 bg-gray-200"></div>
+            </div>
+        </div>
+    </div>
+);
+
 const SingleCategory = () => {
     const { category, page } = useParams();
     const [data, setData] = useState([]);
@@ -98,7 +129,7 @@ const SingleCategory = () => {
         const articleId = article.id;
         const articleTitle = article.title.toLowerCase()
         const pubDate = article.publishedAt.split("T")[0];
-        const isAlreadySaved = savedIds.has(articleId);
+        const isAlreadySaved = savedIds?.has(articleId);
 
         setProcessingIds(prev => [...prev, articleId]);
 
@@ -127,33 +158,33 @@ const SingleCategory = () => {
             </div>
 
             <div className="w-full sm:w-[90%] mx-auto px-4 py-10">
-                {loading ? (
-                    <div className="flex justify-center items-center h-64">
-                        <Ring2 size="40" stroke="5" speed="0.8" color="black" />
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-10">
-                        {data.map((article, index) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-10">
+                    {loading ? (
+                        // Show 6 skeleton cards while loading
+                        Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+                    ) : (
+                        data.map((article, index) => (
                             <div
                                 key={index}
                                 className="group relative border-2 border-black bg-white flex flex-col w-full transition-all hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
                             >
                                 <p className="absolute top-2 right-2 py-1 px-2 bg-black text-white text-[10px] font-bold z-10">
-                                    {article.publishedAt.split("T")[0]}
+                                    {article.publishedAt?.split("T")[0]}
                                 </p>
                                 
                                 <div className="overflow-hidden border-b-2 border-black">
                                     <img
                                         src={article.image}
                                         alt={article.title}
-                                        className="w-full h-[250px] object-cover transition-transform duration-500 group-hover:scale-105"
+                                        className="w-full h-62.5 object-cover transition-transform duration-500 group-hover:scale-105"
                                         loading="lazy"
+                                        referrerPolicy="no-referrer"
                                     />
                                 </div>
 
                                 <div className="px-5 py-3 sm:pt-5 flex flex-col flex-1">
                                     <Link to={article?.source?.url} className="text-[10px] w-max font-black uppercase tracking-wide text-red-600 mb-2 hover:underline">
-                                        {article.source?.name}
+                                        {typeof article.source === 'object' ? article.source?.name : article.source}
                                     </Link>
                                     
                                     <h3 className="text-xl font-bold mb-3 line-clamp-2 leading-tight uppercase">
@@ -184,16 +215,16 @@ const SingleCategory = () => {
                                                 {processingId.includes(article.id) ? (
                                                     <div className="flex items-center">
                                                         <Ring2 size="17" stroke="3" speed="0.8" color="black" />
-                                                        <span className="text-xs ml-1 font-black">PROCESSING...</span>
+                                                        <span className="text-xs ml-1 font-black uppercase">PROCESSING...</span>
                                                     </div>
                                                 ) : (
                                                     <>
                                                         <Bookmark 
                                                             size={20}
-                                                            className={`transition-colors ${savedIds.has(article.id) ? 'fill-black text-black' : 'text-black'}`} 
+                                                            className={`transition-colors ${savedIds?.has(article.id) ? 'fill-black text-black' : 'text-black'}`} 
                                                         />
-                                                        <span className="text-xs h-max my-auto font-black hover:underline">
-                                                            {savedIds.has(article.id) ? "IN LIBRARY" : "ADD TO LIBRARY"}
+                                                        <span className="text-xs h-max my-auto font-black hover:underline uppercase">
+                                                            {savedIds?.has(article.id) ? "IN LIBRARY" : "ADD TO LIBRARY"}
                                                         </span>
                                                     </>
                                                 )}
@@ -202,9 +233,9 @@ const SingleCategory = () => {
                                     </div>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                )}
+                        ))
+                    )}
+                </div>
             </div>
 
             <div className="flex justify-center items-center gap-6 py-12 border-t-2 border-black">

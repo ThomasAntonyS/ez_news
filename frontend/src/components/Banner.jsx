@@ -38,7 +38,7 @@ const Banner = ({ newsItems, loading }) => {
               alt={bannerItems[0].title}
               className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
             />
-            <div className="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black via-transparent to-transparent">
+            <div className="absolute inset-0 flex flex-col justify-end p-6 bg-linear-to-t from-black via-transparent to-transparent">
               <span className="bg-white text-black text-xs font-black px-2 py-1 w-max mb-3 uppercase tracking-wide">
                 Breaking
               </span>
@@ -61,7 +61,7 @@ const Banner = ({ newsItems, loading }) => {
               alt={bannerItems[1].title}
               className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
             />
-            <div className="absolute inset-0 flex items-end p-4 bg-gradient-to-t from-black/80 to-transparent">
+            <div className="absolute inset-0 flex items-end p-4 bg-linear-to-t from-black/80 to-transparent">
               <h3 className="text-sm sm:text-lg text-white font-black uppercase leading-tight line-clamp-2">
                 {bannerItems[1].title}
               </h3>
@@ -81,7 +81,7 @@ const Banner = ({ newsItems, loading }) => {
               alt={bannerItems[2].title}
               className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
             />
-            <div className="absolute inset-0 flex items-end p-4 bg-gradient-to-t from-black/80 to-transparent">
+            <div className="absolute inset-0 flex items-end p-4 bg-linear-to-t from-black/80 to-transparent">
               <h3 className="text-sm sm:text-lg text-white font-black uppercase leading-tight line-clamp-2">
                 {bannerItems[2].title}
               </h3>

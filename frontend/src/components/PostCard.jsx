@@ -14,7 +14,7 @@ const PodcastCard = ({ image, title, url, description, source, sourceUrl, publis
         <img
           src={image}
           alt={title}
-          className="w-full h-[200px] object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-50 object-cover transition-transform duration-500 group-hover:scale-105"
         />
       </div>
 

@@ -24,7 +24,7 @@ const Modal = ({ onClose }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-[200] flex items-center justify-center h-screen
+      className={`fixed inset-0 z-200 flex items-center justify-center h-screen
         px-4 sm:px-6 transition-all duration-500 bg-black/40
         ${closing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
     >

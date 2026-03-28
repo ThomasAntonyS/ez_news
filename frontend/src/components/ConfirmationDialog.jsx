@@ -27,7 +27,7 @@ const ConfirmationDialog = ({ isOpen, type, onConfirm, onCancel }) => {
   const { title, message, confirmText, confirmColor } = content[type];
 
   return (
-    <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-none">
+    <div className="fixed inset-0 z-300 flex items-center justify-center p-4 bg-black/60 backdrop-none">
       <div className="bg-white border-4 border-black w-full max-w-md relative animate-in zoom-in-95 duration-200">
         
         <div className="border-b-4 border-black p-4 flex justify-between items-center bg-zinc-50">

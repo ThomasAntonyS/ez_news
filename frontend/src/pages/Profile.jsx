@@ -158,7 +158,7 @@ const Profile = () => {
               </button>
             </div>
             <div className="md:mt-6 md:text-center">
-              <h2 className="text-xl font-semibold uppercase tracking-tight truncate max-w-[150px] md:max-w-full">
+              <h2 className="text-xl font-semibold uppercase tracking-tight truncate max-w-37.5 md:max-w-full">
                 {userData?.name || "User"}
               </h2>
               <p className="text-[10px] font-bold uppercase opacity-80 tracking-wide">Verified User</p>

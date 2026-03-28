@@ -8,6 +8,25 @@ import 'ldrs/react/Ring2.css';
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
+const SkeletonCard = () => (
+    <div className="relative border-2 border-black bg-white flex flex-col w-full animate-pulse shadow-[6px_6px_0px_0px_rgba(0,0,0,0.1)]">
+        <div className="absolute top-2 right-2 h-4 w-20 bg-gray-200 z-10"></div>
+        <div className="border-b-2 border-black bg-gray-200 h-62.5 w-full"></div>
+        <div className="px-5 py-3 sm:pt-5 flex flex-col flex-1">
+            <div className="h-3 w-24 bg-gray-200 mb-2"></div>
+            <div className="h-6 w-full bg-gray-200 mb-2"></div>
+            <div className="h-6 w-3/4 bg-gray-200 mb-3"></div>
+            <div className="h-3 w-full bg-gray-200 mb-1"></div>
+            <div className="h-3 w-full bg-gray-200 mb-1"></div>
+            <div className="h-3 w-1/2 bg-gray-200 mb-6"></div>
+            <div className="mt-auto flex justify-between items-center pt-2 border-t border-black">
+                <div className="h-4 w-20 bg-gray-200 my-3"></div>
+                <div className="h-6 w-24 bg-gray-200"></div>
+            </div>
+        </div>
+    </div>
+);
+
 const Search = () => {
     const { q, page } = useParams();
     const [data, setData] = useState([]);
@@ -32,11 +51,7 @@ const Search = () => {
                 const parsed = JSON.parse(cached);
                 if (now - parsed.timestamp < CACHE_LIFETIME) {
                     const articles = parsed.data.articles || [];
-                    if (articles.length === 0) {
-                        navigate("/error-not-found", { replace: true });
-                    } else {
-                        setData(articles);
-                    }
+                    setData(articles);
                     setTotalPages(Math.min(10, Math.ceil(parsed.data.totalArticles / 10)));
                     setLoading(false);
                     return;
@@ -75,11 +90,11 @@ const Search = () => {
         if (!userData) return alert("PLEASE LOGIN TO SAVE NEWS");
 
         const articleId = article.id;
-        const articleTitle = article.title.toLowerCase()
+        const articleTitle = article.title.toLowerCase();
         const pubDate = article.publishedAt.split("T")[0];
-        const isCurrentlySaved = savedIds.has(articleId);
+        const isCurrentlySaved = savedIds?.has(articleId);
 
-       setProcessingIds(prev => [...prev, articleId]);
+        setProcessingIds(prev => [...prev, articleId]);
 
         try {
             if (isCurrentlySaved) {
@@ -102,98 +117,98 @@ const Search = () => {
                 <p className="w-max mx-auto mt-10 text-[2.5rem] sm:text-[6rem] 2xl:text-[10rem] font-black uppercase tracking-tighter">
                     Search
                 </p>
+                <p className="text-center font-bold uppercase tracking-wide text-sm mb-5">
+                    Results for: <span className="text-red-600">{q}</span>
+                </p>
             </div>
 
             <div className="w-full sm:w-[90%] mx-auto px-4 py-10">
-                {loading ? (
-                    <div className="flex justify-center items-center h-64">
-                        <Ring2 size="40" stroke="5" speed="0.8" color="black" />
-                    </div>
-                ) : (
-                    <>
-                        {data.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-10">
-                                {data.map((article, index) => (
-                                    <div
-                                        key={index}
-                                        className="group relative border-2 border-black bg-white flex flex-col w-full transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
-                                    >
-                                        <p className="absolute top-2 right-2 py-1 px-2 bg-black text-white text-[10px] font-bold z-10">
-                                            {article.publishedAt.split("T")[0]}
-                                        </p>
-                                        <div className="overflow-hidden border-b-2 border-black">
-                                            <img
-                                                src={article.image}
-                                                alt={article.title}
-                                                className="w-full h-[250px] object-cover transition-transform duration-500 group-hover:scale-105"
-                                                loading="lazy"
-                                            />
-                                        </div>
-                                        <div className="px-5 py-3 sm:pt-5 flex flex-col flex-1">
-                                            <Link to={article.source?.url} className="text-[10px] w-max font-black uppercase tracking-wide text-red-600 mb-2 hover:underline">
-                                                {article.source?.name}
-                                            </Link>
-                                            
-                                            <h3 className="text-xl font-bold mb-3 line-clamp-2 leading-tight uppercase">
-                                                {article.title}
-                                            </h3>
-                                            
-                                            <p className="text-gray-800 text-sm mb-6 line-clamp-3">
-                                                {article.description}
-                                            </p>
-
-                                            <div className="mt-auto flex justify-between items-center pt-2 border-t border-black">
-                                                <a
-                                                    href={article.url}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex items-center text-xs font-black uppercase tracking-wide hover:underline px-2"
-                                                >
-                                                    <Link2 className="w-4 h-4 mr-2 my-3" />
-                                                    Full Report
-                                                </a>
-
-                                                {isLoggedIn && (
-                                                    <button 
-                                                        onClick={(e) => handleToggleSave(e, article)} 
-                                                        disabled={processingId.includes(article.id)}
-                                                        className="flex p-2 cursor-pointer transition-all"
-                                                    >
-                                                        {processingId.includes(article.id) ? (
-                                                            <div className="flex items-center">
-                                                                <Ring2 size="17" stroke="3" speed="0.8" color="black" />
-                                                                <span className="text-xs ml-1 font-black">PROCESSING...</span>
-                                                            </div>
-                                                        ) : (
-                                                            <>
-                                                                <Bookmark 
-                                                                    size={20}
-                                                                    className={`transition-colors ${savedIds.has(article.id) ? 'fill-black text-black' : 'text-black'}`} 
-                                                                />
-                                                                <span className="text-xs h-max my-auto font-black hover:underline">
-                                                                    {savedIds.has(article.id) ? "IN LIBRARY" : "ADD TO LIBRARY"}
-                                                                </span>
-                                                            </>
-                                                        )}
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="w-full px-3 py-10 sm:py-20 flex flex-col items-center justify-center text-black bg-white border-2 border-black border-dashed">
-                                <p className="text-center text-xl sm:text-3xl font-black uppercase tracking-tighter max-w-lg mx-auto">
-                                    Oops! Nothing popped up for that search...
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-10">
+                    {loading ? (
+                        // Render 6 skeleton cards while searching
+                        Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+                    ) : data.length > 0 ? (
+                        data.map((article, index) => (
+                            <div
+                                key={index}
+                                className="group relative border-2 border-black bg-white flex flex-col w-full transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
+                            >
+                                <p className="absolute top-2 right-2 py-1 px-2 bg-black text-white text-[10px] font-bold z-10">
+                                    {article.publishedAt?.split("T")[0]}
                                 </p>
+                                <div className="overflow-hidden border-b-2 border-black">
+                                    <img
+                                        src={article.image || "/placeholder-news.jpg"}
+                                        alt={article.title}
+                                        className="w-full h-62.5 object-cover transition-transform duration-500 group-hover:scale-105"
+                                        loading="lazy"
+                                        referrerPolicy="no-referrer"
+                                    />
+                                </div>
+                                <div className="px-5 py-3 sm:pt-5 flex flex-col flex-1">
+                                    <Link to={article.source?.url} className="text-[10px] w-max font-black uppercase tracking-wide text-red-600 mb-2 hover:underline">
+                                        {typeof article.source === 'object' ? article.source?.name : article.source}
+                                    </Link>
+                                    
+                                    <h3 className="text-xl font-bold mb-3 line-clamp-2 leading-tight uppercase">
+                                        {article.title}
+                                    </h3>
+                                    
+                                    <p className="text-gray-800 text-sm mb-6 line-clamp-3">
+                                        {article.description}
+                                    </p>
+
+                                    <div className="mt-auto flex justify-between items-center pt-2 border-t border-black">
+                                        <a
+                                            href={article.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center text-xs font-black uppercase tracking-wide hover:underline px-2"
+                                        >
+                                            <Link2 className="w-4 h-4 mr-2 my-3" />
+                                            Full Report
+                                        </a>
+
+                                        {isLoggedIn && (
+                                            <button 
+                                                onClick={(e) => handleToggleSave(e, article)} 
+                                                disabled={processingId.includes(article.id)}
+                                                className="flex p-2 cursor-pointer transition-all"
+                                            >
+                                                {processingId.includes(article.id) ? (
+                                                    <div className="flex items-center">
+                                                        <Ring2 size="17" stroke="3" speed="0.8" color="black" />
+                                                        <span className="text-xs ml-1 font-black uppercase">PROCESSING...</span>
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <Bookmark 
+                                                            size={20}
+                                                            className={`transition-colors ${savedIds?.has(article.id) ? 'fill-black text-black' : 'text-black'}`} 
+                                                        />
+                                                        <span className="text-xs h-max my-auto font-black hover:underline uppercase">
+                                                            {savedIds?.has(article.id) ? "IN LIBRARY" : "ADD TO LIBRARY"}
+                                                        </span>
+                                                    </>
+                                                )}
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                        )}
-                    </>
-                )}
+                        ))
+                    ) : (
+                        /* Empty State */
+                        <div className="col-span-full px-3 py-10 sm:py-20 flex flex-col items-center justify-center text-black bg-white border-2 border-black border-dashed">
+                            <p className="text-center text-xl sm:text-3xl font-black uppercase tracking-tighter max-w-lg mx-auto">
+                                Oops! Nothing popped up for that search...
+                            </p>
+                        </div>
+                    )}
+                </div>
             </div>
 
-            {data.length > 0 && (
+            {data.length > 0 && !loading && (
                 <div className="flex justify-center items-center gap-6 py-12 border-t-2 border-black">
                     <button
                         onClick={() => handleNavigation(parseInt(page) - 1)}
