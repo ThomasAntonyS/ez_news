@@ -8,32 +8,20 @@ import 'ldrs/react/Ring2.css';
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
-// --- SKELETON COMPONENT ---
 const SkeletonCard = () => (
-    <div className="relative border-2 border-black bg-white flex flex-col w-full animate-pulse shadow-[6px_6px_0px_0px_rgba(0,0,0,0.1)]">
-        {/* Date Placeholder */}
-        <div className="absolute top-2 right-2 h-4 w-20 bg-gray-200 z-10"></div>
-        
-        {/* Image Placeholder */}
-        <div className="border-b-2 border-black bg-gray-200 h-62.5 w-full"></div>
-
-        <div className="px-5 py-3 sm:pt-5 flex flex-col flex-1">
-            {/* Source Placeholder */}
-            <div className="h-3 w-24 bg-gray-200 mb-2"></div>
-            
-            {/* Title Placeholder */}
-            <div className="h-6 w-full bg-gray-200 mb-2"></div>
-            <div className="h-6 w-3/4 bg-gray-200 mb-3"></div>
-            
-            {/* Description Placeholder */}
-            <div className="h-3 w-full bg-gray-200 mb-1"></div>
-            <div className="h-3 w-full bg-gray-200 mb-1"></div>
-            <div className="h-3 w-1/2 bg-gray-200 mb-6"></div>
-
-            {/* Footer Placeholder */}
-            <div className="mt-auto flex justify-between items-center pt-2 border-t border-black">
-                <div className="h-4 w-20 bg-gray-200 my-3"></div>
-                <div className="h-6 w-24 bg-gray-200"></div>
+    <div className="relative border border-neutral-100 bg-white flex flex-col w-full animate-pulse">
+        <div className="absolute bottom-4 right-5 h-4 w-16 bg-neutral-100 z-10" />
+        <div className="bg-neutral-100 aspect-video w-full" />
+        <div className="p-6 flex flex-col flex-1 space-y-3">
+            <div className="h-3 w-20 bg-neutral-100" />
+            <div className="h-5 w-full bg-neutral-100" />
+            <div className="h-5 w-5/6 bg-neutral-100" />
+            <div className="pt-2 space-y-2">
+                <div className="h-3 w-full bg-neutral-50" />
+                <div className="h-3 w-4/5 bg-neutral-50" />
+            </div>
+            <div className="mt-auto pt-4 border-t border-neutral-50 flex justify-between items-center">
+                <div className="h-3 w-16 bg-neutral-100" />
             </div>
         </div>
     </div>
@@ -127,7 +115,7 @@ const SingleCategory = () => {
         if (!userData) return alert("PLEASE LOGIN TO SAVE NEWS");
 
         const articleId = article.id;
-        const articleTitle = article.title.toLowerCase()
+        const articleTitle = article.title.toLowerCase();
         const pubDate = article.publishedAt.split("T")[0];
         const isAlreadySaved = savedIds?.has(articleId);
 
@@ -148,85 +136,93 @@ const SingleCategory = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white text-black">
+        <div className="min-h-screen bg-white text-neutral-900">
             <Header />
             
-            <div className="pt-20">
-                <p className="w-max mx-auto mt-10 text-[2.5rem] sm:text-[6rem] 2xl:text-[10rem] font-black uppercase tracking-tighter">
-                    {category}
-                </p>
+            <div className="pt-24 border-b border-neutral-100 bg-neutral-50/50">
+                <div className="w-[90%] xl:max-w-310 mx-auto py-12">
+                    <h1 className="lora text-4xl sm:text-5xl lg:text-6xl font-medium capitalize tracking-tight text-neutral-900">
+                        {category}
+                    </h1>
+                    <p className="manrope text-sm font-bold text-red-700 uppercase tracking-wide mt-3">
+                        <span className=" italic">LATEST ARTICLE'S</span> • Page {page} of {totalPages}
+                    </p>
+                </div>
             </div>
 
-            <div className="w-full sm:w-[90%] mx-auto px-4 py-10">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-10">
+            <div className="w-[90%] xl:max-w-310 mx-auto py-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mb-16">
                     {loading ? (
-                        // Show 6 skeleton cards while loading
                         Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
                     ) : (
                         data.map((article, index) => (
                             <div
                                 key={index}
-                                className="group relative border-2 border-black bg-white flex flex-col w-full transition-all hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+                                className="group relative border border-neutral-200 bg-white flex flex-col w-full transition-colors duration-300 hover:border-neutral-400"
                             >
-                                <p className="absolute top-2 right-2 py-1 px-2 bg-black text-white text-[10px] font-bold z-10">
-                                    {article.publishedAt?.split("T")[0]}
-                                </p>
-                                
-                                <div className="overflow-hidden border-b-2 border-black">
+                                <div className="overflow-hidden aspect-video border-b border-neutral-100 bg-neutral-50">
                                     <img
                                         src={article.image}
                                         alt={article.title}
-                                        className="w-full h-62.5 object-cover transition-transform duration-500 group-hover:scale-105"
+                                        className="w-full h-full object-cover grayscale-15 contrast-102 transition-transform duration-700 ease-out group-hover:scale-102 group-hover:grayscale-0"
                                         loading="lazy"
                                         referrerPolicy="no-referrer"
                                     />
                                 </div>
 
-                                <div className="px-5 py-3 sm:pt-5 flex flex-col flex-1">
-                                    <Link to={article?.source?.url} className="text-[10px] w-max font-black uppercase tracking-wide text-red-600 mb-2 hover:underline">
-                                        {typeof article.source === 'object' ? article.source?.name : article.source}
-                                    </Link>
+                                <div className="p-6 flex flex-col flex-1">
+                                    <div className="flex justify-between items-baseline mb-2.5">
+                                        <Link to={article?.source?.url || "#"} className="manrope text-[12px] font-bold uppercase tracking-wide text-red-700 hover:underline line-clamp-1 max-w-[70%]">
+                                            {typeof article.source === 'object' ? article.source?.name : article.source}
+                                        </Link>
+                                        <span className="manrope text-[11px] font-semibold text-neutral-700 tracking-wider shrink-0 italic">
+                                            {article.publishedAt?.split("T")[0]}
+                                        </span>
+                                    </div>
                                     
-                                    <h3 className="text-xl font-bold mb-3 line-clamp-2 leading-tight uppercase">
-                                        {article.title}
+                                    <h3 className="lora text-lg font-medium text-neutral-900 leading-snug mb-3 tracking-tight line-clamp-2 group-hover:text-neutral-700 transition-colors">
+                                        <a href={article.url} target="_blank" rel="noopener noreferrer">
+                                            {article.title}
+                                        </a>
                                     </h3>
                                     
-                                    <p className="text-gray-800 text-sm mb-6 line-clamp-3">
+                                    <p className="lora text-neutral-600 text-[14px] leading-relaxed mb-6 line-clamp-3 font-normal">
                                         {article.description}
                                     </p>
 
-                                    <div className="mt-auto flex justify-between items-center pt-2 border-t border-black">
+                                    <div className="mt-auto pt-4 border-t border-neutral-100 flex justify-between items-center">
                                         <a
                                             href={article.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center text-xs font-black uppercase tracking-wide hover:underline px-2"
+                                            className="manrope inline-flex items-center text-[12px] font-bold uppercase tracking-wider text-neutral-800 transition-colors group/link"
                                         >
-                                            <Link2 className="w-4 h-4 mr-2 my-3" />
+                                            <Link2 className="w-3.5 h-3.5 mr-1.5 text-neutral-400 group-hover/link:text-neutral-600" />
                                             Full Report
                                         </a>
 
                                         {isLoggedIn && (
-                                            <button 
-                                                onClick={(e) => handleToggleSave(e, article)} 
+                                            <button
+                                                onClick={(e) => handleToggleSave(e, article)}
                                                 disabled={processingId.includes(article.id)}
-                                                className="flex p-2 cursor-pointer transition-all"
+                                                className="inline-flex items-center text-neutral-900 transition-colors p-1 cursor-pointer"
+                                                title={savedIds?.has(article.id) ? "Saved" : "Save Article"}
                                             >
                                                 {processingId.includes(article.id) ? (
-                                                    <div className="flex items-center">
-                                                        <Ring2 size="17" stroke="3" speed="0.8" color="black" />
-                                                        <span className="text-xs ml-1 font-black uppercase">PROCESSING...</span>
+                                                    <div className="flex items-center px-2">
+                                                        <Ring2 size="15" stroke="2.5" speed="0.8" color="#000" />
                                                     </div>
                                                 ) : (
-                                                    <>
-                                                        <Bookmark 
-                                                            size={20}
-                                                            className={`transition-colors ${savedIds?.has(article.id) ? 'fill-black text-black' : 'text-black'}`} 
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Bookmark
+                                                            size={15}
+                                                            className={savedIds?.has(article.id) ? "fill-neutral-900 text-neutral-900" : "text-neutral-900"}
                                                         />
-                                                        <span className="text-xs h-max my-auto font-black hover:underline uppercase">
-                                                            {savedIds?.has(article.id) ? "IN LIBRARY" : "ADD TO LIBRARY"}
+                                                        {/* Fixed tracking text width mapped directly to match reference designs */}
+                                                        <span className="manrope text-[11px] font-bold tracking-wider uppercase text-neutral-900">
+                                                            {savedIds?.has(article.id) ? "Saved" : "Save Article"}
                                                         </span>
-                                                    </>
+                                                    </div>
                                                 )}
                                             </button>
                                         )}
@@ -236,28 +232,28 @@ const SingleCategory = () => {
                         ))
                     )}
                 </div>
-            </div>
 
-            <div className="flex justify-center items-center gap-6 py-12 border-t-2 border-black">
-                <button
-                    onClick={() => handleNavigation(parseInt(page) - 1)}
-                    disabled={parseInt(page) <= 1}
-                    className="border-2 border-black p-3 disabled:opacity-20 hover:bg-black hover:text-white transition-colors cursor-pointer"
-                >
-                    <ChevronLeft size={24} />
-                </button>
+                <div className="flex justify-center items-center gap-8 pt-8 border-t border-neutral-200">
+                    <button
+                        onClick={() => handleNavigation(parseInt(page) - 1)}
+                        disabled={parseInt(page) <= 1}
+                        className="p-2 border border-neutral-700 text-neutral-700 disabled:opacity-20 hover:text-neutral-900 hover:border-neutral-400 transition-colors cursor-pointer rounded-xs disabled:cursor-not-allowed"
+                    >
+                        <ChevronLeft size={20} />
+                    </button>
 
-                <span className="text-lg font-black uppercase tracking-wide">
-                    {page} / {totalPages}
-                </span>
+                    <span className="manrope text-sm font-bold tracking-wide text-neutral-700 uppercase">
+                        Page {page} / {totalPages}
+                    </span>
 
-                <button
-                    onClick={() => handleNavigation(parseInt(page) + 1)}
-                    disabled={parseInt(page) >= totalPages}
-                    className="border-2 border-black p-3 disabled:opacity-20 hover:bg-black hover:text-white transition-colors cursor-pointer"
-                >
-                    <ChevronRight size={24} />
-                </button>
+                    <button
+                        onClick={() => handleNavigation(parseInt(page) + 1)}
+                        disabled={parseInt(page) >= totalPages}
+                        className="p-2 border border-neutral-700 text-neutral-700 disabled:opacity-20 hover:text-neutral-900 hover:border-neutral-400 transition-colors cursor-pointer rounded-xs disabled:cursor-not-allowed"
+                    >
+                        <ChevronRight size={20} />
+                    </button>
+                </div>
             </div>
 
             <Footer />

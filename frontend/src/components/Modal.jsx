@@ -24,45 +24,40 @@ const Modal = ({ onClose }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-200 flex items-center justify-center h-screen
-        px-4 sm:px-6 transition-all duration-500 bg-black/40
-        ${closing ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
+      className={`fixed inset-0 z-200 flex items-center justify-center h-screen px-4 sm:px-6 transition-all duration-500 bg-neutral-950/40 backdrop-blur-sm
+        ${closing ? 'opacity-0 scale-98' : 'opacity-100 scale-100'}`}
     >
-      <div className="bg-white border-[6px] border-black sm:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] w-full 
-        max-w-md sm:max-w-lg md:max-w-xl 
-        text-center p-8 sm:p-12 transition-all"
-      >
-        <div className="inline-block bg-black text-white px-4 py-1 mb-6 font-black uppercase tracking-wide text-xs">
-          System Message
+      <div className="bg-white border border-neutral-200 shadow-xl w-full max-w-md text-center p-8 sm:p-10 transition-all rounded-xs">
+        <div className="manrope inline-block bg-neutral-100 text-neutral-800 px-3 py-1 mb-6 font-bold uppercase tracking-widest text-[10px]">
+          System Update
         </div>
         
-        <h2 className="text-3xl sm:text-5xl font-black mb-4 uppercase tracking-tighter leading-none">
-          Welcome to <br/> 
-          <span className="bg-blur-lg px-2">EZ News</span>
+        <h2 className="lora text-3xl sm:text-4xl font-medium mb-4 tracking-tight text-neutral-900 leading-snug">
+          Welcome to <span className="italic">EZ News</span>
         </h2>
         
-        <div className="space-y-4 mb-10">
-          <p className="text-lg sm:text-xl font-bold uppercase leading-tight italic">
+        <div className="space-y-2 mb-8">
+          <p className="lora text-neutral-600 text-base font-normal leading-relaxed">
             Stay updated with trending news across all categories.
           </p>
-          <p className="text-sm sm:text-base font-medium uppercase tracking-wide text-zinc-600">
-            Fresh news available every few hours.
+          <p className="manrope text-[11px] font-bold uppercase tracking-widest text-neutral-400">
+            Fresh updates synchronized every few hours.
           </p>
         </div>
 
-        <div className="relative w-full h-10 border-4 border-black bg-white overflow-hidden">
-          <div
-            className="h-full bg-black transition-all duration-50 ease-linear flex items-center justify-end px-2"
-            style={{ width: `${progress}%` }}
-          >
-            <span className="text-white font-black text-xs">
-              {progress}%
-            </span>
+        <div className="space-y-2.5">
+          <div className="w-full h-1 bg-neutral-100 overflow-hidden rounded-full">
+            <div
+              className="h-full bg-neutral-900 transition-all duration-50 ease-linear"
+              style={{ width: `${progress}%` }}
+            />
           </div>
-        </div>
-        
-        <div className="mt-4 text-[10px] font-black text-black animate-pulse">
-          Initializing Articles...
+          <div className="flex justify-between items-center manrope text-[10px] font-bold tracking-widest text-neutral-400 uppercase">
+            <span className={progress === 100 ? "text-neutral-900" : "animate-pulse"}>
+              {progress === 100 ? "Ready" : "Initializing Feed..."}
+            </span>
+            <span className="text-neutral-700 font-extrabold">{progress}%</span>
+          </div>
         </div>
       </div>
     </div>

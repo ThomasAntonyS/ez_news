@@ -3,42 +3,35 @@ import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 
 const NotFound = () => {
-  document.title = "404: PAGE_NOT_FOUND";
+  document.title = "404 | Page Not Found";
   
   return (
     <>
       <Header />
-      <div className="min-h-screen flex flex-col justify-center items-center text-black p-6 bg-white select-none relative overflow-hidden">
-        <h1 className="text-[10rem] sm:text-[18rem] font-black leading-none uppercase tracking-tighter italic z-10">
+      <div className="min-h-screen flex flex-col justify-center items-center text-neutral-900 p-6 bg-white select-none relative overflow-hidden">
+        
+        <h1 className="manrope text-[12rem] sm:text-[20rem] font-light leading-none tracking-tighter text-neutral-100 select-none z-0 absolute top-1/2 -translate-y-2/3">
           404
         </h1>
         
-        <div className="z-10 flex flex-col items-center">
-          <p className="text-3xl sm:text-6xl font-black uppercase mb-8 bg-black text-white px-6 py-2 rotate-[-1.5deg] shadow-[8px_8px_0px_0px_rgba(0,0,0,.9)]">
+        <div className="z-10 flex flex-col items-center text-center mt-12">
+          <h2 className="lora text-2xl sm:text-4xl font-medium tracking-tight text-neutral-900 mb-4">
             Page Not Found
-          </p>
+          </h2>
           
-          <p className="font-bold uppercase tracking-wide mb-12 text-center max-w-lg leading-snug text-sm sm:text-base">
-            Error_Log: The requested URL does not exist or has been relocated to an unknown sector.
+          <p className="lora text-neutral-500 font-normal tracking-normal mb-10 max-w-sm text-sm sm:text-base leading-relaxed">
+            The requested article link does not exist or has been permanently moved to another section.
           </p>
           
           <Link
             to="/"
-            className="group flex gap-3 items-center px-12 py-6 bg-white border-4 border-black text-black font-black uppercase tracking-wide shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all duration-200 active:bg-black active:text-white"
+            className="manrope group inline-flex gap-2 items-center px-6 py-3 bg-neutral-900 border border-neutral-900 text-white text-xs font-bold uppercase tracking-widest rounded-xs hover:bg-transparent hover:text-neutral-900 transition-colors duration-300"
           >
             Go to Homepage 
-            <ChevronRightIcon className='group-hover:translate-x-2 transition-transform' strokeWidth={4} size={24}/>
+            <ChevronRightIcon className='group-hover:translate-x-0.5 transition-transform duration-200 mt-0.5' strokeWidth={2.5} size={14}/>
           </Link>
         </div>
 
-        <div className="fixed -bottom-10 -right-10 z-0 opacity-[0.03] pointer-events-none">
-          <p className="text-[20rem] font-black uppercase transform rotate-45">
-            VOID
-          </p>
-        </div>
-
-        <div className="absolute top-1/4 left-10 w-32 h-32 border-8 border-black opacity-5 -rotate-12 pointer-events-none hidden md:block"></div>
-        <div className="absolute bottom-1/4 right-20 w-48 h-12 bg-black opacity-5 rotate-12 pointer-events-none hidden md:block"></div>
       </div>
     </>
   );

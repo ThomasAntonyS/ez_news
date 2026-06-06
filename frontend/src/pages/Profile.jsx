@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { User, Bookmark, LogOut, Trash2, Camera, ChevronLeft, ExternalLink, Loader2, ChevronRight, Search } from 'lucide-react';
+import { User, Bookmark, LogOut, Trash2, Camera, ChevronLeft, ExternalLink, Loader2, ChevronRight, Search as SearchIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
 import axios from 'axios';
@@ -9,7 +9,6 @@ import logo from '../assets/icon.png';
 
 const Profile = () => {
   document.title = "EZ NEWS | PROFILE"
-  const [activeTab, setActiveTab] = useState('personal');
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const [savedArticles, setSavedArticles] = useState([]);
   const [loadingSaved, setLoadingSaved] = useState(false);
@@ -20,7 +19,7 @@ const Profile = () => {
   const [dialog, setDialog] = useState({ isOpen: false, type: '', onConfirm: null });
   const libraryTopRef = useRef(null);
 
-  const { setIsLoggedIn, userData, setSavedIds, fetchSavedIds, savedIds } = useAuth();
+  const { setIsLoggedIn, userData, setSavedIds, fetchSavedIds } = useAuth();
   const navigate = useNavigate();
   const apiBase = import.meta.env.VITE_API_BASE;
   const itemsPerPage = 10;
@@ -39,34 +38,24 @@ const Profile = () => {
       setSavedArticles(parsedArticles);
       setTotalPages(res.data.totalPages);
       setCurrentPage(res.data.currentPage);
-      } catch (error) {
-        console.error("Error fetching saved news:", error);
-      } finally {
-        setLoadingSaved(false);
-      }
+    } catch (error) {
+      console.error("Error fetching saved news:", error);
+    } finally {
+      setLoadingSaved(false);
+    }
   }
 
   useEffect(() => {
-    if (activeTab === 'saved' && searchQuery.trim()!="") {
+    if (searchQuery.trim() !== "") {
       const delayDebounceFn = setTimeout(() => {
         fetchSavedArticles(1);
       }, 500);
 
       return () => clearTimeout(delayDebounceFn);
-    }
-  }, [searchQuery]);
-
-  useEffect(() => {
-    if (activeTab === 'saved') {
+    } else {
       fetchSavedArticles(currentPage);
     }
-  }, [activeTab, currentPage]);
-
-  useEffect(() => {
-    if (activeTab === "saved") {
-      libraryTopRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [currentPage]);
+  }, [searchQuery, currentPage]);
 
   const handleLogout = async () => {
     setIsProcessing(true);
@@ -76,7 +65,7 @@ const Profile = () => {
       setIsLoggedIn(false);
       navigate("/");
     } catch (error) {
-      setToast({ show: true, message: "An error occured. Try again", type: 'error' });
+      setToast({ show: true, message: "An error occurred. Try again", type: 'error' });
     } finally {
       setIsProcessing(false);
     }
@@ -106,8 +95,7 @@ const Profile = () => {
     } catch (error) {
       setSavedArticles(previousArticles);
       setToast({ show: true, message: "Failed to remove article", type: 'error' });
-    }
-    finally{
+    } finally {
       fetchSavedIds()
     }
   };
@@ -125,203 +113,210 @@ const Profile = () => {
 
   const handleNext = () => {
     setCurrentPage(prev => prev + 1);
+    libraryTopRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handlePrevious = () => {
     setCurrentPage(prev => prev - 1);
+    libraryTopRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleClear = () =>{
+  const handleClear = () => {
     setSearchQuery("")
-    fetchSavedArticles(1,"")
+    fetchSavedArticles(1, "")
   }
 
   return (
-    <div className="h-screen w-screen bg-white flex flex-col overflow-hidden text-black">
-      <div className="w-full h-16 border-b-2 border-black flex items-center justify-between px-6 shrink-0 bg-white z-10">
-        <Link to="/" className="flex items-center gap-2 group">
-          <ChevronLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="font-semibold uppercase tracking-wide text-sm">Back to News</span>
+    <div className="min-h-screen bg-neutral-50 flex flex-col text-neutral-900">
+      
+      <div className="w-full h-16 border-b border-neutral-200 flex items-center justify-between px-[5%] shrink-0 bg-white sticky top-0 z-50">
+        <Link to="/" className="flex items-center gap-2 group/back text-neutral-500 hover:text-neutral-900 transition-colors">
+          <ChevronLeft size={18} className="group-hover/back:-translate-x-0.5 transition-transform" />
+          <span className="manrope font-bold uppercase tracking-widest text-[11px]">Back to News</span>
         </Link>
-        <img src={logo} alt="Logo" onClick={() => navigate("/")} className="w-10 h-10 object-contain cursor-pointer" />
+        <img src={logo} alt="Logo" onClick={() => navigate("/")} className="w-8 h-8 object-contain cursor-pointer grayscale opacity-80 hover:opacity-100 hover:grayscale-0 transition-all" />
       </div>
 
-      <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
-        <aside className="w-full md:w-80 border-b-2 md:border-b-0 md:border-r-2 border-black flex flex-col bg-white shrink-0">
-          <div className="p-6 md:p-10 flex flex-row md:flex-col items-center gap-4 md:gap-0 border-b-2 border-black">
-            <div className="relative">
-              <div className="w-16 h-16 md:w-28 md:h-28 rounded-none border-2 border-black flex items-center justify-center bg-gray-50 overflow-hidden">
-                <User size={64} className="text-black" />
+      <div className="w-[90%] xl:max-w-310 mx-auto py-12 flex-1">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
+          
+          {/* ================= LEFT SIDE PANEL: USER PARAMETERS ================= */}
+          <div className="md:col-span-1 space-y-8 sticky md:top-24">
+            
+            {/* Core Card Identity Block */}
+            <div className="border border-neutral-200 bg-white p-6 rounded-xs text-center flex flex-col items-center">
+              <div className="relative mb-4">
+                <div className="w-20 h-20 rounded-full border border-neutral-200 flex items-center justify-center bg-neutral-50 overflow-hidden">
+                  <User size={36} className="text-neutral-400" />
+                </div>
+                <button className="absolute -bottom-0.5 -right-0.5 bg-neutral-900 text-white p-1.5 rounded-full border border-neutral-900 hover:bg-neutral-800 transition-colors cursor-pointer">
+                  <Camera size={12} />
+                </button>
               </div>
-              <button className="absolute -bottom-1 -right-1 bg-black text-white p-1.5 border border-black hover:bg-white hover:text-black transition-all">
-                <Camera size={14} />
-              </button>
-            </div>
-            <div className="md:mt-6 md:text-center">
-              <h2 className="text-xl font-semibold uppercase tracking-tight truncate max-w-37.5 md:max-w-full">
-                {userData?.name || "User"}
+              <h2 className="manrope text-lg font-bold text-neutral-900 truncate max-w-full px-2">
+                {userData?.name || "Reader Profile"}
               </h2>
-              <p className="text-[10px] font-bold uppercase opacity-80 tracking-wide">Verified User</p>
             </div>
+
+            {/* Account Details */}
+            <div className="border border-neutral-200 bg-white p-6 rounded-xs space-y-5">
+              <h3 className="manrope text-[11px] font-bold uppercase tracking-wide text-neutral-400 border-b border-neutral-100 pb-2">Account Details</h3>
+              
+              <div className="space-y-1">
+                <span className="block manrope text-[10px] font-bold uppercase tracking-widest text-neutral-400">Full Name</span>
+                <p className="manrope text-xs font-semibold text-neutral-700 truncate">{userData?.name || "Not Specified"}</p>
+              </div>
+
+              <div className="space-y-1">
+                <span className="block manrope text-[10px] font-bold uppercase tracking-widest text-neutral-400">Email</span>
+                <p className="manrope text-xs font-semibold text-neutral-700 truncate">{userData?.email || "Not Connected"}</p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-4 border-t border-neutral-100 flex flex-col gap-2">
+                <button 
+                  onClick={() => openConfirm('signOut', handleLogout)}
+                  disabled={isProcessing}
+                  className="manrope w-full py-2.5 bg-neutral-900 text-white border border-neutral-900 text-[11px] font-bold uppercase tracking-wider rounded-xs hover:bg-transparent hover:text-neutral-900 transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <LogOut size={13} /> Sign Out Session
+                </button>
+                <button 
+                  onClick={() => openConfirm('accountDelete', handleDeleteAccount)}
+                  disabled={isProcessing}
+                  className="manrope w-full py-2.5 bg-transparent border border-red-200 text-red-700 text-[11px] font-bold uppercase tracking-wider rounded-xs hover:bg-red-50 hover:border-red-300 transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <Trash2 size={13} /> Delete Profile
+                </button>
+              </div>
+            </div>
+
           </div>
 
-          <nav className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible no-scrollbar bg-white">
-            {[
-              { id: 'personal', label: 'Personal', icon: <User size={20} /> },
-              { id: 'saved', label: 'Library', icon: <Bookmark size={20} /> },
-              { id: 'logout', label: 'Logout', icon: <LogOut size={20} /> },
-              { id: 'delete', label: 'Delete', icon: <Trash2 size={20} /> }
-            ].map((item) => (
-              <button
-                key={item.id}
-                onClick={() => { setActiveTab(item.id); if(item.id === 'saved') setCurrentPage(1); }}
-                className={`flex-1 md:flex-none flex items-center justify-center md:justify-start cursor-pointer gap-4 px-6 py-4 text-[10px] md:text-xs font-semibold uppercase tracking-wide transition-all border-r-2 md:border-r-0 md:border-b-2 border-black last:border-r-0 md:last:border-b-0 whitespace-nowrap
-                  ${activeTab === item.id ? 'bg-black text-white' : 'bg-white hover:bg-gray-100'}`}
-              >
-                {item.icon}
-                <span className="hidden sm:inline">{item.label}</span>
-              </button>
-            ))}
-          </nav>
-        </aside>
-
-        <main className="flex-1 overflow-y-auto bg-white p-6 md:p-16 no-scrollbar">
-          <div className="max-w-4xl mx-auto">
-            {activeTab === 'personal' && (
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <h3 className="text-4xl md:text-6xl font-semibold uppercase tracking-tighter mb-10">Personal<br/>Data</h3>
-                <div className="space-y-4">
-                  <div className="border-2 border-black p-6 bg-white">
-                    <label className="block text-[10px] font-semibold uppercase tracking-wide mb-2">Full Identity</label>
-                    <p className="text-xl md:text-2xl font-bold">{userData?.name}</p>
-                  </div>
-                  <div className="border-2 border-black p-6 bg-white">
-                    <label className="block text-[10px] font-semibold uppercase tracking-wide mb-2">Email Connection</label>
-                    <p className="text-xl md:text-2xl font-bold">{userData?.email}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'saved' && (
-              <div ref={libraryTopRef} className="animate-in fade-in slide-in-from-bottom-2 duration-300 pb-20">
-                <h3 className="text-4xl md:text-6xl font-semibold uppercase tracking-tighter mb-10">Library</h3>
-
-              {savedArticles.length > 0 ?
-                <div className="flex items-center gap-4 mb-10 w-full md:w-fit">
-                  <div className="flex items-center p-2 border-2 border-black bg-white focus-within:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
+          {/* ================= RIGHT SIDE PANEL: THE ARCHIVE STREAM ================= */}
+          <div ref={libraryTopRef} className="md:col-span-2 space-y-8 scroll-mt-24">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 pb-4">
+              <h3 className="lora text-3xl font-medium tracking-tight text-neutral-900">My Library</h3>
+              
+              {/* Filter Headline Input Mechanism */}
+              {(savedArticles.length > 0 || searchQuery) && (
+                <div className="flex items-center gap-3 w-full sm:max-w-xs">
+                  <div className="flex items-center border-b border-neutral-600 focus-within:border-neutral-800 transition-colors w-full py-1 bg-transparent">
                     <input 
                       type="text" 
-                      placeholder="SEARCH BY NEWS TITLE." 
+                      placeholder="Filter library collection..." 
                       value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setCurrentPage(1); 
-                      }}
-                      className="w-full md:w-64 pr-4 text-[14px] font-black tracking-wide placeholder:text-black focus:outline-none bg-transparent"
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full text-sm font-medium tracking-tight placeholder:text-neutral-600 focus:outline-none bg-transparent text-neutral-800 manrope"
                     />
-                    <div className="shrink-0 border-l-2 border-black pl-2 hover:cursor-pointer">
-                      <Search size={18} strokeWidth={3} />
+                    <div className="shrink-0 pl-2 text-neutral-600">
+                      <SearchIcon size={15} />
                     </div>
                   </div>
-                    
                   {searchQuery.trim() !== "" && (
-                    <button onClick={handleClear}
-                      className="px-4 py-2 border-2 border-black bg-white text-[14px] font-black uppercase tracking-wide hover:bg-black hover:text-white transition-all cursor-pointer"
+                    <button 
+                      onClick={handleClear}
+                      className="manrope px-2 py-0.5 border border-neutral-200 text-neutral-600 rounded-xs text-[10px] font-bold uppercase tracking-wider hover:text-neutral-900 hover:border-neutral-400 transition-colors cursor-pointer shrink-0"
                     >
                       Clear
                     </button>
                   )}
                 </div>
-                :
-                null
-              }
+              )}
+            </div>
 
-                <div className="grid gap-4">
-                  {loadingSaved ? (
-                    <div className="flex flex-col gap-4">
-                        {[1, 2, 3].map(i => <div key={i} className="h-32 w-full border-2 border-black animate-pulse bg-gray-50" />)}
-                    </div>
-                  ) : savedArticles.length > 0 ? (
-                    <>
-                      {savedArticles.map((item) => (
-                        <div key={item.news_id} className="border-2 border-black p-6 group relative bg-white hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all">
-                          <div className="flex justify-between items-start mb-2">
-                            <a href={item.news.source.url} target="_blank" rel="noopener noreferrer">
-                              <span className="text-[10px] font-black uppercase tracking-widest bg-black text-white px-2 py-0.5 border border-black hover:bg-white hover:text-black transition-colors cursor-pointer">
-                                {item.news.source?.name || "News"}
-                              </span>
-                            </a>
-                            <div className="flex items-center gap-4 px-2">
-                              <span className="hidden sm:flex text-[12px] font-bold uppercase">{item.news.publishedAt?.split("T")[0]}</span>
-                              <button title='Delete Article' onClick={() => openConfirm('newsDelete', () => handleUnsave(item.news_id))} className="text-black hover:text-red-600 cursor-pointer transition-colors">
-                                <Trash2 size={20} />
-                              </button>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-end gap-6">
-                            <a href={item.news.url} target="_blank" rel="noreferrer" className="block group/link">
-                              <h4 className="text-xl md:text-2xl font-bold leading-tight group-hover/link:underline decoration-2 line-clamp-5 sm:line-clamp-3">
-                                {item.news.title}
-                              </h4>
-                            </a>
-                            <a title='Visit' href={item.news.url} target="_blank" rel="noreferrer" className="shrink-0 p-1 border-2 border-transparent hover:border-black transition-all">
-                              <ExternalLink size={20} />
-                            </a>
-                          </div>
-                        </div>
-                      ))}
-                      <div className="flex items-center justify-between mt-12 pt-8 border-t-4 border-black">
-                        <button disabled={currentPage === 1} onClick={handlePrevious} className="flex items-center gap-2 font-black cursor-pointer uppercase text-xs border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-all disabled:opacity-30">
-                          <ChevronLeft size={16} strokeWidth={3} /> Previous
-                        </button>
-                        <div className="font-black text-sm">PAGE {currentPage} / {totalPages}</div>
-                        <button disabled={currentPage === totalPages} onClick={handleNext} className="flex items-center gap-2 font-black cursor-pointer uppercase text-xs border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-all disabled:opacity-30">
-                          Next <ChevronRight size={16} strokeWidth={3} />
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="border-2 border-dashed border-black p-12 text-center">
-                      <Bookmark size={48} className="mx-auto mb-4" />
-                      <p className="font-semibold uppercase tracking-wide">Archives are empty</p>
-                      <Link to="/" className="text-xs font-bold underline mt-2 inline-block">Go discover news</Link>
-                    </div>
-                  )}
+            {/* Article Stack Layout Grid */}
+            <div className="space-y-4">
+              {loadingSaved ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="h-24 w-full border border-neutral-200 animate-pulse bg-white rounded-xs" />
+                  ))}
                 </div>
-              </div>
-            )}
+              ) : savedArticles.length > 0 ? (
+                <>
+                  {savedArticles.map((item) => (
+                    <div 
+                      key={item.news_id} 
+                      className="border border-neutral-200 p-5 bg-white transition-colors duration-300 hover:border-neutral-400 flex flex-col gap-2 relative group/item rounded-xs"
+                    >
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                          <a href={item.news.source?.url} target="_blank" rel="noopener noreferrer" className="manrope text-[12px] font-bold uppercase tracking-widest text-red-700 hover:underline">
+                            {item.news.source?.name || "News Wire"}
+                          </a>
+                          <span className="text-neutral-200 text-[10px]">|</span>
+                          <span className="manrope text-[12px] text-neutral-700 tracking-wider">
+                            {item.news.publishedAt?.split("T")[0]}
+                          </span>
+                        </div>
 
-            {activeTab === 'logout' && (
-              <div className="h-[60vh] flex flex-col items-center justify-center text-center animate-in zoom-in-95 duration-300">
-                <div className="border-2 border-black p-12 inline-block bg-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-                  <h3 className="text-3xl font-semibold uppercase mb-6 tracking-tighter">Sign Out?</h3>
-                  <p className="mb-8 font-bold text-sm max-w-xs uppercase">Your library remains safe in our secure database.</p>
-                  <div className="flex flex-col gap-3">
-                    <button onClick={() => openConfirm('signOut', handleLogout)} disabled={isProcessing} className="w-full py-4 bg-black text-white font-semibold uppercase tracking-widest cursor-pointer border-2 border-black hover:bg-white hover:text-black transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-                      {isProcessing ? <><Loader2 className="animate-spin" size={18}/> PROCESSING...</> : "Confirm Exit"}
+                        <div className="flex items-center gap-1 opacity-60 group-hover/item:opacity-100 transition-opacity">
+                          <a 
+                            href={item.news.url} 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            className="p-1.5 text-neutral-700 hover:text-neutral-900 transition-colors"
+                            title="Open Source"
+                          >
+                            <ExternalLink size={14} />
+                          </a>
+                          <button 
+                            title='Remove Entry' 
+                            onClick={() => openConfirm('newsDelete', () => handleUnsave(item.news_id))} 
+                            className="p-1.5 text-neutral-700 hover:text-red-600 cursor-pointer transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+
+                      <h4 className="lora text-[18px] font-medium text-neutral-900 leading-snug tracking-tight line-clamp-2 pr-4">
+                        <a href={item.news.url} target="_blank" rel="noreferrer" className="hover:text-neutral-700 transition-colors">
+                          {item.news.title}
+                        </a>
+                      </h4>
+                    </div>
+                  ))}
+
+                  {/* Stack List Pagination Control Strip */}
+                  <div className="flex items-center justify-between mt-8 pt-6 border-t border-neutral-200">
+                    <button 
+                      disabled={currentPage === 1} 
+                      onClick={handlePrevious} 
+                      className="manrope inline-flex items-center gap-1 font-bold text-[12px] uppercase tracking-wider text-neutral-700 disabled:opacity-20 hover:text-neutral-950 cursor-pointer disabled:cursor-not-allowed"
+                    >
+                      <ChevronLeft size={14} /> Previous
+                    </button>
+                    <div className="manrope text-[12px] font-bold text-neutral-700 tracking-widest uppercase">Page {currentPage} / {totalPages}</div>
+                    <button 
+                      disabled={currentPage === totalPages} 
+                      onClick={handleNext} 
+                      className="manrope inline-flex items-center gap-1 font-bold text-[12px] uppercase tracking-wider text-neutral-700 disabled:opacity-20 hover:text-neutral-950 cursor-pointer disabled:cursor-not-allowed"
+                    >
+                      Next <ChevronRight size={14} />
                     </button>
                   </div>
+                </>
+              ) : (
+                <div className="border border-dashed border-neutral-300 p-12 text-center rounded-xs bg-white max-w-xl mx-auto w-full">
+                  <Bookmark size={28} className="mx-auto mb-3 text-neutral-300" />
+                  <p className="manrope text-xs font-bold text-neutral-400 uppercase tracking-wider">Your saved archives are empty</p>
+                  <Link to="/" className="manrope text-[11px] font-bold text-neutral-900 underline mt-1.5 inline-block hover:text-neutral-600">Discover Latest News</Link>
                 </div>
-              </div>
-            )}
-
-            {activeTab === 'delete' && (
-              <div className="h-[60vh] flex flex-col items-center justify-center text-center animate-in slide-in-from-top-2 duration-300">
-                <div className="border-4 border-black p-8 md:p-12 max-w-lg bg-white shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]">
-                  <h3 className="text-4xl font-bold uppercase mb-4 text-black">Nuclear Option</h3>
-                  <p className="font-bold text-sm mb-8 leading-relaxed uppercase">Account deletion is permanent. All saved articles will be wiped from the database.</p>
-                  <button onClick={() => openConfirm('accountDelete', handleDeleteAccount)} disabled={isProcessing} className="w-full py-4 border-2 border-black text-black font-semibold uppercase cursor-pointer hover:bg-red-600 hover:text-white hover:border-red-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-                    {isProcessing ? <><Loader2 className="animate-spin" size={18}/> PROCESSING...</> : "Wipe Account Data"}
-                  </button>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </main>
+
+        </div>
       </div>
 
-      <ConfirmationDialog isOpen={dialog.isOpen} type={dialog.type} onConfirm={dialog.onConfirm} onCancel={() => setDialog(prev => ({ ...prev, isOpen: false }))} />
+      <ConfirmationDialog 
+        isOpen={dialog.isOpen} 
+        type={dialog.type} 
+        onConfirm={dialog.onConfirm} 
+        onCancel={() => setDialog(prev => ({ ...prev, isOpen: false }))} 
+      />
 
       {toast.show && (
         <Toast message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />

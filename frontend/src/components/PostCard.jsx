@@ -3,43 +3,45 @@ import { Link } from "react-router-dom";
 
 const PodcastCard = ({ image, title, url, description, source, sourceUrl, publishedAt }) => {
   return (
-    <div className="group border-2 border-black bg-white flex flex-col h-full transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-      {publishedAt && (
-        <p className="absolute top-2 right-2 py-1 px-2 bg-black text-white text-[10px] font-bold z-10">
-          {publishedAt.split("T")[0]}
-        </p>
-      )}
-
-      <div className="overflow-hidden border-b-2 border-black">
+    <div className="group bg-white flex flex-col h-full border border-neutral-200 transition-all duration-300 hover:border-neutral-400">
+      <div className="relative overflow-hidden aspect-video border-b border-neutral-100 bg-neutral-50">
         <img
           src={image}
           alt={title}
-          className="w-full h-50 object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover grayscale-20 contrast-105 transition-transform duration-700 ease-out group-hover:scale-102 group-hover:grayscale-0"
         />
+        {publishedAt && (
+          <p className="manrope absolute bottom-3 left-3 bg-neutral-900/90 backdrop-blur-xs text-white text-[10px] font-semibold tracking-wider uppercase px-2 py-1">
+            {publishedAt.split("T")[0]}
+          </p>
+        )}
       </div>
 
-      <div className="p-5 flex flex-col flex-1">
-        <Link to={sourceUrl || "#"} className="text-[10px] w-max font-black uppercase tracking-wide text-red-600 mb-2 hover:underline">
+      <div className="p-6 flex flex-col flex-1">
+        <Link 
+          to={sourceUrl || "#"} 
+          className="manrope text-[11px] w-max font-bold uppercase tracking-wide text-red-700 mb-2.5 transition-colors hover:text-red-900"
+        >
           {source || "Source Unavailable"}
         </Link>
 
-        <h3 className="text-xl font-bold mb-3 line-clamp-2 leading-tight uppercase">
+        <h3 className="lora text-xl font-medium text-neutral-900 mb-3 line-clamp-2 leading-snug tracking-tight group-hover:text-neutral-800">
           {title}
         </h3>
 
-        <p className="text-gray-800 text-sm mb-10 line-clamp-3">
+        <p className="lora text-neutral-600 text-[14px] leading-relaxed mb-6 line-clamp-3 font-normal">
           {description}
         </p>
 
-        <div className="mt-auto flex items-center">
+        <div className="mt-auto pt-4 border-t border-neutral-100 flex items-center justify-between">
           <a
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center text-xs font-black uppercase tracking-wide hover:underline ml-1"
+            className="manrope inline-flex items-center text-[11px] font-bold uppercase tracking-wider text-neutral-800 group/link transition-colors hover:text-neutral-500"
           >
-            <Link2 className="w-4 h-4 mr-2" />
-            Know more
+            <Link2 className="w-3.5 h-3.5 mr-1.5 text-neutral-400 transition-colors group-hover/link:text-neutral-600" />
+            Read full article
           </a>
         </div>
       </div>

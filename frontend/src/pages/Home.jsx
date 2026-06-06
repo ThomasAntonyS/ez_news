@@ -27,7 +27,7 @@ const Home = () => {
         const cacheTime = 8 * 60 * 60 * 1000
         if (now - parsed.timestamp < cacheTime) {
           if (parsed.data?.articles?.length > 0) {
-            setter(parsed.data.articles.slice(0, 3));
+            setter(parsed.data.articles);
             return parsed.data.articles[0];
           }
         }
@@ -41,7 +41,7 @@ const Home = () => {
           cacheKey,
           JSON.stringify({ timestamp: now, data })
         );
-        const displayArticles = data.articles.slice(0, 3);
+        const displayArticles = data.articles;
         setter(displayArticles);
         return data.articles[0];
       }

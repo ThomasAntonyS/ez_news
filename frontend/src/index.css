@@ -1,7 +1,11 @@
 @import "tailwindcss";
 
-body {
+.manrope {
   font-family: 'Manrope', sans-serif;
+}
+
+.lora{
+  font-family: "Lora", serif;
 }
 
 /* Brutalist Custom Scrollbar */

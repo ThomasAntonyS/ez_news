@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Menu, Search, X, User, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Logo from '../assets/icon.png'
 
 const Header = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -51,108 +52,121 @@ const Header = () => {
     };
 
     return (
-        <header className={`fixed top-0 left-0 w-full bg-white z-100 border-b-3 border-black transition-all duration-300 ${hasShadow ? "py-2 shadow-[0px_3px_0px_0px_rgba(0,0,0,1)]" : "py-4"}`}>
-            <div className="flex justify-between items-center w-[95%] sm:w-[90%] mx-auto px-2">
+        <header className={`fixed top-0 left-0 w-full bg-white/95 backdrop-blur-md z-100 border-b border-neutral-200 transition-all duration-300 ${hasShadow ? "py-2.5 shadow-xs" : "py-4"}`}>
+            <div className="flex justify-between items-center w-[90%] xl:max-w-310 mx-auto gap-4">
+
+                {/* Branded Logo Link Frame */}
+                <Link to="/" onClick={scrollToTop} className="shrink-0 flex items-center">
+                    <img 
+                        src={Logo} 
+                        alt="EZ NEWS Logo" 
+                        className="w-10 h-10 object-contain transition-all duration-300" 
+                    />
+                </Link>
                 
-                {/* Search Form - Unified Box Design */}
-                <form className="flex items-stretch border-2 border-black overflow-hidden group" onSubmit={handleSearch}>
+                {/* Search Form Container */}
+                <form className="flex items-center border-b border-neutral-700 focus-within:border-neutral-800 transition-colors group py-1" onSubmit={handleSearch}>
                     <input
                         type="text"
-                        placeholder="SEARCH..."
+                        placeholder="Search articles..."
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
-                        className="font-black uppercase tracking-tighter px-3 py-1 focus:bg-gray-50 outline-none w-37.5 sm:w-50 placeholder:text-black transition-colors text-sm"
+                        className="manrope font-medium tracking-tight px-1 outline-none w-28 sm:w-44 placeholder:text-neutral-700 bg-transparent text-[16px] text-neutral-800"
                     />
-                    <button type="submit" className="bg-black text-white px-3 flex items-center justify-center hover:bg-red-600 transition-colors border-l-2 border-black">
-                        <Search size={16} strokeWidth={4} />
+                    <button type="submit" className="text-neutral-700 hover:text-neutral-900 transition-colors px-1 cursor-pointer">
+                        <Search size={15} strokeWidth={2.5} />
                     </button>
                 </form>
 
-                {/* Desktop Navigation */}
-                <nav className="hidden 2xl:flex items-center gap-1">
+                {/* Desktop Navigation Link Track */}
+                <nav className="hidden lg:flex items-center gap-1">
                     {mainLinks.map((link) => (
                         <Link
                             key={link.path}
                             to={link.path === "" ? "/" : `/${link.path}/1`}
                             onClick={scrollToTop}
-                            className="text-black px-4 py-1 font-black uppercase tracking-wide text-[13px] border-2 border-transparent hover:border-black hover:bg-black hover:text-white transition-all"
+                            className="manrope text-neutral-700 px-4 py-1.5 font-bold uppercase tracking-wider text-sm hover:text-neutral-900 transition-colors"
                         >
                             {link.name}
                         </Link>
                     ))}
 
+                    {/* Secondary Overflow Dropdown Element */}
                     <div className="relative" onMouseEnter={() => setMoreDropdownOpen(true)} onMouseLeave={() => setMoreDropdownOpen(false)}>
-                        <button className={`text-black px-4 py-1 font-black uppercase tracking-wide text-[13px] border-2 flex items-center gap-2 transition-all ${moreDropdownOpen ? "bg-black text-white border-black" : "border-transparent hover:border-black"}`}>
-                            MORE <ChevronDown size={14} strokeWidth={3} className={`transition-transform duration-300 ${moreDropdownOpen ? "rotate-180" : ""}`} />
+                        <button className="manrope text-neutral-700 px-4 py-1.5 font-bold uppercase tracking-widest text-sm flex items-center gap-1 transition-colors hover:text-neutral-900 cursor-pointer">
+                            More <ChevronDown size={12} strokeWidth={2.5} className={`transition-transform duration-300 ${moreDropdownOpen ? "rotate-180" : ""}`} />
                         </button>
                         
                         {moreDropdownOpen && (
-                            <ul className="absolute top-full left-0 bg-white border-4 border-black py-2 min-w-50 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] z-110">
+                          <div className="absolute top-full left-0 pt-2 z-110">
+                            <ul className="bg-white border border-neutral-200 py-1.5 w-44 shadow-md rounded-xs">
                                 {moreLinks.map((link) => (
                                     <li key={link.path}>
                                         <Link
                                             to={`/${link.path}/1`}
                                             onClick={() => { scrollToTop(); setMoreDropdownOpen(false); }}
-                                            className="block px-6 py-2 text-xs font-black uppercase tracking-wide hover:bg-gray-50 transition-colors"
+                                            className="manrope block px-4 py-2 text-sm font-bold uppercase tracking-wider text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
                                         >
                                             {link.name}
                                         </Link>
                                     </li>
                                 ))}
                             </ul>
+                          </div>
                         )}
                     </div>
                 </nav>
 
-                {/* Profile & Mobile Menu */}
+                {/* User Status Interface Elements */}
                 <div className="flex items-center gap-4">
                     {!isLoggedIn ? (
-                        <div className="hidden sm:flex font-black uppercase tracking-wide text-xs gap-x-4 items-center">
-                            <Link to={"/login"} className="hover:text-red-600 transition-colors border-b-2 border-transparent hover:border-red-600">Login</Link>
-                            <Link to={"/signup"} className="bg-black text-white px-5 py-2 border-2 border-black hover:bg-white hover:text-black hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">SignUp</Link>
+                        <div className="hidden sm:flex font-bold uppercase tracking-widest text-sm gap-x-6 items-center manrope">
+                            <Link to={"/login"} className="text-neutral-700 hover:text-neutral-900 transition-colors">Login</Link>
+                            <Link to={"/signup"} className="bg-neutral-900 text-white px-5 py-2 border border-neutral-900 rounded-xs hover:bg-transparent hover:text-neutral-900 transition-colors duration-300">Sign Up</Link>
                         </div>
                     ) : (
-                        <Link to="/profile" className="w-10 h-10 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all bg-white flex items-center justify-center overflow-hidden">
+                        <Link to="/profile" className="w-8 h-8 border border-neutral-200 rounded-full hover:border-neutral-400 transition-colors bg-neutral-50 flex items-center justify-center overflow-hidden shadow-2xs">
                             {userProfilePic ? (
                                 <img src={userProfilePic} alt="Profile" className="w-full h-full object-cover" />
                             ) : (
-                                <User size={20} strokeWidth={3} className="text-black" />
+                                <User size={16} strokeWidth={2.5} className="text-neutral-600" />
                             )}
                         </Link>
                     )}
 
+                    {/* Mobile Dynamic Menu Slider Toggle */}
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="2xl:hidden p-2 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all hover:cursor-pointer"
+                        className="lg:hidden p-1.5 text-neutral-600 hover:text-neutral-900 transition-colors cursor-pointer"
                     >
-                        {mobileMenuOpen ? <X size={20} strokeWidth={4} /> : <Menu size={20} strokeWidth={4} />}
+                        {mobileMenuOpen ? <X size={18} strokeWidth={2.5} /> : <Menu size={18} strokeWidth={2.5} />}
                     </button>
                 </div>
             </div>
 
-            {/* Mobile Menu Overlay */}
+            {/* Mobile Viewport Slide Overlay Layer */}
             {mobileMenuOpen && (
-                <div className="absolute top-full left-0 w-full bg-white border-b-8 border-black 2xl:hidden z-100 shadow-[0px_10px_30px_rgba(0,0,0,0.2)]">
-                    <nav className="flex flex-col p-6 space-y-1">
+                <div className="absolute top-full left-0 w-full bg-white border-b border-neutral-200 lg:hidden z-100 shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
+                    <nav className="flex flex-col p-6 space-y-0.5">
                         {[...mainLinks, ...moreLinks].map((link) => (
                             <Link
                                 key={link.name}
                                 to={link.path === "" ? "/" : `/${link.path}/1`}
                                 onClick={() => { scrollToTop(); setMobileMenuOpen(false); }}
-                                className="text-xl font-black uppercase tracking-tighter p-3 border-2 border-transparent hover:border-black hover:bg-gray-50 transition-all"
+                                className="manrope text-xs font-bold uppercase tracking-wider py-3 text-neutral-600 hover:text-neutral-900 transition-colors border-b border-neutral-50 last:border-0"
                             >
                                 {link.name}
                             </Link>
                         ))}
                         
-                        <div className="pt-6 mt-4 border-t-4 border-black flex flex-col gap-4">
+                        <div className="pt-6 mt-2 flex flex-col gap-4">
                             {!isLoggedIn ? (
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="text-center py-3 font-black border-2 border-black uppercase tracking-wide text-sm hover:bg-black hover:text-white transition-all">Login</Link>
-                                    <Link to="/signup" onClick={() => setMobileMenuOpen(false)} className="text-center py-3 font-black bg-black text-white border-2 border-black uppercase tracking-wide text-sm hover:bg-white hover:text-black transition-all">SignUp</Link>
+                                <div className="grid grid-cols-2 gap-4 manrope">
+                                    <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="text-center py-2.5 text-[11px] font-bold uppercase tracking-widest border border-neutral-200 text-neutral-600 rounded-xs transition-colors hover:text-neutral-900">Login</Link>
+                                    <Link to="/signup" onClick={() => setMobileMenuOpen(false)} className="text-center py-2.5 text-[11px] font-bold uppercase tracking-widest bg-neutral-900 text-white border border-neutral-900 rounded-xs">Sign Up</Link>
                                 </div>
                             ) : (
-                                <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="w-full text-center py-4 font-black border-2 border-black uppercase tracking-wide bg-gray-50">My Profile</Link>
+                                <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="w-full text-center py-3 text-[11px] font-bold uppercase tracking-widest border border-neutral-200 text-neutral-700 rounded-xs manrope bg-neutral-50 hover:bg-neutral-100 transition-colors">My Profile</Link>
                             )}
                         </div>
                     </nav>

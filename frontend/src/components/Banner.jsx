@@ -1,92 +1,119 @@
+import { useEffect, useState } from "react";
 
-const Banner = ({ newsItems, loading }) => {
-  const bannerItems = newsItems.slice(0, 3);
+const Banner = ({ newsItems = [], loading }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const totalItems = Math.min(newsItems.length, 4);
 
-  const containerClasses = "grid grid-cols-1 sm:grid-cols-2 sm:grid-rows-2 gap-6 sm:w-[85%] 2xl:w-[70%] mx-auto px-4 mb-20 h-auto sm:max-h-[50vh]";
+  useEffect(() => {
+    if (loading || totalItems <= 1) return;
+
+    const interval = setInterval(() => {
+      setActiveIndex((prevIndex) => (prevIndex + 1) % totalItems);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [loading, totalItems]);
+
+  const wrapperClasses = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 w-[90%] xl:max-w-[1240px] mx-auto mb-24";
 
   if (loading) {
     return (
-      <div className="bg-white">
-        <p className="w-max mx-auto mt-[10vh] text-[4rem] sm:text-[10rem] 2xl:text-[13rem] font-black uppercase tracking-tighter text-black">
-          EZ NEWS
-        </p>
-        <div className={containerClasses}>
-          <div className="h-[44vh] sm:row-span-2 bg-gray-200 border-3 border-black animate-pulse"></div>
-          <div className="h-[20vh] bg-gray-200 border-4 border-black animate-pulse"></div>
-          <div className="h-[20vh] bg-gray-200 border-4 border-black animate-pulse"></div>
+      <div className="bg-white pt-8 mt-[20vh]">
+        <div className={wrapperClasses}>
+          <div className="md:col-span-2 lg:col-span-12 aspect-video lg:aspect-21/9 bg-neutral-100 border border-neutral-200 animate-pulse" />
+          <div className="lg:col-span-6 aspect-video bg-neutral-100 border border-neutral-200 animate-pulse" />
+          <div className="lg:col-span-6 aspect-video bg-neutral-100 border border-neutral-200 animate-pulse" />
         </div>
       </div>
     );
   }
 
+  const leadArticle = newsItems[activeIndex];
+  const secondaryArticles = [
+    newsItems[(activeIndex + 1) % totalItems],
+    newsItems[(activeIndex + 2) % totalItems],
+  ];
+
   return (
-    <div className="bg-white">
-      <p className="w-max mx-auto mt-[10vh] text-[4rem] sm:text-[10rem] 2xl:text-[13rem] font-black uppercase tracking-tighter text-black">
-        EZ NEWS
-      </p>
-
-      <div className={containerClasses}>
-        {bannerItems[0] && (
+    <div className="bg-white pt-8 mt-[15vh]">
+      <div className={wrapperClasses}>
+        {leadArticle && (
           <a
-            href={bannerItems[0].url}
+            href={leadArticle.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative h-[40vh] sm:h-full sm:row-span-2 group overflow-hidden border-3 border-black bg-black transition-all hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
+            key={`hero-${leadArticle.id || activeIndex}`}
+            className="md:col-span-2 lg:col-span-12 relative overflow-hidden bg-neutral-950 border border-neutral-200 group/hero aspect-video lg:aspect-21/9 block animate-fadeIn"
           >
             <img
-              src={bannerItems[0].image}
-              alt={bannerItems[0].title}
-              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
+              src={leadArticle.image}
+              alt={leadArticle.title}
+              className="w-full h-full object-cover grayscale-10 contrast-102 opacity-80 group-hover/hero:opacity-100 group-hover/hero:grayscale-0 transition-all duration-1000 ease-out group-hover/hero:scale-101"
             />
-            <div className="absolute inset-0 flex flex-col justify-end p-6 bg-linear-to-t from-black via-transparent to-transparent">
-              <span className="bg-white text-black text-xs font-black px-2 py-1 w-max mb-3 uppercase tracking-wide">
-                Breaking
+            <div className="absolute inset-0 bg-linear-to-t from-neutral-950/95 via-neutral-950/30 to-transparent flex flex-col justify-end p-6 sm:p-10">
+              <div className="max-w-3xl">
+                <div className="hidden sm:flex items-center gap-3 mb-4">
+                  <span className="manrope bg-red-700 text-white text-[10px] font-bold px-2 py-0.5 uppercase tracking-widest">
+                    Trending Article
+                  </span>
+                  
+                  <div className="flex gap-1.5 ml-2">
+                    {Array.from({ length: totalItems }).map((_, idx) => (
+                      <div 
+                        key={idx} 
+                        className={`h-1 transition-all duration-500 rounded-full ${idx === activeIndex ? 'w-4 bg-white' : 'w-1 bg-white/40'}`} 
+                      />
+                    ))}
+                  </div>
+                </div>
+                <h3 className="lora text-xl sm:text-3xl lg:text-4xl line-clamp-2 text-white font-medium leading-tight tracking-tight">
+                  {leadArticle.title}
+                </h3>
+              </div>
+            </div>
+          </a>
+        )}
+
+        {secondaryArticles[0] && (
+          <button
+            onClick={() => setActiveIndex((activeIndex + 1) % totalItems)}
+            className="lg:col-span-6 relative overflow-hidden bg-neutral-950 border border-neutral-200 group/sub aspect-video w-full text-left cursor-pointer block"
+          >
+            <img
+              src={secondaryArticles[0].image}
+              alt={secondaryArticles[0].title}
+              className="w-full h-full object-cover grayscale-15 opacity-75 group-hover/sub:opacity-100 group-hover/sub:grayscale-0 transition-all duration-700 ease-out group-hover/sub:scale-101"
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-neutral-950 via-neutral-950/20 to-transparent flex flex-col justify-end p-5 sm:p-6">
+              <span className="manrope text-[10px] font-bold uppercase tracking-widest text-neutral-300 mb-2 block italic">
+                Up Next • Trending Wire
               </span>
-              <h3 className="text-xl sm:text-3xl text-white font-black uppercase leading-tight tracking-tight line-clamp-2 sm:line-clamp-3">
-                {bannerItems[0].title}
-              </h3>
+              <h4 className="lora text-base sm:text-lg lg:text-xl text-white font-medium leading-snug tracking-tight line-clamp-2">
+                {secondaryArticles[0].title}
+              </h4>
             </div>
-          </a>
+          </button>
         )}
 
-        {bannerItems[1] && (
-          <a
-            href={bannerItems[1].url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="relative h-[20vh] sm:h-full group overflow-hidden border-3 border-black bg-black transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
+        {secondaryArticles[1] && (
+          <button
+            onClick={() => setActiveIndex((activeIndex + 2) % totalItems)}
+            className="lg:col-span-6 relative overflow-hidden bg-neutral-950 border border-neutral-200 group/sub aspect-video w-full text-left cursor-pointer block"
           >
             <img
-              src={bannerItems[1].image}
-              alt={bannerItems[1].title}
-              className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
+              src={secondaryArticles[1].image}
+              alt={secondaryArticles[1].title}
+              className="w-full h-full object-cover grayscale-15 opacity-75 group-hover/sub:opacity-100 group-hover/sub:grayscale-0 transition-all duration-700 ease-out group-hover/sub:scale-101"
             />
-            <div className="absolute inset-0 flex items-end p-4 bg-linear-to-t from-black/80 to-transparent">
-              <h3 className="text-sm sm:text-lg text-white font-black uppercase leading-tight line-clamp-2">
-                {bannerItems[1].title}
-              </h3>
+            <div className="absolute inset-0 bg-linear-to-t from-neutral-950 via-neutral-950/20 to-transparent flex flex-col justify-end p-5 sm:p-6">
+              <span className="manrope text-[10px] font-bold uppercase tracking-widest text-neutral-300 mb-2 block">
+                Up Next • Editorial Choice
+              </span>
+              <h4 className="lora text-base sm:text-lg lg:text-xl text-white font-medium leading-snug tracking-tight line-clamp-2">
+                {secondaryArticles[1].title}
+              </h4>
             </div>
-          </a>
-        )}
-
-        {bannerItems[2] && (
-          <a
-            href={bannerItems[2].url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="relative h-[20vh] sm:h-full group overflow-hidden border-3 border-black bg-black transition-all hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1"
-          >
-            <img
-              src={bannerItems[2].image}
-              alt={bannerItems[2].title}
-              className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 flex items-end p-4 bg-linear-to-t from-black/80 to-transparent">
-              <h3 className="text-sm sm:text-lg text-white font-black uppercase leading-tight line-clamp-2">
-                {bannerItems[2].title}
-              </h3>
-            </div>
-          </a>
+          </button>
         )}
       </div>
     </div>
