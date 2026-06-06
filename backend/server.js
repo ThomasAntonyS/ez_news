@@ -367,7 +367,7 @@ const getAndCacheData = async (res, cacheKey, apiUrl) => {
         category_data = VALUES(category_data),
         entry_time = VALUES(entry_time)
   `;
-  const REFRESH_INTERVAL = 8 * 60 * 60 * 1000; 
+  const REFRESH_INTERVAL = 8 * 60 * 60 * 1000;
 
   let connection;
   try {
@@ -378,15 +378,46 @@ const getAndCacheData = async (res, cacheKey, apiUrl) => {
     if (rows.length > 0) {
       const { category_data, entry_time } = rows[0];
       const storedEntryTime = new Date(entry_time);
-      const hoursDiff = (now.getTime() - storedEntryTime.getTime());
+      const hoursDiff = now.getTime() - storedEntryTime.getTime();
 
       if (hoursDiff < REFRESH_INTERVAL) {
         return res.json(category_data);
       }
     }
 
-    const apiResponse = await axios.get(apiUrl);
-    const freshData = apiResponse.data;
+    let freshData = null;
+    let attempts = 0;
+    const maxAttempts = 2;
+
+    while (attempts < maxAttempts) {
+      attempts++;
+      try {
+        const apiResponse = await axios.get(apiUrl);
+        const data = apiResponse.data;
+
+        if (data && !data.error && data.articles) {
+          freshData = data;
+          break;
+        }
+        
+        if (attempts < maxAttempts) {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      } catch (apiError) {
+        if (attempts < maxAttempts) {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
+    }
+
+    if (!freshData) {
+      if (rows.length > 0) {
+        const { category_data } = rows[0];
+        return res.json(category_data);
+      }
+      return res.status(502).json({ error: "Internal Server Error" });
+    }
+
     const currentTimeForDB = new Date().toISOString();
     await connection.query(insertOrUpdateQuery, [cacheKey, JSON.stringify(freshData), currentTimeForDB]);
     res.json(freshData);
