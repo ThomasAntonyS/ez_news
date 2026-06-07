@@ -291,13 +291,13 @@ app.get('/saved-news-ids', authenticateToken, async (req, res) => {
 
   try {
     const now = new Date();
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  
     const formatSql = (date) => date.toISOString().slice(0, 10);
     
-    const startTime = formatSql(yesterday);
+    const startTime = formatSql(thirtyDaysAgo);
     const endTime = formatSql(now);
-
+  
     const [rows] = await pool.query(
       `SELECT news_id 
        FROM user_news
@@ -305,13 +305,12 @@ app.get('/saved-news-ids', authenticateToken, async (req, res) => {
        AND date BETWEEN ? AND ?`,
       [userId, startTime, endTime]
     );
-
+  
     const savedIds = rows.map(row => row.news_id);
-
+  
     res.status(200).json(savedIds);
   } catch (error) {
-    console.error("Error fetching saved IDs:", error);
-    res.status(500).json({ message: "SERVER_ERROR" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

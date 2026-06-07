@@ -120,7 +120,7 @@ const Search = () => {
                         Search Results
                     </h1>
                     <p className="manrope text-sm font-bold text-neutral-700 uppercase tracking-wide mt-3">
-                        Query : <span className="text-red-700 normal-case italic">"{q}"</span> {!loading && data.length > 0 && `• Page ${page} of ${totalPages}`}
+                        Query : <span className="text-red-700 normal-case italic">"{q}"</span>
                     </p>
                 </div>
             </div>
@@ -223,10 +223,6 @@ const Search = () => {
                     >
                         <ChevronLeft size={20} />
                     </button>
-
-                    <span className="manrope text-sm font-bold tracking-wide text-neutral-700 uppercase">
-                        Page {page} / {totalPages}
-                    </span>
 
                     <button
                         onClick={() => handleNavigation(parseInt(page) + 1)}
