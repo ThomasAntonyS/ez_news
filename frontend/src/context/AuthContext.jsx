@@ -9,7 +9,8 @@ export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState({
     email:"",
     id:"",
-    name:""
+    name:"",
+    profile_pic:null
   });
   const [loading, setLoading] = useState(true);
 
@@ -26,6 +27,27 @@ export const AuthProvider = ({ children }) => {
         })
       }
     } catch (error) {
+      setIsLoggedIn(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getProfileImage = async () => {
+    try {
+      const apiBase = import.meta.env.VITE_API_BASE;
+      const response = await axios.get(`${apiBase}/api/get-profile-pic`, { withCredentials: true });
+
+      if (response.status === 200 && response.data.success) {
+        setIsLoggedIn(true);
+        
+        setUserData(prev => ({
+          ...prev,
+          profile_pic: response.data.url
+        }));
+      }
+    } catch (error) {
+      console.error("Failed to fetch profile image track details:", error);
       setIsLoggedIn(false);
     } finally {
       setLoading(false);
@@ -50,6 +72,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(()=>{
     fetchSavedIds()
+    getProfileImage()
   },[])
 
   return (

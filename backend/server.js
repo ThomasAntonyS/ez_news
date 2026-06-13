@@ -7,7 +7,10 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const cookieParser = require("cookie-parser");
 const SibApiV3Sdk = require("sib-api-v3-sdk");
-const crypto = require('crypto')
+const crypto = require('crypto');
+const multer = require('multer');
+const CloudinaryStorage  = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary');
 require('dotenv').config();
 
 const app = express();
@@ -31,6 +34,12 @@ app.use(cors({
   credentials: true
 }));
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
 const pool = mysql.createPool({
   connectionLimit: 10,
   host: process.env.DB_host,
@@ -45,8 +54,8 @@ const pool = mysql.createPool({
   keepAliveInitialDelay: 0,
 });
 
-const generateToken = (email,id,name) => {
-  return jwt.sign({ email: email, id:id, name:name}, process.env.JWT_SECRET, { expiresIn: '24h' });
+const generateToken = (email, id, name) => {
+  return jwt.sign({ email: email, id: id, name: name }, process.env.JWT_SECRET, { expiresIn: '24h' });
 };
 
 const authenticateToken = (req, res, next) => {
@@ -85,6 +94,15 @@ const sendEmail = async (toEmail, subject, message) => {
   }
 };
 
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'ez-news'
+  }
+});
+
+const upload = multer({ storage: storage });
+
 app.get("/check-auth", authenticateToken, (req, res) => {
   res.status(200).json({ 
     authenticated: true, 
@@ -107,7 +125,7 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ message: "INVALID CREDENTIALS." });
     }
 
-    const token = generateToken(data[0].email,data[0].id,data[0].name);
+    const token = generateToken(data[0].email, data[0].id, data[0].name);
     
     res.cookie('token', token, {
       httpOnly: true,
@@ -153,7 +171,7 @@ app.post("/signup", async (req, res) => {
     );
 
     await connection.commit();
-    return res.status(200).json({message:`Verification mail send to ${email}. Click the url to verify account`})
+    return res.status(200).json({ message: `Verification mail send to ${email}. Click the url to verify account` })
   } catch (error) {
     if (connection) await connection.rollback();
     res.status(500).json({ message: "SYSTEM ERROR." });
@@ -165,19 +183,19 @@ app.post("/signup", async (req, res) => {
 app.get("/verify", async (req, res) => {
   const { usp, p } = req.query;
   try {
-      const email = Buffer.from(usp, 'hex').toString();
-      const [result] = await pool.query(
-        "UPDATE users SET isVerified = 1 WHERE email = ? AND password = ?",
-        [email, p]
-      );
+    const email = Buffer.from(usp, 'hex').toString();
+    const [result] = await pool.query(
+      "UPDATE users SET isVerified = 1 WHERE email = ? AND password = ?",
+      [email, p]
+    );
 
-      if (result.affectedRows === 0) {
-        return res.status(400).json({ message: "INVALID OR EXPIRED LINK." });
-      }
+    if (result.affectedRows === 0) {
+      return res.status(400).json({ message: "INVALID OR EXPIRED LINK." });
+    }
 
-      return res.status(200).json({ message: "VERIFICATION SUCCESSFUL." });
+    return res.status(200).json({ message: "VERIFICATION SUCCESSFUL." });
   } catch (error) {
-      return res.status(500).json({ message: "SERVER ERROR." });
+    return res.status(500).json({ message: "SERVER ERROR." });
   }
 });
 
@@ -237,7 +255,6 @@ app.post("/unsave-news", authenticateToken, async (req, res) => {
   const userId = req.user.id;
 
   try {
-    
     await pool.query(
       "DELETE FROM user_news WHERE user_id = ? AND news_id = ?",
       [userId, articleId]
@@ -428,6 +445,44 @@ const getAndCacheData = async (res, cacheKey, apiUrl) => {
   }
 };
 
+app.get('/api/get-profile-pic', authenticateToken, async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+    const [rows] = await pool.query(
+      'SELECT profile_pic FROM users WHERE email = ?',
+      [userEmail]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'User profile record missing.'
+      });
+    }
+
+    const imageUrl = rows[0].profile_pic;
+
+    if (!imageUrl) {
+      return res.status(404).json({
+        success: false,
+        message: 'No profile image track found for this reader.'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      url: imageUrl
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: 'SERVER ERROR'
+    });
+  }
+});
+
 app.get("/category/:category/:page", async (req, res) => {
   const { category, page } = req.params;
   const API_KEY = process.env.API_KEY;
@@ -508,7 +563,6 @@ app.post("/reset-password", async (req, res) => {
     if (records.length === 0) return res.status(400).json({ message: "SESSION EXPIRED" });
 
     const salt = parseInt(process.env.BCRYPT_SALT) || 10;
-
     const hashedPassword = await bcrypt.hash(password, salt);
 
     await pool.query("UPDATE users SET password = ? WHERE email = ?", [hashedPassword, email]);
@@ -517,6 +571,125 @@ app.post("/reset-password", async (req, res) => {
     res.status(200).json({ message: "PASSWORD RESET SUCCESSFUL" });
   } catch (error) {
     res.status(500).json({ message: "SERVER ERROR" });
+  }
+});
+
+app.post('/api/upload-avatar', authenticateToken, (req, res, next) => {
+    upload.single('image')(req, res, (err) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          source: 'multer',
+          message: err.message,
+          error: err
+        });
+      }
+
+      next();
+    });
+  },
+  async (req, res) => {
+    try {
+      const userEmail = req.user.email;
+
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          message: 'No file received.'
+        });
+      }
+
+      const imageUrl = req.file.path || req.file.url || req.file.secure_url;
+
+      if (!imageUrl) {
+        return res.status(400).json({
+          success: false,
+          message: 'No Cloudinary URL found.',
+          file: req.file
+        });
+      }
+
+      const [rows] = await pool.query(
+        'SELECT profile_pic FROM users WHERE email = ?',
+        [userEmail]
+      );
+
+      if (rows.length > 0 && rows[0].profile_pic) {
+        const oldImageUrl = rows[0].profile_pic;
+        const matches = oldImageUrl.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z]+$/);
+
+        if (matches && matches[1]) {
+          try {
+            await cloudinary.uploader.destroy(matches[1]);
+          } catch (cloudinaryError) {
+            console.error(cloudinaryError);
+          }
+        }
+      }
+
+      const [result] = await pool.query(
+        'UPDATE users SET profile_pic = ? WHERE email = ?',
+        [imageUrl, userEmail]
+      );
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found.'
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Avatar uploaded successfully.',
+        imageUrl,
+        secureUrl: imageUrl,
+        url: imageUrl
+      });
+    } catch (error) {
+      console.error(error);
+
+      return res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+);
+
+app.post('/api/remove-avatar', authenticateToken, async (req, res) => {
+  try {
+    const userEmail = req.user.email;
+    const [rows] = await pool.query(
+      'SELECT profile_pic FROM users WHERE email = ?',
+      [userEmail]
+    );
+
+    if (rows.length > 0 && rows[0].profile_pic) {
+      const imageUrl = rows[0].profile_pic;
+      const matches = imageUrl.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z]+$/);
+
+      if (matches && matches[1]) {
+        await cloudinary.uploader.destroy(matches[1]);
+      }
+    }
+
+    await pool.query(
+      'UPDATE users SET profile_pic = NULL WHERE email = ?',
+      [userEmail]
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Avatar cleared successfully.'
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to remove avatar.'
+    });
   }
 });
 

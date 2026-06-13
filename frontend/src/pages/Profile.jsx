@@ -1,14 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
-import { User, Bookmark, LogOut, Trash2, Camera, ChevronLeft, ExternalLink, Loader2, ChevronRight, Search as SearchIcon } from 'lucide-react';
+import { User, Bookmark, LogOut, Trash2, Camera, ChevronLeft, ExternalLink, ChevronRight, Search as SearchIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
 import axios from 'axios';
 import Toast from '../components/Toast';
 import ConfirmationDialog from '../components/ConfirmationDialog';
+import ProfileImageModal from '../components/ProfileImageUpload';
 import logo from '../assets/icon.png';
 
 const Profile = () => {
   document.title = "EZ NEWS | PROFILE"
+  const { setIsLoggedIn, userData, setSavedIds, fetchSavedIds } = useAuth();
+  
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const [savedArticles, setSavedArticles] = useState([]);
   const [loadingSaved, setLoadingSaved] = useState(false);
@@ -16,13 +19,21 @@ const Profile = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [profilePic, setProfilePic] = useState(userData?.profile_pic || null);
   const [dialog, setDialog] = useState({ isOpen: false, type: '', onConfirm: null });
   const libraryTopRef = useRef(null);
 
-  const { setIsLoggedIn, userData, setSavedIds, fetchSavedIds } = useAuth();
   const navigate = useNavigate();
   const apiBase = import.meta.env.VITE_API_BASE;
   const itemsPerPage = 10;
+
+  // Track state changes dynamically if parent authentication context changes out of bounds
+  useEffect(() => {
+    if (userData?.profile_pic) {
+      setProfilePic(userData.profile_pic);
+    }
+  }, [userData]);
 
   const fetchSavedArticles = async (page = 1, search = searchQuery) => {
     setLoadingSaved(true);
@@ -126,6 +137,14 @@ const Profile = () => {
     fetchSavedArticles(1, "")
   }
 
+  const handleAvatarUploadSuccess = (secureUrl) => {
+    setProfilePic(secureUrl);
+    if (userData) {
+      userData.profile_pic = secureUrl;
+    }
+    setToast({ show: true, message: secureUrl ? "Avatar updated successfully." : "Avatar removed successfully.", type: 'success' });
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50 flex flex-col text-neutral-900">
       
@@ -146,10 +165,22 @@ const Profile = () => {
             {/* Core Card Identity Block */}
             <div className="border border-neutral-200 bg-white p-6 rounded-xs text-center flex flex-col items-center">
               <div className="relative mb-4">
-                <div className="w-20 h-20 rounded-full border border-neutral-200 flex items-center justify-center bg-neutral-50 overflow-hidden">
-                  <User size={36} className="text-neutral-400" />
+                <div className="w-20 h-20 rounded-full border border-neutral-200 flex items-center justify-center bg-neutral-50 overflow-hidden relative">
+                  {profilePic ? (
+                    <img 
+                      src={profilePic} 
+                      alt="Profile Avatar" 
+                      className="w-full h-full object-cover animate-in fade-in duration-200" 
+                    />
+                  ) : (
+                    <User size={36} className="text-neutral-400 animate-in fade-in duration-200" />
+                  )}
                 </div>
-                <button className="absolute -bottom-0.5 -right-0.5 bg-neutral-900 text-white p-1.5 rounded-full border border-neutral-900 hover:bg-neutral-800 transition-colors cursor-pointer">
+                <button 
+                  onClick={() => setIsImageModalOpen(true)} 
+                  className="absolute -bottom-0.5 -right-0.5 bg-neutral-900 text-white p-1.5 rounded-full border border-neutral-900 hover:bg-neutral-800 transition-colors cursor-pointer"
+                  title="Change avatar photo"
+                >
                   <Camera size={12} />
                 </button>
               </div>
@@ -163,12 +194,12 @@ const Profile = () => {
               <h3 className="manrope text-[11px] font-bold uppercase tracking-wide text-neutral-400 border-b border-neutral-100 pb-2">Account Details</h3>
               
               <div className="space-y-1">
-                <span className="block manrope text-[10px] font-bold uppercase tracking-widest text-neutral-400">Full Name</span>
+                <span className="block manrope text-[10px] font-bold uppercase tracking-wide italic text-neutral-400">Full Name</span>
                 <p className="manrope text-xs font-semibold text-neutral-700 truncate">{userData?.name || "Not Specified"}</p>
               </div>
 
               <div className="space-y-1">
-                <span className="block manrope text-[10px] font-bold uppercase tracking-widest text-neutral-400">Email</span>
+                <span className="block manrope text-[10px] font-bold uppercase tracking-wide italic text-neutral-400">Email</span>
                 <p className="manrope text-xs font-semibold text-neutral-700 truncate">{userData?.email || "Not Connected"}</p>
               </div>
 
@@ -207,16 +238,16 @@ const Profile = () => {
                       placeholder="Filter library collection..." 
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full text-sm font-medium tracking-tight placeholder:text-neutral-600 focus:outline-none bg-transparent text-neutral-800 manrope"
+                      className="w-full text-sm font-medium tracking-tight placeholder:text-neutral-600 focus:outline-none bg-transparent text-neutral-800 manrope text-[14px]"
                     />
                     <div className="shrink-0 pl-2 text-neutral-600">
-                      <SearchIcon size={15} />
+                      <SearchIcon size={14} />
                     </div>
                   </div>
                   {searchQuery.trim() !== "" && (
                     <button 
                       onClick={handleClear}
-                      className="manrope px-2 py-0.5 border border-neutral-200 text-neutral-600 rounded-xs text-[10px] font-bold uppercase tracking-wider hover:text-neutral-900 hover:border-neutral-400 transition-colors cursor-pointer shrink-0"
+                      className="manrope px-2 py-0.5 border border-neutral-200 text-neutral-600 rounded-xs text-[12px] font-bold uppercase tracking-wider hover:text-neutral-900 hover:border-neutral-400 transition-colors cursor-pointer shrink-0"
                     >
                       Clear
                     </button>
@@ -242,7 +273,7 @@ const Profile = () => {
                     >
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-3">
-                          <a href={item.news.source?.url} target="_blank" rel="noopener noreferrer" className="manrope text-[12px] font-bold uppercase tracking-widest text-red-700 hover:underline">
+                          <a href={item.news.source?.url} target="_blank" rel="noopener noreferrer" className="manrope text-[12px] font-bold uppercase tracking-wide text-red-700 hover:underline">
                             {item.news.source?.name || "News Wire"}
                           </a>
                           <span className="text-neutral-200 text-[10px]">|</span>
@@ -321,6 +352,13 @@ const Profile = () => {
       {toast.show && (
         <Toast message={toast.message} type={toast.type} onClose={() => setToast({ ...toast, show: false })} />
       )}
+
+      <ProfileImageModal 
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        currentImage={profilePic}
+        onUploadSuccess={handleAvatarUploadSuccess}
+      />
     </div>
   );
 };

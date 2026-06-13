@@ -11,8 +11,8 @@ const Header = () => {
     const [query, setQuery] = useState('');
 
     const navigate = useNavigate();
-    const { isLoggedIn } = useAuth();
-    const userProfilePic = null;
+    const { isLoggedIn, userData } = useAuth();
+    const userProfilePic = userData.profile_pic;
 
     const mainLinks = [
         { name: "Home", path: "" },
@@ -125,7 +125,7 @@ const Header = () => {
                             <Link to={"/signup"} className="bg-neutral-900 text-white px-5 py-2 border border-neutral-900 rounded-xs hover:bg-transparent hover:text-neutral-900 transition-colors duration-300">Sign Up</Link>
                         </div>
                     ) : (
-                        <Link to="/profile" className="w-8 h-8 border border-neutral-200 rounded-full hover:border-neutral-400 transition-colors bg-neutral-50 flex items-center justify-center overflow-hidden shadow-2xs">
+                        <Link to="/profile" className="w-9 h-9 border border-neutral-200 rounded-full hover:border-neutral-400 transition-colors bg-neutral-50 flex items-center justify-center overflow-hidden shadow-2xs">
                             {userProfilePic ? (
                                 <img src={userProfilePic} alt="Profile" className="w-full h-full object-cover" />
                             ) : (
