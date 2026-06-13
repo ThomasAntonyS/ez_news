@@ -39,13 +39,10 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.get(`${apiBase}/api/get-profile-pic`, { withCredentials: true });
 
       if (response.status === 200 && response.data.success) {
-        setIsLoggedIn(true);
-        
         setProfilePic(response.data.url);
       }
     } catch (error) {
       console.error("Failed to fetch profile image track details:", error);
-      setIsLoggedIn(false);
     } finally {
       setLoading(false);
     }
