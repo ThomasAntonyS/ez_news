@@ -20,11 +20,12 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.get(`${apiBase}/check-auth`, { withCredentials: true });
       if (response.status === 200) {
         setIsLoggedIn(true);
-        setUserData({
+        setUserData(prev=>({
+          ...prev,
           name:response.data.name,
           id:response.data.id,
           email:response.data.email,
-        })
+        }))
       }
     } catch (error) {
       setIsLoggedIn(false);
