@@ -93,7 +93,7 @@ const ProfileImageModal = ({ isOpen, onClose, currentImage = null, onUploadSucce
     setError('');
     
     try {
-      await axios.post(`${apiBase}/remove-avatar`, {}, { withCredentials: true });
+      await axios.post(`${apiBase}/api/remove-avatar`, {}, { withCredentials: true });
       
       setPreview(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
