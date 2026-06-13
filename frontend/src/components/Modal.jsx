@@ -52,12 +52,6 @@ const Modal = ({ onClose }) => {
               style={{ width: `${progress}%` }}
             />
           </div>
-          <div className="flex justify-between items-center manrope text-[10px] font-bold tracking-widest text-neutral-400 uppercase">
-            <span className={progress === 100 ? "text-neutral-900" : "animate-pulse"}>
-              {progress === 100 ? "Ready" : "Initializing Feed..."}
-            </span>
-            <span className="text-neutral-700 font-extrabold">{progress}%</span>
-          </div>
         </div>
       </div>
     </div>

@@ -53,7 +53,7 @@ const Banner = ({ newsItems = [], loading }) => {
             <div className="absolute inset-0 bg-linear-to-t from-neutral-950/95 via-neutral-950/30 to-transparent flex flex-col justify-end p-6 sm:p-10">
               <div className="max-w-3xl">
                 <div className="hidden sm:flex items-center gap-3 mb-4">
-                  <span className="manrope bg-red-700 text-white text-[10px] font-bold px-2 py-0.5 uppercase tracking-widest">
+                  <span className="manrope bg-red-700 text-white text-[10px] font-bold px-2 py-0.5 uppercase tracking-wide">
                     Trending Article
                   </span>
                   
@@ -85,7 +85,7 @@ const Banner = ({ newsItems = [], loading }) => {
               className="w-full h-full object-cover grayscale-15 opacity-75 group-hover/sub:opacity-100 group-hover/sub:grayscale-0 transition-all duration-700 ease-out group-hover/sub:scale-101"
             />
             <div className="absolute inset-0 bg-linear-to-t from-neutral-950 via-neutral-950/20 to-transparent flex flex-col justify-end p-5 sm:p-6">
-              <span className="manrope text-[10px] font-bold uppercase tracking-widest text-neutral-300 mb-2 block italic">
+              <span className="manrope text-[10px] font-bold uppercase tracking-wide text-neutral-300 mb-2 block italic">
                 Up Next • Trending Wire
               </span>
               <h4 className="lora text-base sm:text-lg lg:text-xl text-white font-medium leading-snug tracking-tight line-clamp-2">
@@ -106,7 +106,7 @@ const Banner = ({ newsItems = [], loading }) => {
               className="w-full h-full object-cover grayscale-15 opacity-75 group-hover/sub:opacity-100 group-hover/sub:grayscale-0 transition-all duration-700 ease-out group-hover/sub:scale-101"
             />
             <div className="absolute inset-0 bg-linear-to-t from-neutral-950 via-neutral-950/20 to-transparent flex flex-col justify-end p-5 sm:p-6">
-              <span className="manrope text-[10px] font-bold uppercase tracking-widest text-neutral-300 mb-2 block">
+              <span className="manrope text-[10px] font-bold uppercase tracking-wide text-neutral-300 mb-2 block">
                 Up Next • Editorial Choice
               </span>
               <h4 className="lora text-base sm:text-lg lg:text-xl text-white font-medium leading-snug tracking-tight line-clamp-2">

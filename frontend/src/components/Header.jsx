@@ -11,8 +11,7 @@ const Header = () => {
     const [query, setQuery] = useState('');
 
     const navigate = useNavigate();
-    const { isLoggedIn, userData } = useAuth();
-    const userProfilePic = userData.profile_pic;
+    const { isLoggedIn, userData, profilePic } = useAuth();
 
     const mainLinks = [
         { name: "Home", path: "" },
@@ -126,8 +125,8 @@ const Header = () => {
                         </div>
                     ) : (
                         <Link to="/profile" className="w-9 h-9 border border-neutral-200 rounded-full hover:border-neutral-400 transition-colors bg-neutral-50 flex items-center justify-center overflow-hidden shadow-2xs">
-                            {userProfilePic ? (
-                                <img src={userProfilePic} alt="Profile" className="w-full h-full object-cover" />
+                            {profilePic ? (
+                                <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
                             ) : (
                                 <User size={16} strokeWidth={2.5} className="text-neutral-600" />
                             )}

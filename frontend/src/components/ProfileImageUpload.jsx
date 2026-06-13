@@ -13,7 +13,7 @@ const ProfileImageModal = ({ isOpen, onClose, currentImage = null, onUploadSucce
   const [isUploading, setIsUploading] = useState(false);
   const [errorMessage, setError] = useState('');
   const fileInputRef = useRef(null);
-  const { userData } = useAuth();
+  const { userData, setProfilePic } = useAuth();
 
   const apiBase = import.meta.env.VITE_API_BASE;
 
@@ -62,6 +62,7 @@ const ProfileImageModal = ({ isOpen, onClose, currentImage = null, onUploadSucce
       }
 
       setPreview(imageUrl);
+      setProfilePic(imageUrl)
 
       if (onUploadSuccess) {
         onUploadSuccess(imageUrl);
@@ -98,6 +99,7 @@ const ProfileImageModal = ({ isOpen, onClose, currentImage = null, onUploadSucce
       setPreview(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
       if (onUploadSuccess) onUploadSuccess(null); 
+      setProfilePic(null)
     } catch (error) {
       console.error("AVATAR_DELETION_FAILURE", error);
       setError(error.response?.data?.message || 'Failed to remove asset signature from account profile record.');
@@ -175,23 +177,30 @@ const ProfileImageModal = ({ isOpen, onClose, currentImage = null, onUploadSucce
                   <span className="manrope text-xs font-semibold tracking-wide text-neutral-400">Processing asset...</span>
                 </div>
               ) : preview ? (
-                <div className="relative w-full h-full group/preview overflow-hidden rounded-xs animate-in fade-in duration-300">
-                  <img src={preview} alt="Avatar Profile preview" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-neutral-950/40 opacity-0 group-hover/preview:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-2">
+                <div className="relative w-full h-full group/preview overflow-hidden rounded-sm animate-in fade-in duration-300">
+                  <img 
+                    src={preview} 
+                    alt="Avatar Profile preview" 
+                    className="w-full h-full object-cover" 
+                  />
+                  
+                  <div className="absolute inset-0 bg-neutral-950/50 md:opacity-0 md:group-hover/preview:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-2.5 p-2">
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
-                      className="manrope px-3 py-1.5 bg-white text-neutral-900 text-xs font-semibold tracking-wide rounded-xs hover:bg-neutral-100 transition-colors cursor-pointer"
+                      className="manrope w-full max-w-30 text-center px-3 py-2 md:py-1.5 bg-white text-neutral-900 text-xs font-semibold tracking-wide rounded-sm hover:bg-neutral-100 transition-colors cursor-pointer shadow-sm active:scale-95"
                     >
                       Replace photo
                     </button>
+                              
                     <button
                       type="button"
                       onClick={handleClearImage}
-                      className="manrope text-white text-xs font-semibold tracking-wide hover:text-red-300 transition-colors cursor-pointer mt-1"
+                      className="manrope w-full max-w-30 text-center text-white text-xs font-semibold tracking-wide hover:text-red-300 transition-colors cursor-pointer py-1 active:text-red-400"
                     >
                       Remove photo
                     </button>
+                              
                   </div>
                 </div>
               ) : (

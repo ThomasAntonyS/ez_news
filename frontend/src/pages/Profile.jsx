@@ -10,7 +10,7 @@ import logo from '../assets/icon.png';
 
 const Profile = () => {
   document.title = "EZ NEWS | PROFILE"
-  const { setIsLoggedIn, userData, setSavedIds, fetchSavedIds } = useAuth();
+  const { setIsLoggedIn, userData, setSavedIds, fetchSavedIds, profilePic, setProfilePic } = useAuth();
   
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const [savedArticles, setSavedArticles] = useState([]);
@@ -20,20 +20,12 @@ const Profile = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-  const [profilePic, setProfilePic] = useState(userData?.profile_pic || null);
   const [dialog, setDialog] = useState({ isOpen: false, type: '', onConfirm: null });
   const libraryTopRef = useRef(null);
 
   const navigate = useNavigate();
   const apiBase = import.meta.env.VITE_API_BASE;
   const itemsPerPage = 10;
-
-  // Track state changes dynamically if parent authentication context changes out of bounds
-  useEffect(() => {
-    if (userData?.profile_pic) {
-      setProfilePic(userData.profile_pic);
-    }
-  }, [userData]);
 
   const fetchSavedArticles = async (page = 1, search = searchQuery) => {
     setLoadingSaved(true);
@@ -137,12 +129,8 @@ const Profile = () => {
     fetchSavedArticles(1, "")
   }
 
-  const handleAvatarUploadSuccess = (secureUrl) => {
-    setProfilePic(secureUrl);
-    if (userData) {
-      userData.profile_pic = secureUrl;
-    }
-    setToast({ show: true, message: secureUrl ? "Avatar updated successfully." : "Avatar removed successfully.", type: 'success' });
+  const handleAvatarUploadSuccess = (url) => {
+    setToast({ show: true, message: url ? "Avatar updated successfully." : "Avatar removed successfully.", type: 'success' });
   };
 
   return (
@@ -151,9 +139,9 @@ const Profile = () => {
       <div className="w-full h-16 border-b border-neutral-200 flex items-center justify-between px-[5%] shrink-0 bg-white sticky top-0 z-50">
         <Link to="/" className="flex items-center gap-2 group/back text-neutral-500 hover:text-neutral-900 transition-colors">
           <ChevronLeft size={18} className="group-hover/back:-translate-x-0.5 transition-transform" />
-          <span className="manrope font-bold uppercase tracking-widest text-[11px]">Back to News</span>
+          <span className="manrope font-bold uppercase tracking-wide italic text-[11px]">Back to News</span>
         </Link>
-        <img src={logo} alt="Logo" onClick={() => navigate("/")} className="w-8 h-8 object-contain cursor-pointer grayscale opacity-80 hover:opacity-100 hover:grayscale-0 transition-all" />
+        <img src={logo} alt="Logo" onClick={() => navigate("/")} className="w-8 h-8 object-contain cursor-pointer opacity-100 transition-all" />
       </div>
 
       <div className="w-[90%] xl:max-w-310 mx-auto py-12 flex-1">
@@ -165,7 +153,7 @@ const Profile = () => {
             {/* Core Card Identity Block */}
             <div className="border border-neutral-200 bg-white p-6 rounded-xs text-center flex flex-col items-center">
               <div className="relative mb-4">
-                <div className="w-20 h-20 rounded-full border border-neutral-200 flex items-center justify-center bg-neutral-50 overflow-hidden relative">
+                <div onClick={() => setIsImageModalOpen(true)} className="w-20 h-20 rounded-full border border-neutral-200 flex items-center justify-center bg-neutral-50 overflow-hidden relative cursor-pointer">
                   {profilePic ? (
                     <img 
                       src={profilePic} 
@@ -176,13 +164,6 @@ const Profile = () => {
                     <User size={36} className="text-neutral-400 animate-in fade-in duration-200" />
                   )}
                 </div>
-                <button 
-                  onClick={() => setIsImageModalOpen(true)} 
-                  className="absolute -bottom-0.5 -right-0.5 bg-neutral-900 text-white p-1.5 rounded-full border border-neutral-900 hover:bg-neutral-800 transition-colors cursor-pointer"
-                  title="Change avatar photo"
-                >
-                  <Camera size={12} />
-                </button>
               </div>
               <h2 className="manrope text-lg font-bold text-neutral-900 truncate max-w-full px-2">
                 {userData?.name || "Reader Profile"}

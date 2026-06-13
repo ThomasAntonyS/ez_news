@@ -10,8 +10,8 @@ export const AuthProvider = ({ children }) => {
     email:"",
     id:"",
     name:"",
-    profile_pic:null
   });
+  const [profilePic, setProfilePic] = useState(null)
   const [loading, setLoading] = useState(true);
 
   const checkAuth = async () => {
@@ -20,12 +20,11 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.get(`${apiBase}/check-auth`, { withCredentials: true });
       if (response.status === 200) {
         setIsLoggedIn(true);
-        setUserData(prev=>({
-          ...prev,
+        setUserData({
           name:response.data.name,
           id:response.data.id,
           email:response.data.email,
-        }))
+        })
       }
     } catch (error) {
       setIsLoggedIn(false);
@@ -42,10 +41,7 @@ export const AuthProvider = ({ children }) => {
       if (response.status === 200 && response.data.success) {
         setIsLoggedIn(true);
         
-        setUserData(prev => ({
-          ...prev,
-          profile_pic: response.data.url
-        }));
+        setProfilePic(response.data.url);
       }
     } catch (error) {
       console.error("Failed to fetch profile image track details:", error);
@@ -77,7 +73,7 @@ export const AuthProvider = ({ children }) => {
   },[])
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, userData, loading, savedIds, setSavedIds, fetchSavedIds }}>
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, userData, loading, savedIds, setSavedIds, fetchSavedIds, profilePic, setProfilePic }}>
       {children}
     </AuthContext.Provider>
   );
