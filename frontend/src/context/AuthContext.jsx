@@ -65,11 +65,11 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkAuth();
+    getProfileImage();
   }, [isLoggedIn]);
 
   useEffect(()=>{
     fetchSavedIds()
-    getProfileImage()
   },[])
 
   return (
