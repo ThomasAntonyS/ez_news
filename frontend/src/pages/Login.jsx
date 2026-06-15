@@ -14,7 +14,7 @@ const Login = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const { setIsLoggedIn, fetchSavedIds } = useAuth();
+    const { setIsLoggedIn } = useAuth();
 
     const navigate = useNavigate()
 
@@ -48,7 +48,6 @@ const Login = () => {
             });
         } 
         finally {
-            fetchSavedIds()
             setIsSubmitting(false);
         }
     };

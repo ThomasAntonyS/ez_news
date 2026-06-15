@@ -54,8 +54,8 @@ const NewSection = () => {
 
             try {
                 const cached = sessionStorage.getItem(cacheKey);
-                if (cached) {
-                    const parsed = JSON.parse(cached);
+                const parsed = JSON.parse(cached);
+                if (cached && !parsed?.data?.error ) {
                     if (now - parsed.timestamp < CACHE_LIFETIME) {
                         const articles = parsed.data.articles || [];
                         setPopular(articles);

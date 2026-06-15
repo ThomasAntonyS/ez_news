@@ -62,12 +62,11 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkAuth();
-    getProfileImage();
+    if(isLoggedIn==true){
+      getProfileImage();
+      fetchSavedIds()
+    }
   }, [isLoggedIn]);
-
-  useEffect(()=>{
-    fetchSavedIds()
-  },[])
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, userData, loading, savedIds, setSavedIds, fetchSavedIds, profilePic, setProfilePic }}>
