@@ -132,10 +132,10 @@ const ProfileImageModal = ({ isOpen, onClose, currentImage = null, onUploadSucce
           <div className="p-6 sm:p-8 flex flex-col justify-between border-b sm:border-b-0 sm:border-r border-neutral-100 sm:w-2/5 shrink-0 bg-neutral-50/40">
             <div>
               <h3 className="lora text-xl font-medium text-neutral-900 tracking-tight mb-2">
-                Avatar Identity
+                Profile Picture
               </h3>
               <p className="manrope text-xs font-medium text-neutral-400 tracking-wide leading-relaxed">
-                Update your global profile signature avatar picture.
+                Replace or remove your profile picture.
               </p>
             </div>
             
