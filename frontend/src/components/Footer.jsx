@@ -1,5 +1,6 @@
 import { Facebook, Instagram, Linkedin, ArrowUp } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import FooterLogo from '../assets/footer-logo.png'
 
 const Footer = () => {
     const navigate = useNavigate();
@@ -25,19 +26,20 @@ const Footer = () => {
             <div className="max-w-[90%] xl:max-w-310 mx-auto py-16 grid grid-cols-1 md:grid-cols-4 gap-12">
                 
                 <div className="md:col-span-1">
-                    <p 
-                        onClick={e => handleFooterClick(e)} 
-                        className="manrope text-2xl font-extrabold uppercase mb-4 cursor-pointer hover:text-neutral-400 transition-colors"
-                    >
-                        EZ NEWS
-                    </p>
+                <Link to="/" onClick={handleFooterClick} className="shrink-0 flex items-center mb-5">
+                    <img 
+                        src={FooterLogo} 
+                        alt="Footer Logo" 
+                        className="w-10 h-10 object-contain transition-all duration-300" 
+                    />
+                </Link>
                     <p className="lora text-[13px] leading-relaxed text-neutral-400 font-normal">
                         From breaking news to thought-provoking opinion pieces, our site keeps you informed & engaged. No fluff, just headlines.
                     </p>
                 </div>
 
                 <div>
-                    <h3 className="manrope text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-5 pb-2 border-b border-neutral-800 w-full">
+                    <h3 className="manrope text-[11px] font-bold uppercase italic tracking-widest text-neutral-400 mb-5 pb-2 border-b border-neutral-800 w-full">
                         Categories
                     </h3>
                     <ul className="grid grid-cols-2 gap-y-2.5 text-[11px] font-bold uppercase tracking-wider manrope text-neutral-300">
@@ -55,7 +57,7 @@ const Footer = () => {
                 </div>
 
                 <div>
-                    <h3 className="manrope text-[11px] font-bold uppercase tracking-widest text-neutral-400 mb-5 pb-2 border-b border-neutral-800 w-full">
+                    <h3 className="manrope text-[11px] font-bold uppercase italic tracking-widest text-neutral-400 mb-5 pb-2 border-b border-neutral-800 w-full">
                         Legal
                     </h3>
                     <ul className="space-y-2.5 text-[11px] font-bold uppercase tracking-wider manrope text-neutral-300">
