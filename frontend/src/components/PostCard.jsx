@@ -25,7 +25,7 @@ const PodcastCard = ({ image, title, url, description, source, sourceUrl, publis
           {source || "Source Unavailable"}
         </Link>
 
-        <h3 className="lora text-xl font-medium text-neutral-900 mb-3 line-clamp-2 max-w-[100%] leading-snug tracking-tight group-hover:text-neutral-800">
+        <h3 className="lora text-xl font-medium text-neutral-900 mb-3 line-clamp-2 w-full leading-snug tracking-tight group-hover:text-neutral-800">
           {title}
         </h3>
 
