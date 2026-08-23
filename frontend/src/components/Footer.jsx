@@ -92,7 +92,7 @@ const Footer = () => {
             </div>
 
             <div className="border-t border-neutral-900 py-8 text-center">
-                <p className="manrope text-[10px] font-bold tracking-widest text-neutral-600 uppercase">
+                <p className="manrope text-[10px] font-bold tracking-wide text-neutral-600 uppercase">
                     &copy; {new Date().getFullYear()} EZ NEWS. All Rights Reserved.
                 </p>
             </div>

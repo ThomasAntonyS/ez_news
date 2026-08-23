@@ -123,7 +123,7 @@ const HomeSliders = ({ sectionTitle, podcastData = [], categoryPath }) => {
                   
                   <div className="flex justify-between items-center mb-3">
                     <div className="flex items-center gap-4">
-                      <Link to={leadArticle.source?.url || "#"} className="manrope text-[12px] font-bold uppercase tracking-widest text-red-700 hover:underline hover:text-red-900">
+                      <Link to={leadArticle.source?.url || "#"} className="manrope text-[12px] font-bold uppercase tracking-wide text-red-700 hover:underline hover:text-red-900">
                         {leadArticle.source?.name || "Featured Source"}
                       </Link>
                       <span className="text-neutral-300 text-xs">|</span>
