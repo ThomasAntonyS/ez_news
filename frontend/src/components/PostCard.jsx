@@ -20,7 +20,7 @@ const PodcastCard = ({ image, title, url, description, source, sourceUrl, publis
       <div className="p-6 flex flex-col flex-1">
         <Link 
           to={sourceUrl || "#"} 
-          className="manrope text-[11px] w-max font-bold uppercase tracking-wide text-red-700 mb-2.5 transition-colors hover:text-red-900"
+          className="manrope text-[11px] w-full font-bold uppercase tracking-wide text-red-700 mb-2.5 transition-colors hover:text-red-900"
         >
           {source || "Source Unavailable"}
         </Link>
