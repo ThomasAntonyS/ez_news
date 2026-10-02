@@ -76,17 +76,29 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-const sendEmail = async (toEmail, subject, message) => {
+const sendEmail = async (toEmail, templateId, params, subject, previewText) => {
   try {
     const defaultClient = SibApiV3Sdk.ApiClient.instance;
     const apiKey = defaultClient.authentications['api-key'];
     apiKey.apiKey = process.env.BREVO_API_KEY;
+
     const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
     const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+
     sendSmtpEmail.sender = { name: "EZ NEWS", email: process.env.sendSmtpEmail_sender };
     sendSmtpEmail.to = [{ email: toEmail }];
-    sendSmtpEmail.subject = subject;
-    sendSmtpEmail.textContent = message;
+    sendSmtpEmail.templateId = Number(templateId);
+    sendSmtpEmail.params = params;
+    if (subject) {
+      sendSmtpEmail.subject = subject;
+    }
+
+    if (previewText) {
+      sendSmtpEmail.headers = {
+        "X-Mailin-Custom": previewText
+      };
+    }
+
     return await apiInstance.sendTransacEmail(sendSmtpEmail);
   } catch (error) {
     console.error("Brevo Email Error:", error);
@@ -163,7 +175,17 @@ app.post("/signup", async (req, res) => {
     
     const verificationUrl = `${baseUrl}/verify?usp=${hashedEmail}&p=${encodeURIComponent(hashedPassword)}`;
     
-    await sendEmail(email, "VERIFY IDENTITY", `Verify your account: ${verificationUrl}`);
+    const verificationDetails = `Use this link to verify your account: ${verificationUrl} `;
+
+    const emailParams = {
+      verification_details: verificationDetails,
+      current_year: new Date().getFullYear().toString(),
+    };
+    const subject = "Verify your EZ News account to get started";
+    const previewText = "Confirm your email address to unlock full access to your personalized news feed.";
+
+    const templateId = process.env.BREVO_Template_id
+    await sendEmail(email, templateId, emailParams, subject, previewText);
     
     await connection.query(
       "INSERT INTO users (email, password, name, isVerified) VALUES (?, ?, ?, 0)",
@@ -171,9 +193,10 @@ app.post("/signup", async (req, res) => {
     );
 
     await connection.commit();
-    return res.status(200).json({ message: `Verification mail send to ${email}. Click the url to verify account` })
+    return res.status(200).json({ message: `Verification mail sent to ${email}. Check your inbox to verify your account.` });
   } catch (error) {
     if (connection) await connection.rollback();
+    console.error(error);
     res.status(500).json({ message: "SYSTEM ERROR." });
   } finally {
     if (connection) connection.release();
@@ -512,11 +535,11 @@ app.get("/search/:query/:page", async (req, res) => {
 app.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
   try {
-    const [user] = await pool.query("SELECT id FROM users WHERE email = ?", [email]);
+    const [user] = await pool.query("SELECT id, name FROM users WHERE email = ?", [email]);
     if (user.length === 0) return res.status(404).json({ message: "Account not found" });
 
     const code = crypto.randomInt(100000, 999999).toString();
-    const expiryTime = Date.now() + (15 * 60 * 1000)
+    const expiryTime = Date.now() + (15 * 60 * 1000);
 
     await pool.query("DELETE FROM reset_table WHERE email = ?", [email]);
     await pool.query(
@@ -524,10 +547,21 @@ app.post("/forgot-password", async (req, res) => {
       [email, code, expiryTime]
     );
 
-    await sendEmail(email, "VERIFICATION CODE", `Your reset code is: ${code}`);
+    const verificationDetails = `Your verification code to reset password: ${code}`;
+
+    const emailParams = {
+      verification_details: verificationDetails,
+      current_year: new Date().getFullYear().toString(),
+    };
+
+    const templateId = process.env.BREVO_Template_id
+    const subject = "Action Required: Your password reset code";
+    const previewText = "Use this secure verification code within 10 minutes to proceed with your request.";
+    await sendEmail(email, templateId, emailParams, subject, previewText);
 
     res.status(200).json({ message: "CODE SENT SUCCESSFULLY" });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "SERVER ERROR" });
   }
 });
